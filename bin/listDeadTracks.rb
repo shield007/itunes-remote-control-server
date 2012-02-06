@@ -22,18 +22,21 @@
 
 
 require 'itunesController/macosx_itunescontroller'
+require 'itunesController/version'
 
 require 'rubygems'
 require 'fileutils'
 
-controller = MacOSXITunesController.new
-
-deadTracks=controller.findDeadTracks
-
-deadTracks.each do | deadTrack | 
-    if (deadTrack.show!=nil && deadTrack.show!="")
-        puts "TV: "+deadTrack.show+" - " + deadTrack.name
-    else
-        puts "Film: "+deadTrack.name
+module ItunesController
+    controller = MacOSXITunesController.new
+    
+    deadTracks=controller.findDeadTracks
+    
+    deadTracks.each do | deadTrack | 
+        if (deadTrack.show!=nil && deadTrack.show!="")
+            puts "TV: "+deadTrack.show+" - " + deadTrack.name
+        else
+            puts "Film: "+deadTrack.name
+        end
     end
 end
