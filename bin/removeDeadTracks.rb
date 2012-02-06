@@ -27,3 +27,7 @@ deadTracks.each do | deadTrack |
         puts "Film: "+deadTrack.name
     end
 end
+
+controller.removeTracksFromLibrary(deadTracks)
+
+puts "Done"
