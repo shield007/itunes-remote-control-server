@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["John-Paul Stanford"]
   s.email       = 'dev@stanwood.org.uk'
   s.homepage    = 'http://code.google.com/p/itunes-remote-control-server/'
-  s.files       = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }  
+  s.files       = `git ls-files`.split("\n")  
   s.executables = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 end
