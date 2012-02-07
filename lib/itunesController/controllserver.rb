@@ -20,6 +20,7 @@
 #
 
 require 'gserver'
+require 'itunesController/version'
 
 module ItunesController
 
@@ -218,15 +219,13 @@ module ItunesController
         end
         
         def processData(line,io)
-            io.puts("ITunes control server:" +ITunesControlServer::SERVER_VERSION)
-            io.puts("Itunes version: "+@itunes.version)
+            io.puts("ITunes control server:" +ItunesController::VERSION)
+            io.puts("Apple iTunes version: "+@itunes.version)
             return true, "220 ok\r\n"
         end
     end
     
     class ITunesControlServer < GServer
-        
-        SERVER_VERSION="1.0"
         
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
