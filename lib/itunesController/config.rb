@@ -20,9 +20,9 @@
 #
 
 require 'rexml/document'
+include REXML
 
 module ItunesController    
-    include REXML
     
     class ServerConfig
         attr_accessor :username,:password,:port,:interfaceAddress

@@ -1,4 +1,3 @@
-#!/usr/bin/ruby -I../lib
 #
 # Copyright (C) 2011-2012  John-Paul.Stanford <dev@stanwood.org.uk>
 #
@@ -20,21 +19,6 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-
-require 'itunesController/macosx_itunescontroller'
-require 'itunesController/version'
-
-require 'rubygems'
-require 'fileutils'
-
-controller = ItunesController::MacOSXITunesController.new
-
-deadTracks=controller.findDeadTracks
-
-deadTracks.each do | deadTrack | 
-    if (deadTrack.show!=nil && deadTrack.show!="")
-        puts "TV: "+deadTrack.show+" - " + deadTrack.name
-    else
-        puts "Film: "+deadTrack.name
-    end
+module ItunesController
+    VERSION = "0.1.0"
 end

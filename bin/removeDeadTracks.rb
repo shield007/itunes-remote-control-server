@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -I ../liby
+#!/usr/bin/ruby -I../liby
 #
 # Copyright (C) 2011-2012  John-Paul.Stanford <dev@stanwood.org.uk>
 #
@@ -22,26 +22,22 @@
 
 require 'itunesController/macosx_itunescontroller'
 require 'itunesController/version'
-require 'itunesController/version'
 
 require 'rubygems'
 require 'fileutils'
 
-module ItunesController
+controller = ItunesController::MacOSXITunesController.new
 
-    controller = MacOSXITunesController.new
-    
-    deadTracks=controller.findDeadTracks
-    
-    deadTracks.each do | deadTrack | 
-        if (deadTrack.show!=nil && deadTrack.show!="")
-            puts "TV: "+deadTrack.show+" - " + deadTrack.name
-        else
-            puts "Film: "+deadTrack.name
-        end
+deadTracks=controller.findDeadTracks
+
+deadTracks.each do | deadTrack | 
+    if (deadTrack.show!=nil && deadTrack.show!="")
+        puts "TV: "+deadTrack.show+" - " + deadTrack.name
+    else
+        puts "Film: "+deadTrack.name
     end
-    
-    controller.removeTracksFromLibrary(deadTracks)
-    
-    puts "Done"
 end
+
+controller.removeTracksFromLibrary(deadTracks)
+
+puts "Done"

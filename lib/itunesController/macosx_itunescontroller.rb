@@ -24,9 +24,9 @@
 #  - http://guides.macrumors.com/Deleting_Songs_From_iTunes
 #  - http://macscripter.net/viewtopic.php?id=22726
 
-require 'osx/cocoa'
 require 'itunesController/itunescontroller'
 require 'itunesController/kinds'
+require 'osx/cocoa'
 
 include OSX
 OSX.require_framework 'ScriptingBridge'
