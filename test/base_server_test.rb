@@ -39,7 +39,12 @@ class BaseServerTest < Test::Unit::TestCase
         return -1
     end
     
-    def setupServer        
+    def setupServer
+        ItunesController::DummyITunesController::COMMAND_LOG.take_while {
+            | el |
+        }
+        
+        
         controller = ItunesController::DummyITunesController.new
         config=ItunesController::ServerConfig.new
         config.port = findAvaliablePort
