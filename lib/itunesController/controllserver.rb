@@ -24,6 +24,20 @@ require 'itunesController/version'
 
 module ItunesController
 
+    class CommandName
+        HELO="HELO"
+        QUIT="QUIT"
+        LOGIN="LOGIN"
+        PASSWORD="PASSWORD"
+        CLEARFILES="CLEARFILES"
+        ADDFILES="ADDFILES"
+        FILE="FILE"
+        REMOVEFILES="REMOVEFILES"
+        REMOVEDEADFILES="REMOVEDEADFILES"
+        LISTDEADFILES="LISTDEADFILES"
+        VERSION="VERSION"
+    end
+    
     class ServerState
         
         attr_accessor :state,:files,:user,:config
@@ -35,7 +49,7 @@ module ItunesController
         def initialize(config)
             @state=ServerState::NOT_AUTHED
             @files=[]
-            @config=config
+            @config=config           
         end
         
         def clean
@@ -69,7 +83,7 @@ module ItunesController
     # This command is used check that the server is responding
     class HelloCommand < ServerCommand
         def initialize(state,itunes)
-            super("HELO",nil,state,itunes)
+            super(ItunesController::CommandName::HELO,nil,state,itunes)
         end
     
         def processData(line,io)
@@ -80,7 +94,7 @@ module ItunesController
     # This command is used to close the connection to the server
     class QuitCommand < ServerCommand
         def initialize(state,itunes)
-            super("QUIT",nil,state,itunes)
+            super(ItunesController::CommandName::QUIT,nil,state,itunes)
         end
     
         def processData(line,io)
@@ -91,7 +105,7 @@ module ItunesController
     # This command is used to log into the server and tell it the username
     class LoginCommand < ServerCommand
         def initialize(state,itunes)
-            super("LOGIN",nil,state,itunes)
+            super(ItunesController::CommandName::LOGIN,nil,state,itunes)
         end
     
         def processData(line,io)
@@ -107,7 +121,7 @@ module ItunesController
     # This command is used to log into the server and tell it the password
     class PasswordCommand < ServerCommand
         def initialize(state,itunes)
-            super("PASSWORD",ServerState::DOING_AUTH,state,itunes)
+            super(ItunesController::CommandName::PASSWORD,ServerState::DOING_AUTH,state,itunes)
         end
     
         def processData(line,io)
@@ -130,7 +144,7 @@ module ItunesController
     # This command is used to clear the registers files
     class ClearFilesCommand < ServerCommand
         def initialize(state,itunes)
-            super("CLEARFILES",ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::CLEARFILES,ServerState::AUTHED,state,itunes)
         end
     
         def processData(line,io)
@@ -142,7 +156,7 @@ module ItunesController
     # This command will cause files registerd with the server to be added to the itunes library
     class AddFilesCommand < ServerCommand
         def initialize(state,itunes)
-            super("ADDFILES",ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::ADDFILES,ServerState::AUTHED,state,itunes)
         end
     
         def processData(line,io)
@@ -155,7 +169,7 @@ module ItunesController
     # This command will cause files registerd with the server to be removed from the itunes library
     class RemoveFilesCommand < ServerCommand
         def initialize(state,itunes)
-            super("REMOVEFILES",ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::REMOVEFILES,ServerState::AUTHED,state,itunes)
         end
     
         def processData(line,io)
@@ -168,7 +182,7 @@ module ItunesController
     # This command will remove files form the itunes library if they can't be found on the disk
     class RemoveDeadFilesCommand < ServerCommand
         def initialize(state,itunes)
-            super("REMOVEDEADFILES",ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::REMOVEDEADFILES,ServerState::AUTHED,state,itunes)
         end
     
         def processData(line,io)
@@ -181,7 +195,7 @@ module ItunesController
     # This is used to get a list of files in the itunes library which can't be found on the disk
     class ListDeadFilesCommand < ServerCommand
         def initialize(state,itunes)
-            super("LISTDEADFILES",ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::LISTDEADFILES,ServerState::AUTHED,state,itunes)
         end
     
         def processData(line,io)
@@ -200,7 +214,7 @@ module ItunesController
     # This command is used to register a file with the server. These files can then be used by other commands
     class FileCommand < ServerCommand
         def initialize(state,itunes)
-            super("FILE",ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::FILE,ServerState::AUTHED,state,itunes)
         end
     
         def processData(line,io)
@@ -215,7 +229,7 @@ module ItunesController
     # This command is used to return version information
     class VersionCommand < ServerCommand
         def initialize(state,itunes)
-            super("VERSION",nil,state,itunes)
+            super(ItunesController::CommandName::VERSION,nil,state,itunes)
         end
         
         def processData(line,io)
@@ -227,10 +241,12 @@ module ItunesController
     
     class ITunesControlServer < GServer
         
+        attr_accessor :connections
+              
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
-            puts "Started iTunes controll server on port #{port}"        
-            @itunes=itunes
+            puts "Started iTunes controll server on port #{port}"                   
+            @itunes=itunes                 
             @state=ServerState.new(config)
             @commands=[
                 HelloCommand.new(@state,@itunes),
@@ -245,8 +261,9 @@ module ItunesController
                 FileCommand.new(@state,@itunes),
                 VersionCommand.new(@state,@itunes)
             ]
+                 
         end
-    
+                
         def serve(io)
             puts "Connected"
             @state.clean
@@ -264,9 +281,9 @@ module ItunesController
     
                 end
             end
-            io.print "002 bye\r\n"
+            io.print "Send:002 bye\r\n"
             io.close
-            @state.clean
+            @state.clean            
             puts "Disconnected"
         end
     
@@ -281,5 +298,5 @@ module ItunesController
             end
             return nil,nil
         end
-end
+    end
 end

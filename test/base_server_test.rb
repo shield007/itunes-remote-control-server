@@ -13,7 +13,7 @@ class BaseServerTest < Test::Unit::TestCase
     MIN_PORT_NUMBER = 5000
     MAX_PORT_NUMBER = 9000
     
-    attr_accessor :server
+    attr_accessor :server,:port
     
     def portOpen?(ip, port, seconds=1)
       Timeout::timeout(seconds) do
@@ -43,6 +43,7 @@ class BaseServerTest < Test::Unit::TestCase
         controller = ItunesController::DummyITunesController.new
         config=ItunesController::ServerConfig.new
         config.port = findAvaliablePort
+        @port = config.port
         config.username = BaseServerTest::USER
         config.password = BaseServerTest::PASSWORD
         @server=ItunesController::ITunesControlServer.new(config,config.port,controller)
@@ -51,6 +52,9 @@ class BaseServerTest < Test::Unit::TestCase
     
     def teardownServer
         @server.stop
+        while !@server.stopped?
+        end
+        @server.join
     end
         
 end
