@@ -129,5 +129,103 @@ class ServerTest < BaseServerTest
             assert(@server.stopped?)
         end
     end
+    
+    def test_RemoveFiles
+        setupServer
+        begin
+            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+            client=DummyClient.new
+            client.connect("localhost",@port)            
+            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
+            
+            client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
+            client.sendCommand(ItunesController::CommandName::FILE+":/blah1", 220);
+            client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
+            client.sendCommand(ItunesController::CommandName::REMOVEFILES, 220);
+            client.sendCommand(ItunesController::CommandName::HELO, 220);
+            
+            commandLog = ItunesController::DummyITunesController::COMMAND_LOG
+            assert_equal(orgSize+5,commandLog.size());
+            assert_equal("findTracksWithLocations(locations)",commandLog[orgSize]);
+            assert_equal("removeTracksFromLibrary(tracks)",commandLog[orgSize+1]);
+            
+            client.sendCommand(ItunesController::CommandName::QUIT,221)
+            client.disconnect
+        ensure
+            teardownServer
+            assert(@server.stopped?)
+        end
+    end
+    
+    def test_ClearFiles
+       setupServer
+       begin
+           orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+           client=DummyClient.new
+           client.connect("localhost",@port)            
+           client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
+           
+           client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
+           client.sendCommand(ItunesController::CommandName::FILE+":/blah1", 220);
+           client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
+           client.sendCommand(ItunesController::CommandName::CLEARFILES, 220);
+           client.sendCommand(ItunesController::CommandName::HELO, 220);
+           
+           commandLog = ItunesController::DummyITunesController::COMMAND_LOG
+           assert_equal(orgSize,commandLog.size());           
+           
+           client.sendCommand(ItunesController::CommandName::QUIT,221)
+           client.disconnect
+       ensure
+           teardownServer
+           assert(@server.stopped?)
+       end
+   end
 
+   def test_ClearFiles2
+       setupServer
+       begin
+           orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+           client=DummyClient.new
+           client.connect("localhost",@port)            
+           client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
+           
+           client.sendCommand(ItunesController::CommandName::CLEARFILES, 220);
+           client.sendCommand(ItunesController::CommandName::HELO, 220);
+           
+           commandLog = ItunesController::DummyITunesController::COMMAND_LOG
+           assert_equal(orgSize,commandLog.size());           
+           
+           client.sendCommand(ItunesController::CommandName::QUIT,221)
+           client.disconnect
+       ensure
+           teardownServer
+           assert(@server.stopped?)
+       end
+   end
+   
+   def test_RemoveDeadFiles
+       setupServer
+       begin
+           orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+           client=DummyClient.new
+           client.connect("localhost",@port)            
+           client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
+           
+           client.sendCommand(ItunesController::CommandName::REMOVEDEADFILES, 220);
+           client.sendCommand(ItunesController::CommandName::HELO, 220);
+           
+           commandLog = ItunesController::DummyITunesController::COMMAND_LOG
+           assert_equal(orgSize+2,commandLog.size());
+           assert_equal("findDeadTracks()",commandLog[orgSize]);
+           assert_equal("removeTracksFromLibrary(tracks)",commandLog[orgSize+1]);
+           
+           client.sendCommand(ItunesController::CommandName::QUIT,221)
+           client.disconnect
+       ensure
+           teardownServer
+           assert(@server.stopped?)
+       end
+   end
+   
 end
