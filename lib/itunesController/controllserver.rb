@@ -60,6 +60,10 @@ module ItunesController
     end
     
     # Used to store the state within the server of each connected client
+    # @attr [Number] state The server state. Either ServerState::NOT_AUTHED, ServerState::DOING_AUTHED or ServerState::AUTHED
+    # @attr [Array[String]] files An array that contains the list of registered files the client is working on
+    # @attr [String] user The logged in user
+    # @attr [ItunesController::ServerConfig] config The server configuration
     class ServerState
         
         attr_accessor :state,:files,:user,:config
@@ -80,7 +84,12 @@ module ItunesController
         end
     end
     
-    # This is the base class of all server commands. 
+    # This is the base class of all server commands.
+    # @abstract Subclass and override {#processData} to implement a server command 
+    # @attr_reader [Number] requiredLoginState The required login state need for this command. Either nil,
+    #                                          ServerState::NOT_AUTHED, ServerState::DOING_AUTH or
+    #                                          ServerState::AUTHED. If nil then works in any login state.
+    # @attr_reader [String] name The command name
     class ServerCommand
         attr_reader :requiredLoginState,:name
         
@@ -371,9 +380,7 @@ module ItunesController
     
     # The TCP Socket server used to listen on connections and process commands whcih control itunes.
     # see ItunesController::CommandName for a list of supported commands     
-    class ITunesControlServer < GServer
-        
-        attr_accessor :connections
+    class ITunesControlServer < GServer             
               
         # The constructor
         # @param [ItunesController::ServerConfig] config The server configuration

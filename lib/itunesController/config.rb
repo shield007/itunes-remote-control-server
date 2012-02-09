@@ -23,15 +23,34 @@ require 'rexml/document'
 include REXML
 
 module ItunesController    
-    
+
+    # This class is used to save read and store the server configuration
+    # @example {
+    #    <itunesController>
+    #        <users>
+    #            <user username="test" password="test"/>
+    #        </users>
+    #    </itunesController>
+    # }
+    # @attr username The username of the user used to connect to login to the server
+    # @attr password The password of the user used to connect to login to the server
+    # @attr port The port number the server is listening on
+    # @attr interfaceAddress The DNS/IP address of the interface the server is binding too. 
     class ServerConfig
         attr_accessor :username,:password,:port,:interfaceAddress
         
+        # The constructor
         def initialize()
             @port =nil
-            @interfaceAddress = "127.0.0.1"
+            @interfaceAddress = "localhost"
         end
     
+        # A class scoped method used to read the server configuration from a file
+        # See the class description for a example of the configuration file format. 
+        # If their are any problems loading the configuration, then the application is
+        # exited and a error message is printed to the stderr console stream.
+        # @param [String] configFile The file name of the configuration file
+        # @return [ItunesController::ServerConfig] The server configuration
         def self.readConfig(configFile)
             if (!File.exists? configFile)
                 error("Unable to find configuration file: "+configFile)
