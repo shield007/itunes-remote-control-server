@@ -29,11 +29,14 @@ require 'itunesController/version'
 require 'rubygems'
 require 'optparse'
 
+# Used to cause the application to exit with a error message
+# @param [String] msg The error message
 def error(msg)
     $stderr.puts msg
     exit(1)
 end
 
+# Used to display the command line useage
 def displayUsage()
     puts("Usage: itunesController.rb [options]")
     puts("")
@@ -43,6 +46,8 @@ def displayUsage()
     puts("    -h, --help                       Display this screen")
 end
 
+# Used to display a error message and the command line usesage
+# @param [String] message The error message
 def usageError(message)
     $stderr.puts "ERROR: "+message
     displayUsage()
@@ -53,6 +58,7 @@ OPTIONS = {}
 OPTIONS[:port] = nil
 OPTIONS[:config] = nil
 
+# Used to check the command line options are valid
 def checkOptions
     if (OPTIONS[:config]==nil)
         usageError("No config file specified. Use --config option.")

@@ -1,19 +1,15 @@
 #!/usr/bin/ruby -I../lib
 #
-# Copyright (C) 2011-2012  John-Paul.Stanford <dev@stanwood.org.uk>
+# This is a ruby executable that is used to create a dummy itunes server. It's mostly intended for use 
+# with tests.
+# @example {
+#   Usage: dummyItunesController.rb [options]
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#   Specific options:
+#    -p, --port PORT                  The port number to start the server on. Defaults to 7000
+#    -c, --config FILE                The configuration file
+#    -h, --help                       Display this screen
+# }
 #
 # Author:: John-Paul Stanford <dev@stanwood.org.uk>
 # Copyright:: Copyright (C) 2011  John-Paul.Stanford <dev@stanwood.org.uk>
@@ -29,13 +25,16 @@ require 'itunesController/version'
 require 'rubygems'
 require 'optparse'
 
+# Used to cause the application to exit with a error message
+# @param [String] msg The error message
 def error(msg)
     $stderr.puts msg
     exit(1)
 end
     
+# Used to display the command line useage
 def displayUsage()
-    puts("Usage: itunesController.rb [options]")
+    puts("Usage: dummyItunesController.rb [options]")
     puts("")
     puts("Specific options:")
     puts("    -p, --port PORT                  The port number to start the server on. Defaults to 7000")
@@ -43,6 +42,8 @@ def displayUsage()
     puts("    -h, --help                       Display this screen")
 end
 
+# Used to display a error message and the command line usesage
+# @param [String] message The error message
 def usageError(message)
     $stderr.puts "ERROR: "+message
     displayUsage()
@@ -53,6 +54,7 @@ OPTIONS = {}
 OPTIONS[:port] = nil
 OPTIONS[:config] = nil
 
+# Used to check the command line options are valid
 def checkOptions
     if (OPTIONS[:config]==nil)
         usageError("No config file specified. Use --config option.")

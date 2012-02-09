@@ -55,8 +55,8 @@ end
 
 # Returns a list of media files that are have not been added to the
 # itunes library
-# ::libraryTracks 
-#   The tracks within the library
+# @param libraryTracks The tracks within the library
+# @return The list of files that are not in the libaray
 def findNewMediaFiles(libraryTracks)
     libraryFiles=[]
     libraryTracks.each do | track |
