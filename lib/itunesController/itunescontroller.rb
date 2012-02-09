@@ -21,44 +21,76 @@
 
 module ItunesController
     
+    # This is the base class of all itunes controller.    
+    # @abstract This class should be overridden to implement the class that talks to iTunes.
     class ITunesController
-        
+
+        # The constructor        
         def initialize
             
         end
     
+        # Used to get the libaray play lists
+        # @abstract Must be overridden
+        # @return The iTunes playlist
         def getLibraryPlaylists
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to get the iTunes version
+        # @abstract Must be overridden
+        # @return [String] The itunes version
         def version
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to remove tracks from the libaray
+        # @abstract Must be overridden
+        # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to add a list of files to the itunes library
+        # @abstract Must be overridden
+        # @param [Array[String]] A list of files to add to the itunes library
         def addFilesToLibrary(files)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to get the libaray iTunes source
+        # @abstract Must be overridden
+        # @return The iTunes source for the library
         def getSourceLibrary()
             raise "ERROR: Your trying to instantiate an abstract class"
         end
-    
+           
+        # Used to get a list of tracks that have the given locations
+        # @abstract Must be overridden
+        # @param [Array[String]] locations a list of track locations to find
+        # @return [Array] A list of tracks that were found 
         def findTracksWithLocations(locations)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to get a track with the given location
+        # @abstract Must be overridden
+        # @param [String] location The location of the track to find
+        # @return The track that was found, or nil if it could not be found
         def findTrackWithLocation(location)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to find the dead tracks (tracks whoes file references don't exist) within the
+        # iTunes libaray
+        # @return [Array] A list of dead tracks
         def findDeadTracks()
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     
+        # Used to list all the files in the library
+        # @abstract Must be overridden
+        # @return [Array] A list of files in the iTunes library
         def listFilesInLibrary()
             raise "ERROR: Your trying to instantiate an abstract class"
         end

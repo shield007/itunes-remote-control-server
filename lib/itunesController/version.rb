@@ -20,5 +20,6 @@
 #
 
 module ItunesController
+    # The itunes-remote-control-server version
     VERSION = "0.1.0"
 end

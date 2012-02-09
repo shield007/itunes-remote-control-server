@@ -26,8 +26,7 @@ module ItunesController
     # in tests to check that they talk to the server correctly. Any commands
     # that are recived are logged in the COMMNAD_LOG list. Tests can read
     # these to make sure they did the correct thing
-    class DummyITunesController < ITunesController 
-        attr_reader :iTunes    
+    class DummyITunesController < ITunesController   
     
         # The list of commands performed 
         COMMAND_LOG = []
