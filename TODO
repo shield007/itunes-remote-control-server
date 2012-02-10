@@ -1,2 +1,1 @@
-itunesController.rb
-	* Allow paths to be entered on the command line and remove the hard coded ones
+Add support for windows itunes

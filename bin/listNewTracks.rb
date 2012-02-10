@@ -25,10 +25,7 @@ require 'itunesController/macosx_itunescontroller'
 
 require 'rubygems'
 require 'fileutils'
-
-# The media directiores to search
-DIRS=["/mounts/incomming","/mounts/TVShows","/mounts/Films"]
-    
+  
 # The file extensions to be considered as media files
 MEDIA_TYPES = [".m4v","mp3",".mp4"]
     
@@ -55,9 +52,10 @@ end
 
 # Returns a list of media files that are have not been added to the
 # itunes library
+# @param [Array[String]] dirs List of directiores to search for new tracks
 # @param libraryTracks The tracks within the library
 # @return The list of files that are not in the libaray
-def findNewMediaFiles(libraryTracks)
+def findNewMediaFiles(dirs,libraryTracks)
     libraryFiles=[]
     libraryTracks.each do | track |
         if (track.location.isFileURL)
@@ -65,7 +63,7 @@ def findNewMediaFiles(libraryTracks)
         end
     end
     files=[]
-    DIRS.each do | dir | 
+    dirs.each do | dir | 
         listMediaFiles(files,dir)
     end    
     
@@ -74,8 +72,13 @@ def findNewMediaFiles(libraryTracks)
     return files
 end
 
+if ARGV.length != 1
+    puts "usage: listNewTracks.rb directories..."
+    exit
+end
+
 controller = ItunesController::MacOSXITunesController.new
-newFiles=findNewMediaFiles(controller.listFilesInLibrary())
+newFiles=findNewMediaFiles(ARGV,controller.listFilesInLibrary())
 newFiles.each do | file |
     puts(file)
 end
