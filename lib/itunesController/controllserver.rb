@@ -276,12 +276,11 @@ module ItunesController
         def processData(line,io)
             success=(@itunes.addFilesToLibrary(@state.files))
             @state.files=[]
-            if (success) {
+            if (success) 
                 return true, "220 ok\r\n"
-            }
-            else {
-                return true, "504 error, unable to add files\r\n"
-            }
+            else
+                return true, "504 error, unable to add files ok\r\n"
+            end
         end
     end
     
