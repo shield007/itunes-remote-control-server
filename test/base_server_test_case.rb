@@ -61,5 +61,8 @@ class BaseServerTest < Test::Unit::TestCase
         end
         @server.join
     end
+
+    def test_dummy
+    end
         
 end
