@@ -73,7 +73,12 @@ module ItunesController
                 script=script+"    add POSIX file \"#{file}\"\n"
             end
             script=script+"end tell\n"
-            executeScript(script)
+            output=executeScript(script)
+            
+            if (output =~ /file track id (\d+).*/)
+                return true;
+            end
+            return false;
         end
     
         # Used to get the libaray iTunes source        
@@ -94,7 +99,7 @@ module ItunesController
             tracks=[]
             @libraryPlaylists.each do | playlist |
                 playlist.fileTracks.each do |track|
-                    if (track.location.isFileURL)
+                    if (track.location != nil && track.location.isFileURL)
                         if (locations.index(track.location.path))
                         return tracks.push(track)
                         end
@@ -183,7 +188,7 @@ module ItunesController
         # @param script the Script contents        
         def executeScript(script)
             puts script
-            system(Escape.shell_command(["osascript","-e",script]))
+            return system(Escape.shell_command(["osascript","-e",script]))
         end
     end
 end
