@@ -8,13 +8,13 @@
 #
 
 
-require 'itunesController/macosx_itunescontroller'
+require 'itunesController/itunescontroller_factory'
 require 'itunesController/version'
 
 require 'rubygems'
 require 'fileutils'
 
-controller = ItunesController::MacOSXITunesController.new
+controller = ItunesController::ITunesControllerFactory::createController()
 
 deadTracks=controller.findDeadTracks
 

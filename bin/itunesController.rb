@@ -22,7 +22,7 @@
 
 
 require 'itunesController/config'
-require 'itunesController/macosx_itunescontroller'
+require 'itunesController/itunescontroller_factory'
 require 'itunesController/controllserver'
 require 'itunesController/version'
 
@@ -86,7 +86,7 @@ end
 optparse.parse!
 checkOptions()
 
-controller = ItunesController::MacOSXITunesController.new
+controller = ItunesController::ITunesControllerFactory::createController()
 port = 7000
 config=ItunesController::ServerConfig.readConfig(OPTIONS[:config])
 if (config.port!=nil) 

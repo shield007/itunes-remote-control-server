@@ -25,6 +25,7 @@
 #  - http://macscripter.net/viewtopic.php?id=22726
 
 require 'itunesController/itunescontroller'
+require 'escape'
 require 'itunesController/kinds'
 require 'osx/cocoa'
 
@@ -181,7 +182,7 @@ module ItunesController
         # @private
         # @param script the Script contents        
         def executeScript(script)
-            system("osascript -e '"+script+"'")
+            system(Escape.shell_command("osascript","-e",script))
         end
     end
 end

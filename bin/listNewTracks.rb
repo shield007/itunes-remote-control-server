@@ -21,7 +21,7 @@
 #
 
 require 'itunesController/version'
-require 'itunesController/macosx_itunescontroller'
+require 'itunesController/itunescontroller_factory'
 
 require 'rubygems'
 require 'fileutils'
@@ -77,7 +77,7 @@ if ARGV.length != 1
     exit
 end
 
-controller = ItunesController::MacOSXITunesController.new
+controller = ItunesController::ITunesControllerFactory::createController()
 newFiles=findNewMediaFiles(ARGV,controller.listFilesInLibrary())
 newFiles.each do | file |
     puts(file)
