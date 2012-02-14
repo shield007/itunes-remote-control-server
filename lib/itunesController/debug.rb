@@ -21,6 +21,7 @@
 
 module ItunesController
 
+    class ItunesControllerDebug
     ANSI_BOLD       = "\033[1m"
     ANSI_RESET      = "\033[0m"
     ANSI_LGRAY    = "\033[0;37m"
@@ -29,7 +30,7 @@ module ItunesController
     # Used to print the methods of a object
     # @param [Object] obj The object
     # @param options    
-    def pm(obj, *options) 
+    def self.pm(obj, *options) 
           methods = obj.methods
           methods -= Object.methods unless options.include? :more
           filter = options.select {|opt| opt.kind_of? Regexp}.first
@@ -61,18 +62,20 @@ module ItunesController
     
     # Used to print track information
     # @param track iTunes track
-    def printTack(track)
+    def self.printTrack(track)
         puts getTrackDescription(track)
     end
     
     # Used to get a track description
     # @param track iTunes track
     # @return the track information
-    def getTrackDescription(track)
+    def self.getTrackDescription(track)
+        pm track
         if (track.show!=nil && track.show!="")
-            return track.show+" - " + track.name
+            return "TV Show:"+track.show+" - " + track.name
         else
-            return track.name
+            return "Film:"+track.name
         end
+    end
     end
 end

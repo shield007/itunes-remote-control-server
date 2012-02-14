@@ -11,11 +11,10 @@ require 'itunesController/itunescontroller_factory'
 
 require 'rubygems'
 
-if ARGV.length != 1
+if ARGV.length == 0
     puts "usage: addFiles.rb files..."
     exit
 end
 
 controller = ItunesController::ITunesControllerFactory::createController()
-controller.addFilesToLibrary(ARGV);
-
+controller.addFilesToLibrary(ARGV)

@@ -25,9 +25,12 @@
 #  - http://macscripter.net/viewtopic.php?id=22726
 
 require 'itunesController/itunescontroller'
+require 'itunesController/kinds'
+require 'itunesController/debug'
+
 require 'rubygems'
 require 'escape'
-require 'itunesController/kinds'
+require 'open3'
 require 'osx/cocoa'
 
 include OSX
@@ -61,24 +64,29 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            
             tracks.reverse.each do | track |
+                puts ("Remove track '#{track.location.path}' from iTunes library")
                 track.delete
             end
         end
 
         # Used to add a list of files to the itunes library        
         # @param [Array[String]] A list of files to add to the itunes library    
+        # @return True if it sucesseds, or false if their is a error
         def addFilesToLibrary(files)
-            script="tell application \"iTunes\"\n"
             files.each do | file |
+                script="tell application \"iTunes\"\n"
                 script=script+"    add POSIX file \"#{file}\"\n"
+                script=script+"end tell\n"
+                output=executeScript(script)
+                if (output =~ /file track id (\d+).*/)
+                    puts("Added file '#{file}' with track id #{$1}")
+                else 
+                    $stderr.puts("Unable to add file '#{file}'")
+                    return false
+                end
             end
-            script=script+"end tell\n"
-            output=executeScript(script)
             
-            if (output =~ /file track id (\d+).*/)
-                return true;
-            end
-            return false;
+            return true;
         end
     
         # Used to get the libaray iTunes source        
@@ -94,14 +102,18 @@ module ItunesController
     
         # Used to get a list of tracks that have the given locations
         # @param [Array[String]] locations a list of track locations to find
-        # @return [Array] A list of tracks that were found 
+        # @return [Array[OSX::ITunesFileTrack]] A list of tracks that were found 
         def findTracksWithLocations(locations)
             tracks=[]
             @libraryPlaylists.each do | playlist |
                 playlist.fileTracks.each do |track|
-                    if (track.location != nil && track.location.isFileURL)
+                    #if (track.location != nil && track.location.isFileURL)
+                    if (track.location != nil)
                         if (locations.index(track.location.path))
-                        return tracks.push(track)
+                            tracks.push(track)
+                            if (tracks.size == locations.size)
+                                return tracks
+                            end
                         end
                     end
                 end
@@ -187,8 +199,8 @@ module ItunesController
         # @private
         # @param script the Script contents        
         def executeScript(script)
-            return system(Escape.shell_command(["osascript","-e",script]))
-                
+            stdin, stdout, stderr = Open3.popen3(Escape.shell_command(["osascript","-e",script]))
+            return stdout.readlines.join('\n').strip
         end
     end
 end
