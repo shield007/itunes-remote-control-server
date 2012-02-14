@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -I../liby
+#!/usr/bin/ruby -I../lib
 #
 # A command line util used to add tracks to the iTunes library
 #

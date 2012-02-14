@@ -20,9 +20,9 @@
 #
 
 if RUBY_PLATFORM =~ /mswin|mingw/
-  require 'windows_itunescontroller.rb'
+  require 'itunesController/windows_itunescontroller.rb'
 elsif RUBY_PLATFORM =~ /darwin/
-  require 'macosx_itunescontroller.rb'
+  require 'itunesController/macosx_itunescontroller.rb'
 else
   raise("Unsupported operating system #{RUBY_PLATFORM}.")
 end

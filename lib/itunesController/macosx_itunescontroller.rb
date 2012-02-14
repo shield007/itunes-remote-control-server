@@ -25,6 +25,7 @@
 #  - http://macscripter.net/viewtopic.php?id=22726
 
 require 'itunesController/itunescontroller'
+require 'rubygems'
 require 'escape'
 require 'itunesController/kinds'
 require 'osx/cocoa'
