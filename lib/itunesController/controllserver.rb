@@ -279,7 +279,7 @@ module ItunesController
             if (success) 
                 return true, "220 ok\r\n"
             else
-                return true, "504 error, unable to add files ok\r\n"
+                return true, "504 error, unable to add files\r\n"
             end
         end
     end

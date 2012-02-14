@@ -55,7 +55,7 @@ module ItunesController
             files.each do | file |
                 COMMAND_LOG.push("addFilesToLibrary("+file+")")
             end
-            return false 
+            return true 
         end
     
         def getSourceLibrary()        
