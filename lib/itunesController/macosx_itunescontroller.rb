@@ -25,9 +25,11 @@
 #  - http://macscripter.net/viewtopic.php?id=22726
 
 require 'itunesController/itunescontroller'
+require 'itunesController/kinds'
+
 require 'rubygems'
 require 'escape'
-require 'itunesController/kinds'
+require 'open3'
 require 'osx/cocoa'
 
 include OSX
@@ -67,18 +69,22 @@ module ItunesController
 
         # Used to add a list of files to the itunes library        
         # @param [Array[String]] A list of files to add to the itunes library    
+        # @return True if it sucesseds, or false if their is a error
         def addFilesToLibrary(files)
-            script="tell application \"iTunes\"\n"
             files.each do | file |
+                script="tell application \"iTunes\"\n"
                 script=script+"    add POSIX file \"#{file}\"\n"
+                script=script+"end tell\n"
+                output=executeScript(script)
+                if (output =~ /file track id (\d+).*/)
+                    puts("Added file '#{file}' with track id #{$1}")
+                else 
+                    $stderr.puts("Unable to add file '#{file}'")
+                    return false
+                end
             end
-            script=script+"end tell\n"
-            output=executeScript(script)
             
-            if (output =~ /file track id (\d+).*/)
-                return true;
-            end
-            return false;
+            return true;
         end
     
         # Used to get the libaray iTunes source        
@@ -187,8 +193,8 @@ module ItunesController
         # @private
         # @param script the Script contents        
         def executeScript(script)
-            puts script
-            return system(Escape.shell_command(["osascript","-e",script]))
+            stdin, stdout, stderr = Open3.popen3(Escape.shell_command(["osascript","-e",script]))
+            return stdout.readlines.join('\n').strip
         end
     end
 end

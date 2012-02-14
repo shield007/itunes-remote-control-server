@@ -263,7 +263,7 @@ module ItunesController
     end
     
     # This command is used to add files registered with the FILE command to itunes then clear
-    # the file list.
+    # the file list. This will return a code 220 if it successeds, or 504 if their is a error.
     class AddFilesCommand < ServerCommand
         
         # The constructor
@@ -274,9 +274,14 @@ module ItunesController
         end
     
         def processData(line,io)
-            @itunes.addFilesToLibrary(@state.files)
+            success=(@itunes.addFilesToLibrary(@state.files))
             @state.files=[]
-            return true, "220 ok\r\n"
+            if (success) {
+                return true, "220 ok\r\n"
+            }
+            else {
+                return true, "504 error, unable to add files\r\n"
+            }
         end
     end
     
