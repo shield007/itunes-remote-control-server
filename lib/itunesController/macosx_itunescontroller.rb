@@ -182,7 +182,7 @@ module ItunesController
         # @private
         # @param script the Script contents        
         def executeScript(script)
-            system(Escape.shell_command("osascript","-e",script))
+            system(Escape.shell_command(["osascript","-e",script]))
         end
     end
 end
