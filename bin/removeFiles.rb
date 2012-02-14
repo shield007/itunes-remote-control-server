@@ -11,7 +11,7 @@ require 'itunesController/itunescontroller_factory'
 
 require 'rubygems'
 
-if ARGV.length != 1
+if ARGV.length == 0
     puts "usage: removeFiles.rb files..."
     exit
 end
