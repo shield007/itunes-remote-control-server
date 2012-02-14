@@ -58,8 +58,7 @@ module ItunesController
     
         # Used to remove tracks from the libaray        
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
-        def removeTracksFromLibrary(tracks)
-            pl = getLibraryPlaylists()[0]
+        def removeTracksFromLibrary(tracks)            
             tracks.reverse.each do | track |
                 track.delete
             end
