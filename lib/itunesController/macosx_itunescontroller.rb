@@ -26,6 +26,7 @@
 
 require 'itunesController/itunescontroller'
 require 'itunesController/kinds'
+require 'itunesController/debug'
 
 require 'rubygems'
 require 'escape'
@@ -63,6 +64,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            
             tracks.reverse.each do | track |
+                puts ("Remove track '#{track.location.path}' from iTunes library")
                 track.delete
             end
         end
@@ -100,14 +102,18 @@ module ItunesController
     
         # Used to get a list of tracks that have the given locations
         # @param [Array[String]] locations a list of track locations to find
-        # @return [Array] A list of tracks that were found 
+        # @return [Array[OSX::ITunesFileTrack]] A list of tracks that were found 
         def findTracksWithLocations(locations)
             tracks=[]
             @libraryPlaylists.each do | playlist |
                 playlist.fileTracks.each do |track|
-                    if (track.location != nil && track.location.isFileURL)
+                    #if (track.location != nil && track.location.isFileURL)
+                    if (track.location != nil)
                         if (locations.index(track.location.path))
-                        return tracks.push(track)
+                            tracks.push(track)
+                            if (tracks.size == locations.size)
+                                return tracks
+                            end
                         end
                     end
                 end

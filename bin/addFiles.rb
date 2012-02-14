@@ -17,5 +17,4 @@ if ARGV.length == 0
 end
 
 controller = ItunesController::ITunesControllerFactory::createController()
-controller.addFilesToLibrary(ARGV);
-
+controller.addFilesToLibrary(ARGV)
