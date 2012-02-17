@@ -45,7 +45,7 @@ module ItunesController
 
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @param track The track
-        def refreshTracks(track)
+        def refreshTracks(tracks)
             COMMAND_LOG.push("refreshTracks(tracks)")
             tracks.each do | track |
                 COMMAND_LOG.push("refreshTracks("+track+")")

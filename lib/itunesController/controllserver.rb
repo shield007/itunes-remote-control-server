@@ -55,6 +55,9 @@ module ItunesController
         # This command lists the files in the itunes library which have paths pointing at files 
         # that can't be found
         LISTDEADFILES="LISTDEADFILES"
+        # This command is used to tell iTunes to refresh the metadata from the file of files registered 
+        # with the FILE command from the itunes library then clear the file list.
+        REFRESHFILES="REFRESHFILES"
         # This command is used to get version information
         VERSION="VERSION"
     end
@@ -283,6 +286,25 @@ module ItunesController
             end
         end
     end
+        
+    # This command is used to refresh files registerd with the FILE command. It tells iTunes
+    # to update the meta data from the information stored in the files.
+    class RefreshFilesCommand < ServerCommand
+            
+            # The constructor
+            # @param [ItunesController::ServerState] state The status of the connected client within the server
+            # @param [ItunesController::ItunesController] itunes The itunes controller class
+            def initialize(state,itunes)
+                super(ItunesController::CommandName::REFRESHFILES,ServerState::AUTHED,state,itunes)
+            end
+        
+            def processData(line,io)
+                files=@itunes.findTracksWithLocations(@state.files)
+                @itunes.refreshTracks(files)
+                @state.files=[]
+                return true, "220 frefreshed #{files.count}\r\n"
+            end
+        end
     
     # This command is used to remove files registered with the FILE command from the itunes 
     # library then clear the file list.
@@ -298,6 +320,7 @@ module ItunesController
         def processData(line,io)
             files=@itunes.findTracksWithLocations(@state.files)
             @itunes.removeTracksFromLibrary(files)
+            @state.files=[]
             return true, "220 removed #{files.count} from library\r\n"
         end
     end
@@ -406,6 +429,7 @@ module ItunesController
                 RemoveDeadFilesCommand.new(@state,@itunes),
                 ListDeadFilesCommand.new(@state,@itunes),
                 FileCommand.new(@state,@itunes),
+                RefreshFilesCommand.new(@state,@itunes),
                 VersionCommand.new(@state,@itunes)
             ]
                  

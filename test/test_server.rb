@@ -181,6 +181,38 @@ class ServerTest < BaseServerTest
         puts("--Test Finish:#{this_method()}")
     end
     
+    def test_RefreshFiles
+        puts("\n-- Test Start: #{this_method()}")
+        setupServer
+        begin
+            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+            client=DummyClient.new
+            client.connect("localhost",@port)            
+            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
+            
+            client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
+            client.sendCommand(ItunesController::CommandName::FILE+":/blah1", 220);
+            client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
+            client.sendCommand(ItunesController::CommandName::REFRESHFILES, 220);
+            client.sendCommand(ItunesController::CommandName::HELO, 220);
+            
+            commandLog = ItunesController::DummyITunesController::COMMAND_LOG
+            assert_equal(orgSize+5,commandLog.size());
+            assert_equal("findTracksWithLocations(locations)",commandLog[orgSize]);
+            assert_equal("refreshTracks(tracks)",commandLog[orgSize+1]);
+            assert_equal("refreshTracks(/blah)",commandLog[orgSize+2]);
+            assert_equal("refreshTracks(/blah1)",commandLog[orgSize+3]);
+            assert_equal("refreshTracks(/blah/blah2)",commandLog[orgSize+4]);
+            
+            client.sendCommand(ItunesController::CommandName::QUIT,221)
+            client.disconnect
+        ensure
+            teardownServer
+            assert(@server.stopped?)
+        end
+        puts("--Test Finish:#{this_method()}")
+    end
+    
     def test_ClearFiles
        puts("\n-- Test Start: #{this_method()}")
        setupServer

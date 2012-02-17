@@ -27,11 +27,13 @@ class DummyClient
     
     def sendCommand(cmd, expectedCode,timeout=DummyClient::DEFAULT_TIMEOUT)
         @client.cmd(cmd) do | response |            
-            response.each_line do | line |                                
-                if ( line =~ /(\d+).*/)                    
-                    code=$1
-                    if (code.to_i==expectedCode)                    
-                        return;
+            if (response!=nil)            
+                response.each_line do | line |                                
+                    if ( line =~ /(\d+).*/)                    
+                        code=$1
+                        if (code.to_i==expectedCode)                    
+                            return;
+                        end
                     end
                 end
             end         
