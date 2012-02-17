@@ -60,6 +60,15 @@ module ItunesController
             return @iTunes.version
         end
     
+        # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
+        # @param [Array] tracks A list of tracks to fresh
+        def refreshTracks(tracks)
+            tracks.reverse.each do | track |
+                puts ("Refresh track '#{track.location.path}'")
+                track.refresh
+            end            
+        end
+        
         # Used to remove tracks from the libaray        
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            

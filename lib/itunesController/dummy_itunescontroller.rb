@@ -42,7 +42,16 @@ module ItunesController
         def version
             return "Dummy"
         end
-    
+
+        # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
+        # @param track The track
+        def refreshTracks(track)
+            COMMAND_LOG.push("refreshTracks(tracks)")
+            tracks.each do | track |
+                COMMAND_LOG.push("refreshTracks("+track+")")
+            end
+        end
+            
         def removeTracksFromLibrary(tracks)
             COMMAND_LOG.push("removeTracksFromLibrary(tracks)")
             tracks.each do | track |
@@ -90,5 +99,6 @@ module ItunesController
             COMMAND_LOG.push("findPlaylists(types)")
             return playlists
         end
+                
     end
 end

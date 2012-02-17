@@ -99,6 +99,12 @@ module ItunesController
         def findPlaylists(types)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
+                
+        # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
+        # @param [Array] tracks A list of tracks to fresh
+        def refreshTracks(tracks)
+            raise "ERROR: Your trying to instantiate an abstract class"
+        end
     
     end
 end
