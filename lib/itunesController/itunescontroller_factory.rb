@@ -29,6 +29,7 @@ end
 
 module ItunesController
     
+    # This is a factory class used to create a iTunes controller for the current platform
     class ITunesControllerFactory
         
         # Used to create the iTunes controller for different platforms
