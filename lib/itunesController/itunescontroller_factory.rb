@@ -32,7 +32,7 @@ module ItunesController
     class ITunesControllerFactory
         
         # Used to create the iTunes controller for different platforms
-        # @return [ItunesController::ITunesController] The itunes controller
+        # @return [ItunesController::BaseITunesController] The itunes controller
         # @raise If the platform is unsupported
         def self.createController()
             if RUBY_PLATFORM =~ /mswin|mingw/

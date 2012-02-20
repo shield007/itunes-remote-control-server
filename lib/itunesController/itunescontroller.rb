@@ -23,7 +23,7 @@ module ItunesController
     
     # This is the base class of all itunes controller.    
     # @abstract This class should be overridden to implement the class that talks to iTunes.
-    class ITunesController
+    class BaseITunesController
 
         # The constructor        
         def initialize
