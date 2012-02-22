@@ -64,7 +64,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
             tracks.reverse.each do | track |
-                puts ("Refresh track '#{track.location.path}'")
+                puts("Refresh track '#{track.location.path}'")
                 track.refresh
             end            
         end
@@ -73,7 +73,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            
             tracks.reverse.each do | track |
-                puts ("Remove track '#{track.location.path}' from iTunes library")
+                puts("Remove track '#{track.location.path}' from iTunes library")
                 track.delete
             end
         end
@@ -96,18 +96,7 @@ module ItunesController
             end
             
             return true;
-        end
-    
-        # Used to get the libaray iTunes source        
-        # @return The iTunes source for the library
-        def getSourceLibrary()
-            @iTunes.sources.each do |source|
-                if (source.kind == SourceKind::Library.kind)
-                return source
-                end
-            end
-            return nil
-        end
+        end        
     
         # Used to get a list of tracks that have the given locations
         # @param [Array[String]] locations a list of track locations to find
@@ -178,10 +167,22 @@ module ItunesController
                 end
             end
             return files
+        end   
+    private
+    
+        # Used to get the libaray iTunes source        
+        # @return The iTunes source for the library
+        def getSourceLibrary()
+            @iTunes.sources.each do |source|
+                if (source.kind == SourceKind::Library.kind)
+                return source
+                end
+            end
+            return nil
         end
     
         # Used to find playlists of a given media kind
-        # @param types The types 
+        # @param types The types
         # @return [Array] A list of playlists
         def findPlaylists(types)
             playlists=[]
@@ -189,20 +190,18 @@ module ItunesController
             if (library==nil)
                 error("Unable to find iTunes library")
             end
-    
+
             library.userPlaylists.each do |pl|
                 kind=SpecialKind::fromKind(pl.specialKind)
                 types.each do |type|
                     if (kind.kind == type.kind)
-                    playlists.push(pl)
+                        playlists.push(pl)
                     end
                 end
             end
-    
+
             return playlists
         end
-    
-    private
     
         # Used to execute a apple script using the system "osascript" command.
         # @private

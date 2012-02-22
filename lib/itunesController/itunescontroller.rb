@@ -58,13 +58,6 @@ module ItunesController
         def addFilesToLibrary(files)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
-    
-        # Used to get the libaray iTunes source
-        # @abstract Must be overridden
-        # @return The iTunes source for the library
-        def getSourceLibrary()
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
            
         # Used to get a list of tracks that have the given locations
         # @abstract Must be overridden
@@ -95,11 +88,7 @@ module ItunesController
         def listFilesInLibrary()
             raise "ERROR: Your trying to instantiate an abstract class"
         end
-    
-        def findPlaylists(types)
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
-                
+           
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
