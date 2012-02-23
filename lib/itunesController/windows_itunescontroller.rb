@@ -68,9 +68,14 @@ module ItunesController
         # Used to add a list of files to the itunes library
         # @param [Array[String]] A list of files to add to the itunes library
         # @return True if it sucesseds, or false if their is a error
-        def addFilesToLibrary(files)
+        def addFilesToLibrary(files)            
             files.each do | file |
-                @iTunes.LibraryPlaylist.AddFile(file)
+                if (!File.exist?(file))
+                    $stderr.puts("Unable to find file #{file}")
+                else                     
+                    @libraryPlaylists.AddFile(file)
+                    puts("Added #{file} to the iTunes library")
+                end
             end
 
             return true;
