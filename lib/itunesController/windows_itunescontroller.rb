@@ -51,7 +51,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
             tracks.reverse.each do | track |
-                puts("Refresh track '#{track.location.path}'")
+                puts("Refresh track '#{track.location}'")
                 track.UpdateInfoFromFile
             end
         end
@@ -60,7 +60,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
             tracks.reverse.each do | track |
-                puts("Remove track '#{track.location.path}' from iTunes library")
+                puts("Remove track '#{track.location}' from iTunes library")
                 track.Delete
             end
         end
@@ -83,12 +83,12 @@ module ItunesController
 
         # Used to get a list of tracks that have the given locations
         # @param [Array[String]] locations a list of track locations to find
-        # @return [Array[OSX::ITunesFileTrack]] A list of tracks that were found
+        # @return [Array] A list of tracks that were found
         def findTracksWithLocations(locations)
             tracks=[]
             @libraryPlaylists.Tracks.each do | track |                     
-                if (track.Location != nil)
-                    if (locations.index(track.location.path))
+                if (track.Location != nil)                   
+                    if (locations.index(track.location))                       
                         tracks.push(track)
                         if (tracks.size == locations.size)
                             return tracks
@@ -105,7 +105,7 @@ module ItunesController
         def findTrackWithLocation(location)
             @libraryPlaylists.Tracks.each do | track |                
                 if (track.Location.isFileURL)
-                    if (track.location.path==location)
+                    if (track.location==location)
                         return track
                     end
                 end         
