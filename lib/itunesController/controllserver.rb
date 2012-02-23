@@ -22,7 +22,7 @@
 require 'gserver'
 require 'itunesController/version'
 
-module ItunesController
+module BaseItunesController
 
     # Used to store the command names used in the server
     class CommandName
@@ -102,7 +102,7 @@ module ItunesController
         #                                    ServerState::NOT_AUTHED, ServerState::DOING_AUTH or
         #                                    ServerState::AUTHED. If nil then works in any login state.
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class    
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class    
         def initialize(name,requiredLoginState,state,itunes)
             @name=name
             @state=state
@@ -141,7 +141,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::HELO,nil,state,itunes)
         end
@@ -162,7 +162,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::QUIT,nil,state,itunes)
         end
@@ -184,7 +184,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::LOGIN,nil,state,itunes)
         end
@@ -212,7 +212,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::PASSWORD,ServerState::DOING_AUTH,state,itunes)
         end
@@ -254,7 +254,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::CLEARFILES,ServerState::AUTHED,state,itunes)
         end
@@ -271,7 +271,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::ADDFILES,ServerState::AUTHED,state,itunes)
         end
@@ -293,7 +293,7 @@ module ItunesController
             
             # The constructor
             # @param [ItunesController::ServerState] state The status of the connected client within the server
-            # @param [ItunesController::ItunesController] itunes The itunes controller class
+            # @param [ItunesController::BaseITunesController] itunes The itunes controller class
             def initialize(state,itunes)
                 super(ItunesController::CommandName::REFRESHFILES,ServerState::AUTHED,state,itunes)
             end
@@ -312,7 +312,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::REMOVEFILES,ServerState::AUTHED,state,itunes)
         end
@@ -331,7 +331,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::REMOVEDEADFILES,ServerState::AUTHED,state,itunes)
         end
@@ -349,7 +349,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::LISTDEADFILES,ServerState::AUTHED,state,itunes)
         end
@@ -374,7 +374,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::FILE,ServerState::AUTHED,state,itunes)
         end
@@ -393,7 +393,7 @@ module ItunesController
         
         # The constructor
         # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::ItunesController] itunes The itunes controller class
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
             super(ItunesController::CommandName::VERSION,nil,state,itunes)
         end
@@ -412,7 +412,7 @@ module ItunesController
         # The constructor
         # @param [ItunesController::ServerConfig] config The server configuration
         # @param [Number] port The port to listen on
-        # @param [ItunesController::ItunesController] itunes The itunes controller class         
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class         
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
             puts "Started iTunes controll server on port #{port}"                   
