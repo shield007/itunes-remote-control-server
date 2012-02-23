@@ -2,7 +2,7 @@ require 'win32ole'
 
 module ItunesController
 
-    class WindowsITunesController < ITunesController
+    class WindowsITunesController < ItunesController::BaseITunesController
 
         # The constructor
         def initialize

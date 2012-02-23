@@ -39,7 +39,7 @@ module ItunesController
     
     # This is a iTunes controller class used to talk to itunes. This runs on macosx and makes
     # use of the OSC ruby bindings. It also uses application "osascript" to execute apple scripts. 
-    class MacOSXITunesController < ITunesController
+    class MacOSXITunesController < ItunesController::BaseITunesController
         
         # The constructor
         def initialize
