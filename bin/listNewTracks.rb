@@ -57,10 +57,8 @@ end
 # @return The list of files that are not in the libaray
 def findNewMediaFiles(dirs,libraryTracks)
     libraryFiles=[]
-    libraryTracks.each do | track |
-        if (track.location.isFileURL)
-            libraryFiles.push(track.location.path)
-        end
+    libraryTracks.each do | track |      
+        libraryFiles.push(track)        
     end
     files=[]
     dirs.each do | dir | 

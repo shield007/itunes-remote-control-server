@@ -32,7 +32,7 @@ module ItunesController
         # The constructor
         def initialize
             @iTunes = WIN32OLE.new('iTunes.Application')
-            @libraryPlaylists=@iTunes.LibraryPlaylist
+            @libraryPlaylists=@iTunes.LibraryPlaylist            
         end
 
         # Used to get the libaray play lists
@@ -133,16 +133,15 @@ module ItunesController
 
         # Used to list all the files in the library
         # @abstract Must be overridden
-        # @return [Array] A list of files in the iTunes library
+        # @return [Array[String]] A list of files in the iTunes library
         def listFilesInLibrary()
-            files=[]
-            @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do |track|
-                    if (track.location !=nil && track.location.isFileURL)
-                        files.push(track)
-                    end
+            files=[]            
+            @libraryPlaylists.tracks.each do |track|
+                if (track.location !=nil)                 
+                    files.push(track.location)
                 end
             end
+            
             return files
         end
 

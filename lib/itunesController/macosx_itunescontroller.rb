@@ -156,13 +156,13 @@ module ItunesController
     
         # Used to list all the files in the library
         # @abstract Must be overridden
-        # @return [Array] A list of files in the iTunes library
+        # @return [Array[String]] A list of files in the iTunes library
         def listFilesInLibrary()
             files=[]
             @libraryPlaylists.each do | playlist |
                 playlist.fileTracks.each do |track|                                       
                     if (track.location !=nil && track.location.isFileURL)
-                        files.push(track)
+                        files.push(track.location.path)
                     end
                 end
             end
