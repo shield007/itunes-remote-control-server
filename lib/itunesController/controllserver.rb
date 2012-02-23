@@ -22,7 +22,7 @@
 require 'gserver'
 require 'itunesController/version'
 
-module BaseItunesController
+module ItunesController
 
     # Used to store the command names used in the server
     class CommandName
