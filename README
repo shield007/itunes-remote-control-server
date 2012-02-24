@@ -20,3 +20,8 @@ Installation
 
 Building
 --------
+
+If you need to rebuild gem and run all the tests, then just change to the project directory and type:
+
+rake
+
