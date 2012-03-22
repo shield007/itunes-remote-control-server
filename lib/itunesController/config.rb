@@ -53,7 +53,7 @@ module ItunesController
         # @return [ItunesController::ServerConfig] The server configuration
         def self.readConfig(configFile)
             if (!File.exists? configFile)
-                error("Unable to find configuration file: "+configFile)
+                raise("Unable to find configuration file: "+configFile)
             end 
                  
             config=ServerConfig.new
@@ -62,7 +62,7 @@ module ItunesController
                     
                 rootEl = doc.root.elements["/itunesController"]       
                 if (rootEl==nil)
-                    error("Unable to find parse configuartion file, can't find node /itunesController")
+                    raise("Unable to find parse configuartion file, can't find node /itunesController")
                 end     
                 if (rootEl.attributes["port"]!=nil && rootEl.attributes["port"]!="")
                     config.port = rootEl.attributes["port"].to_i
@@ -77,15 +77,15 @@ module ItunesController
                 }                       
             
             rescue EOFError
-                error("Unable to read or parse the configuration file: " + configFile)
+                raise("Unable to read or parse the configuration file: " + configFile)
             end
             
             if (config.username==nil)
-                error("Username name missing in configuration file")
+                raise("Username name missing in configuration file")
             end
             
             if (config.password==nil)
-                error("Password name missing in configuration file")
+                raise("Password name missing in configuration file")
             end        
             
             return config

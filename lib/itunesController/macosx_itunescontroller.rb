@@ -188,7 +188,7 @@ module ItunesController
             playlists=[]
             library=getSourceLibrary()
             if (library==nil)
-                error("Unable to find iTunes library")
+                raise("Unable to find iTunes library")
             end
 
             library.userPlaylists.each do |pl|
