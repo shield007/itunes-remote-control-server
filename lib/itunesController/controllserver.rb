@@ -21,6 +21,7 @@
 
 require 'gserver'
 require 'itunesController/version'
+require 'itunesController/debug'
 
 module ItunesController
 
