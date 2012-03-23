@@ -16,11 +16,11 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-
 require 'itunesController/config'
 require 'itunesController/dummy_itunescontroller'
 require 'itunesController/controllserver'
 require 'itunesController/version'
+require 'itunesController/debug'
 
 require 'rubygems'
 require 'optparse'
@@ -37,6 +37,7 @@ def displayUsage()
     puts("Usage: dummyItunesController.rb [options]")
     puts("")
     puts("Specific options:")
+    puts("    -l, --log FILE                   Optional paramter used to log messages to")
     puts("    -p, --port PORT                  The port number to start the server on. Defaults to 7000")
     puts("    -c, --config FILE                The configuration file")
     puts("    -h, --help                       Display this screen")
@@ -53,6 +54,7 @@ end
 OPTIONS = {}
 OPTIONS[:port] = nil
 OPTIONS[:config] = nil
+OPTIONS[:logFile] = nil
 
 # Used to check the command line options are valid
 def checkOptions
@@ -66,6 +68,9 @@ optparse = OptionParser.new do|opts|
     opts.separator ""
     opts.separator "Specific options:"
 
+    opts.on('-l','--log FILE','Optional paramter used to log messages to') do |value|
+        OPTIONS[:logFile] = value
+    end
     opts.on('-p','--port PORT','The port number to start the server on. Defaults to 7000') do |port|
         OPTIONS[:port] = port;
     end
@@ -82,6 +87,7 @@ end
 optparse.parse!
 checkOptions()
 
+ItunesController::ItunesControllerDebug::setLogFile(OPTIONS[:logFile])
 controller = ItunesController::DummyITunesController.new
 port = 7000
 config=ItunesController::ServerConfig.readConfig(OPTIONS[:config])

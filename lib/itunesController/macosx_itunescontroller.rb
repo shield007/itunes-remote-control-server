@@ -63,6 +63,7 @@ module ItunesController
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
+            ItunesController::ItunesControllerDebug::log_debug("refreshing tracks...")
             tracks.reverse.each do | track |
                 ItunesController::ItunesControllerDebug::log_info("Refresh track '#{track.location.path}'")
                 track.refresh
@@ -82,16 +83,15 @@ module ItunesController
         # @param [Array[String]] A list of files to add to the itunes library    
         # @return True if it sucesseds, or false if their is a error
         def addFilesToLibrary(files)
-            files.each do | file |
-                ItunesController::ItunesControllerDebug::log_info("Add file '#{track.location.path}' to iTunes library")
+            files.each do | file |                
                 script="tell application \"iTunes\"\n"
                 script=script+"    add POSIX file \"#{file}\"\n"
                 script=script+"end tell\n"
                 output=executeScript(script)
                 if (output =~ /file track id (\d+).*/)
-                    puts("Added file '#{file}' with track id #{$1}")
+                    ItunesController::ItunesControllerDebug::log_info("Added file '#{file}' with track id #{$1}")
                 else 
-                    $stderr.puts("Unable to add file '#{file}'")
+                    ItunesController::ItunesControllerDebug::log_error("Unable to add file '#{file}'")
                     return false
                 end
             end

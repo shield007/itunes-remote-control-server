@@ -51,7 +51,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
             tracks.reverse.each do | track |
-                puts("Refresh track '#{track.location}'")
+                ItunesController::ItunesControllerDebug::log_info("Refresh track '#{track.location}'")
                 track.UpdateInfoFromFile
             end
         end
@@ -60,7 +60,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
             tracks.reverse.each do | track |
-                puts("Remove track '#{track.location}' from iTunes library")
+                ItunesController::ItunesControllerDebug::log_info("Remove track '#{track.location}' from iTunes library")
                 track.Delete
             end
         end
@@ -71,10 +71,10 @@ module ItunesController
         def addFilesToLibrary(files)            
             files.each do | file |
                 if (!File.exist?(file))
-                    $stderr.puts("Unable to find file #{file}")
+                    ItunesController::ItunesControllerDebug::log_error("Unable to find file #{file}")
                 else                     
                     @libraryPlaylists.AddFile(file)
-                    puts("Added #{file} to the iTunes library")
+                    ItunesController::ItunesControllerDebug::log_info("Added #{file} to the iTunes library")
                 end
             end
 

@@ -22,22 +22,58 @@
 module ItunesController    
     
     class ItunesControllerDebug
+        
+        # The log file, if defined then logging opertions will be sent to this file
+        @@logFile = nil
+        
         ANSI_BOLD = "\033[1m"
         ANSI_RESET = "\033[0m"
         ANSI_LGRAY = "\033[0;37m"
         ANSI_GRAY = "\033[1;30m"
         
+        # Used to set the location of the log file
+        # @param [String] file The log file location
+        def self.setLogFile(file)
+            @@logFile = file 
+        end
+        
         # Used to print logging information at info level
         # @param [Stirng] msg The message to print
         def self.log_info(msg)
-            puts(msg)
+            if (@@logFile!=nil) 
+                out_file = File.new(@@logFile,"w") do | f |
+                    f.puts(msg) 
+                end
+            else                
+                puts(msg)
+            end
         end
         
         # Used to print logging information at debug level
         # @param [Stirng] msg The message to print
         def self.log_debug(msg)
-            puts("DEBUG: "+msg)
-        end        
+            msg="DEBUG:"+msg
+            if (@@logFile!=nil) 
+                out_file = File.new(@@logFile,"w") do | f |
+                    f.puts(msg) 
+                end
+            else                
+                puts(msg)
+            end            
+        end       
+        
+        # Used to print logging information at debug level
+        # @param [Stirng] msg The message to print
+        def self.log_error(msg)
+            msg="ERROR:"+msg
+            if (@@logFile!=nil) 
+                out_file = File.new(@@logFile,"w") do | f |
+                    f.puts(msg) 
+                end
+            else                
+                $stderr.puts(msg)
+            end            
+        end       
         
         # Used to print the methods of a object
         # @param [Object] obj The object

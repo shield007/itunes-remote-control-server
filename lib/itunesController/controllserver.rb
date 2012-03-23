@@ -130,6 +130,7 @@ module ItunesController
         def processLine(line,io)
             line = line.chop
             if (line.start_with?(@name))
+                ItunesController::ItunesControllerDebug::log_debug("Command recived: #{@name}")
                 return processData(line[@name.length,line.length],io)
             end
             return nil,nil
@@ -299,9 +300,13 @@ module ItunesController
             end
         
             def processData(line,io)
+                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 1")
                 files=@itunes.findTracksWithLocations(@state.files)
+                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 2")
                 @itunes.refreshTracks(files)
+                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 3")
                 @state.files=[]
+                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 4")
                 return true, "220 frefreshed #{files.count}\r\n"
             end
         end
@@ -472,7 +477,7 @@ module ItunesController
                 if (cmd.requiredLoginState==nil || cmd.requiredLoginState==@state.state)
                     ok, op = cmd.processLine(data,io)
                     if (ok!=nil)
-                        ItunesController::ItunesControllerDebug::log_debug("Command recived: #{cmd.name}")
+                        ItunesController::ItunesControllerDebug::log_debug("Command processed: #{cmd.name}")
                         return ok,op
                     end
                 end
