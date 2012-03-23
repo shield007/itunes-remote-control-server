@@ -90,8 +90,16 @@ module ItunesController
         end
            
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
+        # @abstract Must be overridden
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
+            raise "ERROR: Your trying to instantiate an abstract class"
+        end
+        
+        # Used to get the list of track ID's within the iTunes database
+        # @abstract Must be overridden
+        # @return [Map[Number,String]]
+        def getTrackIds()
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     

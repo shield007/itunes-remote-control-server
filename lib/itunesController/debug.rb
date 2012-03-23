@@ -108,7 +108,7 @@ module ItunesController
             data.size
         end
         
-        # Used to print the methods of a object
+        # Used to print the methods of a ole object
         # @param [Object] obj The object   
         # @param options   
         def self.pm_ole(obj, *options)
@@ -131,12 +131,36 @@ module ItunesController
             end
             data.size
         end
+        
+        # Used to print the methods of a objc object
+        # @param [Object] obj The object   
+        # @param options   
+        def self.pm_objc(obj, *options)
+            methods = obj.objc_methods 
+            methods -= Object.methods unless options.include? :more
+            filter = options.select {|opt| opt.kind_of? Regexp}.first
+            methods = methods.select {|name| name =~ filter} if filter     
+                      
+            data = methods.collect do |m|
+                name = m.to_s               
+                method = obj.objc_method(name)                 
+                [name, "("+method.params.join(",")+")", method.return_type_detail,method.helpstring]
+            end
+            max_name = data.collect {|item| item[0].size}.max
+            max_args = data.collect {|item| item[1].size}.max
+            data.each do |item|
+                print " #{ANSI_BOLD}#{item[0].to_s.rjust(max_name)}#{ANSI_RESET}"
+                print "#{ANSI_GRAY}#{item[1].ljust(max_args)}#{ANSI_RESET}"
+                print "   #{ANSI_LGRAY}#{item[2]}#{ANSI_RESET}\n"
+            end
+            data.size
+        end
 
         # Used to print track information
         # @param track iTunes track
         def self.printTrack(track)
             puts getTrackDescription(track)
-        end
+        end      
 
         # Used to get a track description
         # @param track iTunes track

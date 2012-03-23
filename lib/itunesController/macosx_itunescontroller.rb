@@ -211,5 +211,23 @@ module ItunesController
             stdin, stdout, stderr = Open3.popen3(Escape.shell_command(["osascript","-e",script]))
             return stdout.readlines.join('\n').strip
         end
+        
+        # Used to get the list of track ID's within the iTunes database
+        # @return [Map[Number,String]]
+        def getTrackIds()
+            ids={}
+            @libraryPlaylists.each do | playlist |
+                playlist.fileTracks.each do | track |
+                    ItunesController::ItunesControllerDebug::pm_objc(track)                    
+                    if (track.location!=nil && track.location.isFileURL)
+                        if (File.exist?(track.location.path))
+                            ItunesController::ItunesControllerDebug::log_info("Found: " +track.location.path)
+                            #ids[track.location.path]=2
+                        end
+                    end
+                end
+            end
+            return ids
+        end
     end
 end
