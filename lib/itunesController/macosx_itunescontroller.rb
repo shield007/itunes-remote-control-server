@@ -64,7 +64,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
             tracks.reverse.each do | track |
-                puts("Refresh track '#{track.location.path}'")
+                ItunesController::ItunesControllerDebug::log_info("Refresh track '#{track.location.path}'")
                 track.refresh
             end            
         end
@@ -73,7 +73,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            
             tracks.reverse.each do | track |
-                puts("Remove track '#{track.location.path}' from iTunes library")
+                ItunesController::ItunesControllerDebug::log_info("Remove track '#{track.location.path}' from iTunes library")
                 track.delete
             end
         end
@@ -83,6 +83,7 @@ module ItunesController
         # @return True if it sucesseds, or false if their is a error
         def addFilesToLibrary(files)
             files.each do | file |
+                ItunesController::ItunesControllerDebug::log_info("Add file '#{track.location.path}' to iTunes library")
                 script="tell application \"iTunes\"\n"
                 script=script+"    add POSIX file \"#{file}\"\n"
                 script=script+"end tell\n"

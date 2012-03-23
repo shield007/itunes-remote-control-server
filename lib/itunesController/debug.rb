@@ -19,13 +19,19 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-module ItunesController
-
+module ItunesController    
+    
     class ItunesControllerDebug
-        ANSI_BOLD       = "\033[1m"
-        ANSI_RESET      = "\033[0m"
-        ANSI_LGRAY    = "\033[0;37m"
-        ANSI_GRAY     = "\033[1;30m"
+        ANSI_BOLD = "\033[1m"
+        ANSI_RESET = "\033[0m"
+        ANSI_LGRAY = "\033[0;37m"
+        ANSI_GRAY = "\033[1;30m"
+        
+        # Used to print logging information at info level
+        # @param [Stirng] msg The message to print
+        def self.log_info(msg)
+            puts(msg)
+        end
 
         # Used to print the methods of a object
         # @param [Object] obj The object
