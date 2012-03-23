@@ -32,7 +32,13 @@ module ItunesController
         def self.log_info(msg)
             puts(msg)
         end
-
+        
+        # Used to print logging information at debug level
+        # @param [Stirng] msg The message to print
+        def self.log_debug(msg)
+            puts("DEBUG: "+msg)
+        end        
+        
         # Used to print the methods of a object
         # @param [Object] obj The object
         # @param options

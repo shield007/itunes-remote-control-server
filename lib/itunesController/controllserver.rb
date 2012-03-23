@@ -415,7 +415,7 @@ module ItunesController
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class         
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
-            puts "Started iTunes controll server on port #{port}"                   
+            ItunesController::ItunesControllerDebug::log_info("Started iTunes controll server on port #{port}")                   
             @itunes=itunes                 
             @state=ServerState.new(config)
             @commands=[
@@ -438,7 +438,7 @@ module ItunesController
         # This method is called when a client is connected and finished when the client disconnects.
         # @param io A IO Stream that is used to talk to the connected client     
         def serve(io)
-            puts "Connected"
+            ItunesController::ItunesControllerDebug::log_info("Connected")
             @state.clean
             io.print "001 hello\r\n"
             loop do
@@ -457,7 +457,7 @@ module ItunesController
             io.print "Send:002 bye\r\n"
             io.close
             @state.clean            
-            puts "Disconnected"
+            ItunesController::ItunesControllerDebug::log_info("Disconnected")
         end
     
         # This is used to workout which command is been executed by the client and execute it.
@@ -472,6 +472,7 @@ module ItunesController
                 if (cmd.requiredLoginState==nil || cmd.requiredLoginState==@state.state)
                     ok, op = cmd.processLine(data,io)
                     if (ok!=nil)
+                        ItunesController::ItunesControllerDebug::log_debug("Command recived: #{cmd.name}")
                         return ok,op
                     end
                 end
