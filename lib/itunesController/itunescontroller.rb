@@ -26,8 +26,7 @@ module ItunesController
     class BaseITunesController
 
         # The constructor        
-        def initialize
-            
+        def initialize            
         end
     
         # Used to get the libaray play lists
@@ -100,6 +99,14 @@ module ItunesController
         # @abstract Must be overridden
         # @return [Map[Number,ItunesController::Track]]
         def getTrackIds()
+            raise "ERROR: Your trying to instantiate an abstract class"
+        end
+        
+        # Used to find a iTunes track
+        # @param [ItunesController::Track] track The track to look up
+        # @return The itunes track, or nil if it can't be found
+        # @abstract Must be overridden
+        def findITunesTrack(track)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
     

@@ -195,6 +195,28 @@ module ItunesController
            end
            return ids
        end
+       
+       # Used to find a iTunes track
+       # @param [ItunesController::Track] track The track to look up
+       # @return The itunes track, or nil if it can't be found       
+       def findITunesTrack(track)
+           tracks=[]
+           @libraryPlaylists.each do | playlist |
+               foundTracks = playlist.searchFor(track.name)
+               if (foundTracks!=nil)
+                   foundTracks.each do | t |
+                       if (t.databaseID == track.databaseId)
+                            tracks.push(t)
+                       end
+                   end
+               end
+           end
+           if (tracks.length == 1)
+               return tracks[0]
+           else
+               return nil
+           end
+       end
            
     private
     
