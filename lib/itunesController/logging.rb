@@ -48,7 +48,7 @@ module ItunesController
         # @param [Stirng] msg The message to print
         def self.info(msg)
             if @@logLevel >= INFO            
-                printMsg(msg)
+                ItunesControllerLogging::printMsg(msg)
             end
         end        
         
@@ -57,7 +57,7 @@ module ItunesController
         def self.debug(msg)
             if @@logLevel >= INFO
                 msg="DEBUG:"+msg
-                printMsg(msg)
+                ItunesControllerLogging::printMsg(msg)
             end
         end       
         
@@ -66,7 +66,7 @@ module ItunesController
         def self.error(msg)
             if @@logLevel >= INFO
                 msg="ERROR:"+msg
-                printMsg(msg)        
+                ItunesControllerLogging::printMsg(msg)        
             end       
         end   
     end
