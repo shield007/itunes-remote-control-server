@@ -17,5 +17,6 @@ if ARGV.length == 0
 end
 
 controller = ItunesController::ITunesControllerFactory::createController()
+#controller.getTrackIds()
 tracks=controller.findTracksWithLocations(ARGV)
 controller.removeTracksFromLibrary(tracks)

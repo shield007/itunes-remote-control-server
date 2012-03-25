@@ -28,6 +28,7 @@ require 'itunesController/itunescontroller'
 require 'itunesController/kinds'
 require 'itunesController/debug'
 require 'itunesController/logging'
+require 'itunesController/track'
 
 require 'rubygems'
 require 'escape'
@@ -177,14 +178,20 @@ module ItunesController
            ItunesController::ItunesControllerLogging::debug("Retriving track information...")
            ids={}
            @libraryPlaylists.each do | playlist |
+               size = playlist.fileTracks.length()
+               count = 1
                playlist.fileTracks.each do | track |                                   
                    if (track.location!=nil && track.location.isFileURL)
                        if (File.exist?(track.location.path))          
-                           ItunesController::ItunesControllerDebug::pm_objc(track)       
-                           ids[track.location.path]=ItunesController::Track.new(track.location.path,track.databaseID,track.title,track.type)
+                           if (count % 1000 == 0)
+                              ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
+                           end
+                           ids[track.location.path]=ItunesController::Track.new(track.location.path,track.databaseID,track.name,track.kind)
+                           count=count+1
                        end
                    end
                end
+               ItunesController::ItunesControllerLogging::debug("Found tracks #{count-1} of #{size}")
            end
            return ids
        end

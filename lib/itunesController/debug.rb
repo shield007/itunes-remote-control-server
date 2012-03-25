@@ -90,6 +90,8 @@ module ItunesController
         # @param options   
         def self.pm_objc(obj, *options)
             methods = obj.objc_methods 
+            puts methods
+            exit 1
             methods -= Object.methods unless options.include? :more
             filter = options.select {|opt| opt.kind_of? Regexp}.first
             methods = methods.select {|name| name =~ filter} if filter     
