@@ -19,7 +19,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-module ItunesController
+module ItunesController  
     
     # This is the base class of all itunes controller.    
     # @abstract This class should be overridden to implement the class that talks to iTunes.
@@ -98,7 +98,7 @@ module ItunesController
         
         # Used to get the list of track ID's within the iTunes database
         # @abstract Must be overridden
-        # @return [Map[Number,String]]
+        # @return [Map[Number,ItunesController::Track]]
         def getTrackIds()
             raise "ERROR: Your trying to instantiate an abstract class"
         end

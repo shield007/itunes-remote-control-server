@@ -22,6 +22,7 @@
 require 'gserver'
 require 'itunesController/version'
 require 'itunesController/debug'
+require 'itunesController/logging'
 
 module ItunesController
 
@@ -131,7 +132,7 @@ module ItunesController
         def processLine(line,io)
             line = line.chop
             if (line.start_with?(@name))
-                ItunesController::ItunesControllerDebug::log_debug("Command recived: #{@name}")
+                ItunesController::ItunesControllerLogging::log("Command recived: #{@name}")
                 return processData(line[@name.length,line.length],io)
             end
             return nil,nil
@@ -301,13 +302,13 @@ module ItunesController
             end
         
             def processData(line,io)
-                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 1")
+                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 1")
                 files=@itunes.findTracksWithLocations(@state.files)
-                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 2")
+                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 2")
                 @itunes.refreshTracks(files)
-                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 3")
+                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 3")
                 @state.files=[]
-                ItunesController::ItunesControllerDebug::log_debug("RefreshFilesCommand - Here 4")
+                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 4")
                 return true, "220 frefreshed #{files.count}\r\n"
             end
         end
@@ -421,7 +422,7 @@ module ItunesController
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class         
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
-            ItunesController::ItunesControllerDebug::log_info("Started iTunes controll server on port #{port}")                   
+            ItunesController::ItunesControllerLogging::info("Started iTunes controll server on port #{port}")                   
             @itunes=itunes                 
             @state=ServerState.new(config)
             @commands=[
@@ -444,7 +445,7 @@ module ItunesController
         # This method is called when a client is connected and finished when the client disconnects.
         # @param io A IO Stream that is used to talk to the connected client     
         def serve(io)
-            ItunesController::ItunesControllerDebug::log_info("Connected")
+            ItunesController::ItunesControllerLogging::info("Connected")
             @state.clean
             io.print "001 hello\r\n"
             loop do
@@ -463,7 +464,7 @@ module ItunesController
             io.print "Send:002 bye\r\n"
             io.close
             @state.clean            
-            ItunesController::ItunesControllerDebug::log_info("Disconnected")
+            ItunesController::ItunesControllerLogging::info("Disconnected")
         end
     
         # This is used to workout which command is been executed by the client and execute it.
@@ -478,7 +479,7 @@ module ItunesController
                 if (cmd.requiredLoginState==nil || cmd.requiredLoginState==@state.state)
                     ok, op = cmd.processLine(data,io)
                     if (ok!=nil)
-                        ItunesController::ItunesControllerDebug::log_debug("Command processed: #{cmd.name}")
+                        ItunesController::ItunesControllerLogging::debug("Command processed: #{cmd.name}")
                         return ok,op
                     end
                 end

@@ -27,6 +27,7 @@
 require 'itunesController/itunescontroller'
 require 'itunesController/kinds'
 require 'itunesController/debug'
+require 'itunesController/logging'
 
 require 'rubygems'
 require 'escape'
@@ -63,9 +64,9 @@ module ItunesController
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
-            ItunesController::ItunesControllerDebug::log_debug("refreshing tracks...")
+            ItunesController::ItunesControllerLogging::debug("refreshing tracks...")
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerDebug::log_info("Refresh track '#{track.location.path}'")
+                ItunesController::ItunesControllerLogging::info("Refresh track '#{track.location.path}'")
                 track.refresh
             end            
         end
@@ -74,7 +75,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerDebug::log_info("Remove track '#{track.location.path}' from iTunes library")
+                ItunesController::ItunesControllerLogging::info("Remove track '#{track.location.path}' from iTunes library")
                 track.delete
             end
         end
@@ -89,9 +90,9 @@ module ItunesController
                 script=script+"end tell\n"
                 output=executeScript(script)
                 if (output =~ /file track id (\d+).*/)
-                    ItunesController::ItunesControllerDebug::log_info("Added file '#{file}' with track id #{$1}")
+                    ItunesController::ItunesControllerLogging::info("Added file '#{file}' with track id #{$1}")
                 else 
-                    ItunesController::ItunesControllerDebug::log_error("Unable to add file '#{file}'")
+                    ItunesController::ItunesControllerLogging::error("Unable to add file '#{file}'")
                     return false
                 end
             end
@@ -213,16 +214,16 @@ module ItunesController
         end
         
         # Used to get the list of track ID's within the iTunes database
-        # @return [Map[Number,String]]
+        # @return [Map[Number,ItunesController::Track]]
         def getTrackIds()
+            ItunesController::ItunesControllerLogging::debug("Retriving track information...")
             ids={}
             @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do | track |
-                    ItunesController::ItunesControllerDebug::pm_objc(track)                    
+                playlist.fileTracks.each do | track |                                   
                     if (track.location!=nil && track.location.isFileURL)
-                        if (File.exist?(track.location.path))
-                            ItunesController::ItunesControllerDebug::log_info("Found: " +track.location.path)
-                            #ids[track.location.path]=2
+                        if (File.exist?(track.location.path))          
+                            ItunesController::ItunesControllerDebug::pm_objc(track)       
+                            ids[track.location.path]=ItunesController::Track.new(track.location.path,track.databaseID,track.title,track.type)
                         end
                     end
                 end

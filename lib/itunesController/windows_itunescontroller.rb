@@ -22,6 +22,7 @@
 require 'itunesController/itunescontroller'
 require 'itunesController/kinds'
 require 'itunesController/debug'
+require 'itunesController/logging'
 
 require 'win32ole'
 
@@ -51,7 +52,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerDebug::log_info("Refresh track '#{track.location}'")
+                ItunesController::ItunesControllerLogging::info("Refresh track '#{track.location}'")
                 track.UpdateInfoFromFile
             end
         end
@@ -60,7 +61,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerDebug::log_info("Remove track '#{track.location}' from iTunes library")
+                ItunesController::ItunesControllerLogging::info("Remove track '#{track.location}' from iTunes library")
                 track.Delete
             end
         end
@@ -71,10 +72,10 @@ module ItunesController
         def addFilesToLibrary(files)            
             files.each do | file |
                 if (!File.exist?(file))
-                    ItunesController::ItunesControllerDebug::log_error("Unable to find file #{file}")
+                    ItunesController::ItunesControllerLogging::error("Unable to find file #{file}")
                 else                     
                     @libraryPlaylists.AddFile(file)
-                    ItunesController::ItunesControllerDebug::log_info("Added #{file} to the iTunes library")
+                    ItunesController::ItunesControllerLogging::info("Added #{file} to the iTunes library")
                 end
             end
 

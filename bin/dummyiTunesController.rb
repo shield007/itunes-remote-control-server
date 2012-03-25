@@ -21,6 +21,7 @@ require 'itunesController/dummy_itunescontroller'
 require 'itunesController/controllserver'
 require 'itunesController/version'
 require 'itunesController/debug'
+require 'itunesController/logging'
 
 require 'rubygems'
 require 'optparse'
@@ -87,7 +88,7 @@ end
 optparse.parse!
 checkOptions()
 
-ItunesController::ItunesControllerDebug::setLogFile(OPTIONS[:logFile])
+ItunesController::ItunesControllerLogging::setLogFile(OPTIONS[:logFile])
 controller = ItunesController::DummyITunesController.new
 port = 7000
 config=ItunesController::ServerConfig.readConfig(OPTIONS[:config])
