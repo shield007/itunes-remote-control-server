@@ -169,7 +169,26 @@ module ItunesController
                 end
             end
             return files
-        end   
+        end
+        
+        # Used to get the list of track ID's within the iTunes database
+       # @return [Map[Number,ItunesController::Track]]
+       def getTrackIds()
+           ItunesController::ItunesControllerLogging::debug("Retriving track information...")
+           ids={}
+           @libraryPlaylists.each do | playlist |
+               playlist.fileTracks.each do | track |                                   
+                   if (track.location!=nil && track.location.isFileURL)
+                       if (File.exist?(track.location.path))          
+                           ItunesController::ItunesControllerDebug::pm_objc(track)       
+                           ids[track.location.path]=ItunesController::Track.new(track.location.path,track.databaseID,track.title,track.type)
+                       end
+                   end
+               end
+           end
+           return ids
+       end
+           
     private
     
         # Used to get the libaray iTunes source        
@@ -211,24 +230,6 @@ module ItunesController
         def executeScript(script)
             stdin, stdout, stderr = Open3.popen3(Escape.shell_command(["osascript","-e",script]))
             return stdout.readlines.join('\n').strip
-        end
-        
-        # Used to get the list of track ID's within the iTunes database
-        # @return [Map[Number,ItunesController::Track]]
-        def getTrackIds()
-            ItunesController::ItunesControllerLogging::debug("Retriving track information...")
-            ids={}
-            @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do | track |                                   
-                    if (track.location!=nil && track.location.isFileURL)
-                        if (File.exist?(track.location.path))          
-                            ItunesController::ItunesControllerDebug::pm_objc(track)       
-                            ids[track.location.path]=ItunesController::Track.new(track.location.path,track.databaseID,track.title,track.type)
-                        end
-                    end
-                end
-            end
-            return ids
-        end
+        end             
     end
 end
