@@ -8,15 +8,29 @@
 #
 
 require 'itunesController/cachedcontroller'
+require 'itunesController/application'
 
-require 'rubygems'
+class AddFilesApp < ItunesController::Application
 
-if ARGV.length == 0
-    puts "usage: addFiles.rb files..."
-    exit
+    # Used to display the command line useage
+    def displayUsage()
+        puts("Usage: "+@appName+" [options]")
+        puts("")
+        puts("Specific options:")
+        puts("    -l, --log FILE                   Optional paramter used to log messages to")
+        puts("    -h, --help                       Display this screen")
+    end
+
+    def checkAppOptions()
+        usageError("No config file specified. Use --config option.")
+    end
+
+    def execApp(controller)
+        ARGV.each do | path |
+            controller.addTrack(path)
+        end
+    end
 end
 
-controller = ItunesController::CachedController.new
-ARGV.each do | path |
-        controller.addTrack(path)
-end 
+app=AddFilesApp.new("addFiles.rb")
+app.exec()

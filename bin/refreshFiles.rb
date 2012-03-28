@@ -7,15 +7,32 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-require 'itunesController/itunescontroller_factory'
+require 'itunesController/application'
 
-require 'rubygems'
+class AddFilesApp < ItunesController::Application
 
-if ARGV.length == 0
-    puts "usage: refreshFiles.rb files..."
-    exit
+    # Used to display the command line useage
+    def displayUsage()
+        puts("Usage: "+@appName+" [options] files...")
+        puts("")
+        puts("Specific options:")
+        puts("    -l, --log FILE                   Optional paramter used to log messages to")
+        puts("    -h, --help                       Display this screen")
+    end
+
+    def checkAppOptions()
+        if ARGV.length == 0
+            usageError("No files given.")
+        end
+    end
+
+    def execApp(controller)
+        ARGV.each do | path |
+            controller.refreshTracks(tracks)
+        end
+    end
 end
 
-controller = ItunesController::ITunesControllerFactory::createController()
-tracks=controller.findTracksWithLocations(ARGV)
-controller.refreshTracks(tracks)
+app=AddFilesApp.new("refreshTracks.rb")
+app.exec()
+                               

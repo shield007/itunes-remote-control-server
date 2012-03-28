@@ -10,20 +10,37 @@
 require 'itunesController/cachedcontroller'
 require 'itunesController/debug'
 require 'itunesController/logging'
+require 'itunesController/application'
 
-require 'rubygems'
+class AddFilesApp < ItunesController::Application
 
-if ARGV.length == 0
-    puts "usage: removeFiles.rb files..."
-    exit
-end
+    # Used to display the command line useage
+    def displayUsage()
+        puts("Usage: "+@appName+" [options] files...")
+        puts("")
+        puts("Specific options:")
+        puts("    -l, --log FILE                   Optional paramter used to log messages to")
+        puts("    -h, --help                       Display this screen")
+    end
 
-controller = ItunesController::CachedController.new
-ARGV.each do | path |
-    track=controller.getTrack(path)
-    if (track!=nil)
-        ItunesController::ItunesControllerDebug::printTrack(track) 
-    else
-        ItunesController::ItunesControllerLogging::error("Unable to find track")
+    def checkAppOptions()
+        if ARGV.length == 0
+            usageError("No files given.")
+        end
+    end
+
+    def execApp(controller)
+        ARGV.each do | path |
+            track=controller.getTrack(path)
+            if (track!=nil)
+                ItunesController::ItunesControllerDebug::printTrack(track) 
+            else
+                ItunesController::ItunesControllerLogging::error("Unable to find track")
+            end
+            ItunesController::ItunesControllerLogging::info("")
+        end
     end
 end
+
+app=AddFilesApp.new("trackInfo.rb")
+app.exec()

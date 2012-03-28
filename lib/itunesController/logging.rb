@@ -43,6 +43,20 @@ module ItunesController
             @@logLevel = level
         end
         
+        def self.setLogLevelFromString(level)
+            if (level=="DEBUG")
+                @@logLevel = DEBUG
+            elsif (level=="INFO")
+                @@logLevel = INFO
+            elsif (level=="WARN")
+                @@logLevel = WARN
+            elsif (level=="ERROR")
+                @@logLevel = ERROR
+            else
+                error("Unkown log configuration '#{level}'")
+                exit(1)
+            end
+        end
         
         # Used to print logging information at info level
         # @param [Stirng] msg The message to print

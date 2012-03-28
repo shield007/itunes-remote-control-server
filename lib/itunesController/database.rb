@@ -50,7 +50,7 @@ module ItunesController
             id=track.databaseId.to_i
             title=track.title.to_s
             loc=track.location.to_s
-            ItunesController::ItunesControllerLogging::debug("Adding track to database with id=#{id}, title='#{title}' and location='#{loc}'")
+            #ItunesController::ItunesControllerLogging::debug("Adding track to database with id=#{id}, title='#{title}' and location='#{loc}'")
             begin  
                 stmt.execute(id,loc,title)
             rescue SQLite3::ConstraintException

@@ -53,7 +53,7 @@ module ItunesController
                    count=count-1
                    @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,count)
                    ItunesController::ItunesControllerLogging::info("Remove track '#{trackInfo.location}' from iTunes library")
-                   @datebase.removeTrack(trackInfo)
+                   @database.removeTrack(trackInfo)
                 end
             end
         end
