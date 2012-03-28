@@ -7,7 +7,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-require 'itunesController/itunescontroller_factory'
+require 'itunesController/cachedcontroller'
 
 require 'rubygems'
 
@@ -16,7 +16,7 @@ if ARGV.length == 0
     exit
 end
 
-controller = ItunesController::ITunesControllerFactory::createController()
-#controller.getTrackIds()
-tracks=controller.findTracksWithLocations(ARGV)
-controller.removeTracksFromLibrary(tracks)
+controller = ItunesController::CachedController.new
+ARGV.each do | path |
+    controller.removeTrack(path)
+end

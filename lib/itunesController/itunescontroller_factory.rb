@@ -27,6 +27,8 @@ else
   raise("Unsupported operating system #{RUBY_PLATFORM}.")
 end
 
+require 'itunesController/database.rb'
+
 module ItunesController
     
     # This is a factory class used to create a iTunes controller for the current platform
@@ -37,9 +39,9 @@ module ItunesController
         # @raise If the platform is unsupported
         def self.createController()
             if RUBY_PLATFORM =~ /mswin|mingw/
-              return ItunesController::WindowsITunesController.new
+              return ItunesController::WindowsITunesController.new()
             elsif RUBY_PLATFORM =~ /darwin/
-              return ItunesController::MacOSXITunesController.new
+              return ItunesController::MacOSXITunesController.new()
             else
               raise("Unsupported operating system #{RUBY_PLATFORM}.")
             end            

@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -I../lib
 #
-# A command line util used to add tracks to the iTunes library
+# A command line util used to remove tracks to the iTunes library
 #
 # Author:: John-Paul Stanford <dev@stanwood.org.uk>
 # Copyright:: Copyright (C) 2011  John-Paul.Stanford <dev@stanwood.org.uk>
@@ -8,15 +8,22 @@
 #
 
 require 'itunesController/cachedcontroller'
+require 'itunesController/debug'
+require 'itunesController/logging'
 
 require 'rubygems'
 
 if ARGV.length == 0
-    puts "usage: addFiles.rb files..."
+    puts "usage: removeFiles.rb files..."
     exit
 end
 
 controller = ItunesController::CachedController.new
 ARGV.each do | path |
-        controller.addTrack(path)
-end 
+    track=controller.getTrack(path)
+    if (track!=nil)
+        ItunesController::ItunesControllerDebug::printTrack(track) 
+    else
+        ItunesController::ItunesControllerLogging::error("Unable to find track")
+    end
+end

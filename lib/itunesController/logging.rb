@@ -29,7 +29,7 @@ module ItunesController
         
         # The log file, if defined then logging opertions will be sent to this file
         @@logFile = nil       
-        @@logLevel = INFO;
+        @@logLevel = DEBUG
         
         # Used to set the location of the log file
         # @param [String] file The log file location
@@ -47,15 +47,15 @@ module ItunesController
         # Used to print logging information at info level
         # @param [Stirng] msg The message to print
         def self.info(msg)
-            if @@logLevel >= INFO            
-                ItunesControllerLogging::printMsg(msg)
+            if @@logLevel <= INFO            
+                printMsg(msg)
             end
         end        
         
         # Used to print logging information at debug level
         # @param [Stirng] msg The message to print
         def self.debug(msg)
-            if @@logLevel >= DEBUG
+            if @@logLevel <= DEBUG
                 msg="DEBUG:"+msg
                 printMsg(msg)
             end
@@ -64,9 +64,9 @@ module ItunesController
         # Used to print logging information at debug level
         # @param [Stirng] msg The message to print
         def self.error(msg)
-            if @@logLevel >= ERROR
+            if @@logLevel <= ERROR
                 msg="ERROR:"+msg
-                ItunesControllerLogging::printMsg(msg)        
+                printMsg(msg)        
             end       
         end   
     

@@ -23,13 +23,12 @@ module ItunesController
     
     # Used to store track information
     class Track
-        attr_accessor :location,:databaseId,:title,:kind
+        attr_accessor :location,:databaseId,:title
         
-        def initialize(location,databaseId,title,kind)
+        def initialize(location,databaseId,title)
             @location = location
             @databaseId = databaseId
             @title = title
-            @kind
         end
     end
 

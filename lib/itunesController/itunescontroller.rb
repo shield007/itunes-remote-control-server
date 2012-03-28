@@ -26,7 +26,7 @@ module ItunesController
     class BaseITunesController
 
         # The constructor        
-        def initialize            
+        def initialize()
         end
     
         # Used to get the libaray play lists
@@ -49,11 +49,11 @@ module ItunesController
         def removeTracksFromLibrary(tracks)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
-    
+
         # Used to add a list of files to the itunes library
         # @abstract Must be overridden
         # @param [Array[String]] A list of files to add to the itunes library
-        # @return True if it sucesseds, or false if their is a error
+        # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
@@ -95,20 +95,26 @@ module ItunesController
             raise "ERROR: Your trying to instantiate an abstract class"
         end
         
-        # Used to get the list of track ID's within the iTunes database
         # @abstract Must be overridden
-        # @return [Map[Number,ItunesController::Track]]
-        def getTrackIds()
+        def getTracks(&b)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
         
-        # Used to find a iTunes track
-        # @param [ItunesController::Track] track The track to look up
-        # @return The itunes track, or nil if it can't be found
+        # Used to search the itunes library
+        # @param term The search term
+        # @return [Array] a list of iTunes track that match the search term
         # @abstract Must be overridden
-        def findITunesTrack(track)
+        def searchLibrary(term)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
+
+        # Used to find the number of tracks in the library
+        # @abstract Must be overridden
+        # @return [Number] The number of tracks
+        def getTrackCount()
+            raise "ERROR: Your trying to instantiate an abstract class"
+        end
+
     
     end
 end

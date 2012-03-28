@@ -44,7 +44,7 @@ module ItunesController
     class MacOSXITunesController < ItunesController::BaseITunesController
         
         # The constructor
-        def initialize
+        def initialize()
             @iTunes = SBApplication.applicationWithBundleIdentifier:'com.apple.iTunes'
             library=getSourceLibrary()
             @libraryPlaylists=library.libraryPlaylists
@@ -67,7 +67,6 @@ module ItunesController
         def refreshTracks(tracks)
             ItunesController::ItunesControllerLogging::debug("refreshing tracks...")
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerLogging::info("Refresh track '#{track.location.path}'")
                 track.refresh
             end            
         end
@@ -75,30 +74,32 @@ module ItunesController
         # Used to remove tracks from the libaray        
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)            
+            ItunesController::ItunesControllerLogging::debug("removing tracks...")
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerLogging::info("Remove track '#{track.location.path}' from iTunes library")
                 track.delete
             end
         end
 
         # Used to add a list of files to the itunes library        
         # @param [Array[String]] A list of files to add to the itunes library    
-        # @return True if it sucesseds, or false if their is a error
+        # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
+            tracks=[]
             files.each do | file |                
                 script="tell application \"iTunes\"\n"
-                script=script+"    add POSIX file \"#{file}\"\n"
+                script=script+"    set theTrack to (add POSIX file \"#{file}\")\n"
+                script=script+"    return (database ID of theTrack & name of theTrack)\n"
                 script=script+"end tell\n"
                 output=executeScript(script)
-                if (output =~ /file track id (\d+).*/)
-                    ItunesController::ItunesControllerLogging::info("Added file '#{file}' with track id #{$1}")
+                if (output =~ /(\d+), (.*)/)
+                    track=ItunesController::Track.new(file,$1.to_i,$2)
+                    tracks.push(track)
                 else 
-                    ItunesController::ItunesControllerLogging::error("Unable to add file '#{file}'")
-                    return false
+                    ItunesController::ItunesControllerLogging::error("Unable to add file '#{file}': " + output)
                 end
             end
             
-            return true;
+            return tracks;
         end        
     
         # Used to get a list of tracks that have the given locations
@@ -172,50 +173,51 @@ module ItunesController
             return files
         end
         
-        # Used to get the list of track ID's within the iTunes database
-       # @return [Map[Number,ItunesController::Track]]
-       def getTrackIds()
+       def getTracks(&b)
            ItunesController::ItunesControllerLogging::debug("Retriving track information...")
-           ids={}
-           @libraryPlaylists.each do | playlist |
-               size = playlist.fileTracks.length()
-               count = 1
-               playlist.fileTracks.each do | track |                                   
-                   if (track.location!=nil && track.location.isFileURL)
-                       if (File.exist?(track.location.path))          
-                           if (count % 1000 == 0)
-                              ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
-                           end
-                           ids[track.location.path]=ItunesController::Track.new(track.location.path,track.databaseID,track.name,track.kind)
-                           count=count+1
-                       end
+           playlist=@libraryPlaylists[0]
+           fileTracks = playlist.fileTracks
+           size = fileTracks.length()
+           count = 1
+           fileTracks.each do | track |                                   
+               location=track.location 
+               if (location!=nil && location.isFileURL)
+                  if (File.exist?(location.path) && track.name!=nil)          
+                      if (count % 1000 == 0)
+                          ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
+                      end
+                      b.call(ItunesController::Track.new(location.path,track.databaseID,track.name),count,size)
+                      count=count+1
                    end
                end
-               ItunesController::ItunesControllerLogging::debug("Found tracks #{count-1} of #{size}")
            end
-           return ids
+           ItunesController::ItunesControllerLogging::debug("Found tracks #{count-1} of #{size}")
+           return size
        end
        
-       # Used to find a iTunes track
-       # @param [ItunesController::Track] track The track to look up
-       # @return The itunes track, or nil if it can't be found       
-       def findITunesTrack(track)
+       # Used to find the number of tracks in the library
+       # @return [Number] The number of tracks
+       def getTrackCount()
+           playlist=@libraryPlaylists[0]
+           return playlist.fileTracks.length()
+       end
+
+       # Used to search the itunes library
+       # @param term The search term
+       # @return [Array] a list of iTunes track that match the search term
+       def searchLibrary(term)
            tracks=[]
            @libraryPlaylists.each do | playlist |
-               foundTracks = playlist.searchFor(track.name)
+               #ItunesController::ItunesControllerDebug::pm_objc(playlist)
+               #foundTracks = playlist.searchFor(term,'kSrS')
+               foundTracks = playlist.searchFor_only_(term,1799449708)
                if (foundTracks!=nil)
                    foundTracks.each do | t |
-                       if (t.databaseID == track.databaseId)
-                            tracks.push(t)
-                       end
+                       tracks.push(t)
                    end
                end
            end
-           if (tracks.length == 1)
-               return tracks[0]
-           else
-               return nil
-           end
+           return tracks
        end
            
     private
