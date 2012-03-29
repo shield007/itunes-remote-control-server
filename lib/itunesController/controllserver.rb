@@ -132,7 +132,7 @@ module ItunesController
         def processLine(line,io)
             line = line.chop
             if (line.start_with?(@name))
-                ItunesController::ItunesControllerLogging::log("Command recived: #{@name}")
+                ItunesController::ItunesControllerLogging::debug("Command recived: #{@name}")
                 return processData(line[@name.length,line.length],io)
             end
             return nil,nil
@@ -280,13 +280,11 @@ module ItunesController
         end
     
         def processData(line,io)
-            success=(@itunes.addFilesToLibrary(@state.files))
-            @state.files=[]
-            if (success) 
-                return true, "220 ok\r\n"
-            else
-                return true, "504 error, unable to add files\r\n"
+            @state.files.each do | path |
+                @itunes.addTrack(path)
             end
+            @state.files=[]
+            return true, "220 ok\r\n"
         end
     end
         
@@ -302,14 +300,13 @@ module ItunesController
             end
         
             def processData(line,io)
-                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 1")
-                files=@itunes.findTracksWithLocations(@state.files)
-                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 2")
-                @itunes.refreshTracks(files)
-                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 3")
+                count=0
+                @state.files.each do | path |
+                    @itunes.refreshTrack(path)
+                    count+=1
+                end
                 @state.files=[]
-                ItunesController::ItunesControllerLogging::debug("RefreshFilesCommand - Here 4")
-                return true, "220 frefreshed #{files.count}\r\n"
+                return true, "220 frefreshed #{count}\r\n"
             end
         end
     
@@ -325,10 +322,13 @@ module ItunesController
         end
     
         def processData(line,io)
-            files=@itunes.findTracksWithLocations(@state.files)
-            @itunes.removeTracksFromLibrary(files)
+            count=0
+            @state.files.each do | path |
+                @itunes.removeTrack(path)
+                count+=1
+            end
             @state.files=[]
-            return true, "220 removed #{files.count} from library\r\n"
+            return true, "220 removed #{count} from library\r\n"
         end
     end
     
@@ -344,9 +344,8 @@ module ItunesController
         end
     
         def processData(line,io)
-            deadTracks=@itunes.findDeadTracks()
-            @itunes.removeTracksFromLibrary(deadTracks)
-            return true, "220 removed #{deadTracks.count} from library\r\n"
+            count=@itunes.removeDeadTracks()
+            return true, "220 removed #{count} from library\r\n"
         end
     end
     
@@ -362,13 +361,19 @@ module ItunesController
         end
     
         def processData(line,io)
-            deadTracks=@itunes.findDeadTracks()
-            deadTracks.each do | deadTrack | 
-                if (deadTrack.show!=nil && deadTrack.show!="")
-                    io.puts "TV: "+deadTrack.show+" - " + deadTrack.name
+            deadTracks=@itunes.findDeadTracks
+            count=0
+            deadTracks.each do | deadTrack |
+                result=[]
+                result.push("Name: "+deadTrack.title)
+                result.push("Database ID: "+deadTrack.databaseId.to_s)
+                if (deadTrack.location==nil)
+                    result.push("Location: Unknown")
                 else
-                    io.puts "Film: "+deadTrack.name
+                    result.push("Location: "+deadTrack.location)
                 end
+                io.puts(result.join(":"))
+                count+=1
             end
             return true, "220 found #{deadTracks.count} dead tracks\r\n"
         end
@@ -407,7 +412,7 @@ module ItunesController
                        
         def processData(line,io)
             io.puts("ITunes control server:" +ItunesController::VERSION)
-            io.puts("Apple iTunes version: "+@itunes.version)
+            io.puts("Apple iTunes version: "+@itunes.getItunesVersion)
             return true, "220 ok\r\n"
         end
     end

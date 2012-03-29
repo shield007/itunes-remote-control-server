@@ -163,6 +163,10 @@ module ItunesController
             return count
         end
 
+        def getItunesVersion
+            return @controller.version
+        end
+
         def close()
             @database.close()
         end

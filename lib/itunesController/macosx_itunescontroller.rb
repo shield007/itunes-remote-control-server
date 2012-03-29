@@ -59,7 +59,7 @@ module ItunesController
         # Used to get the iTunes version
         # @return [String] The itunes version
         def version
-            return @iTunes.version
+            return @iTunes.version.to_s+" (Mac OSX)"
         end
     
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files

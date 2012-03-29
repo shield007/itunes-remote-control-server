@@ -40,7 +40,7 @@ module ItunesController
             result.push("Specific options:")
             result.push("    -l, --log FILE                   Optional paramter used to log messages to")
             result.push("    -h, --help                       Display this screen")
-            return result.joint("\n")
+            return result.join("\n")
         end
 
         # Used to display the command line useage
