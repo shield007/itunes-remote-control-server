@@ -28,9 +28,9 @@ module ItunesController
 
     class CachedController
 
-        def initialize()
-            @controller = ItunesController::ITunesControllerFactory::createController()
-            @database = ItunesController::Database.new(@controller)
+        def initialize(controller=ItunesController::ITunesControllerFactory::createController(),dbPath=nil)
+            @controller = controller
+            @database = ItunesController::Database.new(@controller,dbPath)
             @cachedOnCreate=cacheTracks()
         end
 

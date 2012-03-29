@@ -87,10 +87,14 @@ module ItunesController
             optparse.parse!
             checkOptions()
         end
+
+        def createController()
+            return ItunesController::CachedController.new
+        end
     
         def exec()
             parseOptions
-            controller = ItunesController::CachedController.new
+            controller = createController()
             execApp(controller)
             #controller.close()
         end

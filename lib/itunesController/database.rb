@@ -33,9 +33,11 @@ module ItunesController
         PARAM_KEY_TRACK_COUNT=2
 
         # The constructor
-        def initialize(controller)
+        def initialize(controller,dbPath=nil)
             @controller = controller
-            dbPath="#{Etc.getpwuid.dir}/.itunesController/database.db"
+            if (dbPath==nil)
+                dbPath="#{Etc.getpwuid.dir}/.itunesController/database.db"
+            end
             if (!File.directory?(File.dirname(dbPath)))
                 FileUtils::mkdir_p(File.dirname(dbPath))
             end
