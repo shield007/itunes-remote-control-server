@@ -54,6 +54,7 @@ module ItunesController
 
         # Used to check the command line options are valid
         def checkOptions
+            checkAppOptions
         end
 
         def parseOptions

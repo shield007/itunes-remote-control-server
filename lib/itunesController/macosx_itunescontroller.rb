@@ -181,15 +181,24 @@ module ItunesController
            count = 1
            fileTracks.each do | track |                                   
                location=track.location 
+               path=nil
+               dead=false
                if (location!=nil && location.isFileURL)
-                  if (File.exist?(location.path) && track.name!=nil)          
-                      if (count % 1000 == 0)
-                          ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
-                      end
-                      b.call(ItunesController::Track.new(location.path,track.databaseID,track.name),count,size)
-                      count=count+1
-                   end
+                  path=location.path
+                  if (!File.exist?(location.path))          
+                      dead = true
+                  end
+               else
+                   dead = true
                end
+
+               if (count % 1000 == 0)
+                  ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
+               end
+               if (track.name!=nil) 
+                   b.call(ItunesController::Track.new(path,track.databaseID,track.name),count,size,dead)
+               end
+               count=count+1
            end
            ItunesController::ItunesControllerLogging::debug("Found tracks #{count-1} of #{size}")
            return size

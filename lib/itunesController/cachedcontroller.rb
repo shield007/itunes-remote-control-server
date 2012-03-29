@@ -31,7 +31,11 @@ module ItunesController
         def initialize()
             @controller = ItunesController::ITunesControllerFactory::createController()
             @database = ItunesController::Database.new(@controller)
-            cacheTracks()
+            @cachedOnCreate=cacheTracks()
+        end
+
+        def getCachedTracksOnCreate()
+            return @cachedOnCreate
         end
 
         def removeTrack(path)
@@ -40,19 +44,26 @@ module ItunesController
                 ItunesController::ItunesControllerLogging::error("Unable to find track with path: "+path)
                 return nil
             end
+            removeTrackByInfo(trackInfo)
+        end
+
+        def removeTrackByInfo(trackInfo)
             foundTracks=@controller.searchLibrary(trackInfo.title)
             if (foundTracks==nil || foundTracks.length==0)
                 ItunesController::ItunesControllerLogging::error("Unable to find track with path '#{path}' and title '#{trackInfo.title}'")
                 return nil
             end
-            puts("Here 1")
             foundTracks.each do | t |
                 if (t.databaseID == trackInfo.databaseId)
-                   @controller.removeTracksFromLibrary([t]) 
+                   @controller.removeTracksFromLibrary([t])
                    count=@database.getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i
                    count=count-1
                    @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,count)
-                   ItunesController::ItunesControllerLogging::info("Remove track '#{trackInfo.location}' from iTunes library")
+                   if (trackInfo.location!=nil)
+                       ItunesController::ItunesControllerLogging::info("Remove track '#{trackInfo.location}' from iTunes library")
+                   else
+                       ItunesController::ItunesControllerLogging::info("Remove track with databaseId '#{trackInfo.databaseId}' from iTunes library")
+                   end
                    @database.removeTrack(trackInfo)
                 end
             end
@@ -113,17 +124,43 @@ module ItunesController
             end
         end
 
-        def cacheTracks()
-            if (needsRecacheTracks())
-                ItunesController::ItunesControllerLogging::debug("Caching tracks...")
+        def trackInLibrary?(path)
+            trackInfo=@database.getTrack(path)
+            return (trackInfo!=nil)
+        end
+
+        def cacheTracks(force=false)
+            if (force || needsRecacheTracks())
+                ItunesController::ItunesControllerLogging::info("Caching tracks...")
                 @database.removeTracks()
                 @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,@controller.getTrackCount())
-                size=@controller.getTracks() { |t,count,size|
-                    @database.addTrack(t)
+                size=@controller.getTracks() { |t,count,size,dead|
+                    if (dead)
+                        ItunesController::ItunesControllerLogging::warn("Found dead track with databaseID #{t.databaseId}")
+                        @database.addDeadTrack(t)
+                    else
+                        @database.addTrack(t)
+                    end
                 }
+                return true
             else
                 ItunesController::ItunesControllerLogging::debug("Tracks uptodate")
             end
+            return false
+        end
+
+        def findDeadTracks()
+            return @database.getDeadTracks()
+        end
+
+        def removeDeadTracks()
+            count=0
+            deadTracks=findDeadTracks()
+            deadTracks.each do | track |
+                removeTrackByInfo(track)
+                count+=1
+            end
+            return count
         end
 
         def close()

@@ -9,7 +9,7 @@
 
 require 'itunesController/application'
 
-class AddFilesApp < ItunesController::Application
+class App < ItunesController::Application
 
     # Used to display the command line useage
     def displayUsage()
@@ -33,6 +33,6 @@ class AddFilesApp < ItunesController::Application
     end
 end
 
-app=AddFilesApp.new("refreshTracks.rb")
+app=App.new("refreshTracks.rb")
 app.exec()
                                

@@ -59,15 +59,23 @@ module ItunesController
         end
         
         # Used to print logging information at info level
-        # @param [Stirng] msg The message to print
+        # @param [String] msg The message to print
         def self.info(msg)
             if @@logLevel <= INFO            
                 printMsg(msg)
             end
         end        
+
+        # Used to print logging information at warn level
+        # @param [String] msg The message to print
+        def self.warn(msg)
+            if @@logLevel <= WARN            
+                printMsg(msg)
+            end
+        end        
         
         # Used to print logging information at debug level
-        # @param [Stirng] msg The message to print
+        # @param [String] msg The message to print
         def self.debug(msg)
             if @@logLevel <= DEBUG
                 msg="DEBUG:"+msg
@@ -76,7 +84,7 @@ module ItunesController
         end       
         
         # Used to print logging information at debug level
-        # @param [Stirng] msg The message to print
+        # @param [String] msg The message to print
         def self.error(msg)
             if @@logLevel <= ERROR
                 msg="ERROR:"+msg
@@ -86,14 +94,14 @@ module ItunesController
     
     private
     
-    def self.printMsg(msg)
-        if (@@logFile!=nil) 
-            out_file = File.new(@@logFile,"w") do | f |
-                f.puts(msg) 
-            end
-        else                
-            puts(msg)
-        end        
-    end
+        def self.printMsg(msg)
+            if (@@logFile!=nil) 
+                out_file = File.new(@@logFile,"w") do | f |
+                    f.puts(msg) 
+                end
+            else                
+                puts(msg)
+            end        
+        end
     end
 end

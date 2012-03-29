@@ -45,6 +45,17 @@ module ItunesController
 
         end
 
+        def addDeadTrack(track)
+            stmt = @db.prepare("insert into dead_tracks(databaseId,location,name) values(?,?,?)")
+            id=track.databaseId.to_i
+            title=track.title.to_s
+            loc = nil
+            if (track.location!=nil)
+                loc = track.location.to_s
+            end
+            stmt.execute(id,loc,title)
+        end
+
         def addTrack(track)
             stmt = @db.prepare("insert into tracks(databaseId,location,name) values(?,?,?)")
             id=track.databaseId.to_i
@@ -54,7 +65,15 @@ module ItunesController
             begin  
                 stmt.execute(id,loc,title)
             rescue SQLite3::ConstraintException
-                ItunesController::ItunesControllerLogging::error("Unable to add track (probally duplicate):#{id}:#{title}:#{loc}")
+                stmt2 = @db.prepare("select * from tracks where location = ?")
+                rows=stmt2.execute(loc) 
+                if (rows.next!=nil)
+                    ItunesController::ItunesControllerLogging::warn("Duplicate track reference detected with databaseId #{id}, title '#{title}' and location '#{loc}'")
+                    stmt3 = @db.prepare("insert into dupe_tracks(databaseId,location,name) values(?,?,?)")
+                    stmt3.execute(id,loc,title)
+                else
+                    ItunesController::ItunesControllerLogging::warn("Unable to add track to database with #{id}, title '#{title}' and location '#{loc}'")
+                end
             end
         end
 
@@ -62,11 +81,17 @@ module ItunesController
             ItunesController::ItunesControllerLogging::debug("Removing track from database with id=#{track.databaseId.to_i}'")
             stmt = @db.prepare("delete from tracks where databaseId=?")
             stmt.execute(track.databaseId.to_i)
+            stmt = @db.prepare("delete from dead_tracks where databaseId=?")
+            stmt.execute(track.databaseId.to_i)
+            stmt = @db.prepare("delete from dupe_tracks where databaseId=?")
+            stmt.execute(track.databaseId.to_i)
         end
 
         def removeTracks()
             ItunesController::ItunesControllerLogging::debug("Removing all tracks")
             @db.execute("delete from tracks")
+            @db.execute("delete from dead_tracks")
+            @db.execute("delete from dupe_tracks")
         end
 
         def setParam(key,value)
@@ -97,6 +122,16 @@ module ItunesController
             return nil
         end
 
+        def getDeadTracks()
+            result=[]
+            stmt=@db.prepare("select databaseId,location,name from dead_tracks")
+            rows = stmt.execute()
+            while ((row = rows.next)!=nil)
+                result.push(ItunesController::Track.new(row[1],row[0].to_i,row[2]))
+            end
+            return result
+        end
+
         def getTrackById(id)
             stmt=@db.prepare("select databaseId,location,name from tracks where databaseId=?")
             rows = stmt.execute(id)
@@ -120,6 +155,15 @@ module ItunesController
             @db.execute("create table if not exists tracks ( databaseId INTEGER PRIMARY KEY, "+
                                                             "location TEXT NOT NULL, "+
                                                             "name TEXT NOT NULL) ")
+
+            @db.execute("create table if not exists dead_tracks ( databaseId INTEGER NOT NULL, "+
+                                                                 "location TEXT, "+
+                                                                 "name TEXT NOT NULL) ")
+
+            @db.execute("create table if not exists dupe_tracks ( databaseId INTEGER NOT NULL, "+
+                                                                 "location TEXT, "+
+                                                                 "name TEXT NOT NULL) ")
+
             @db.execute("create unique index if not exists 'loction_index' on tracks (location)")
             
             @db.execute("create table if not exists params ( key INTEGER PRIMARY KEY, "+

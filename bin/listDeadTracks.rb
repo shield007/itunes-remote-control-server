@@ -7,21 +7,45 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'itunesController/cachedcontroller'
+require 'itunesController/debug'
+require 'itunesController/logging'
+require 'itunesController/application'
 
-require 'itunesController/itunescontroller_factory'
-require 'itunesController/version'
+class AddFilesApp < ItunesController::Application
 
-require 'rubygems'
-require 'fileutils'
+    # Used to display the command line useage
+    def displayUsage()
+        puts("Usage: "+@appName+" [options]")
+        puts("")
+        puts("Specific options:")
+        puts("    -l, --log FILE                   Optional paramter used to log messages to")
+        puts("    -h, --help                       Display this screen")
+    end
 
-controller = ItunesController::ITunesControllerFactory::createController()
+    def checkAppOptions()
+    end
 
-deadTracks=controller.findDeadTracks
-
-deadTracks.each do | deadTrack | 
-    if (deadTrack.show!=nil && deadTrack.show!="")
-        puts "TV: "+deadTrack.show+" - " + deadTrack.name
-    else
-        puts "Film: "+deadTrack.name
+    def execApp(controller)
+        deadTracks=controller.findDeadTracks
+        count=0
+        deadTracks.each do | deadTrack | 
+            result=[]
+            result.push("Name: "+deadTrack.title)
+            result.push("Database ID: "+deadTrack.databaseId.to_s)
+            if (deadTrack.location==nil)
+                result.push("Location: Unknown")
+            else
+                result.push("Location: "+deadTrack.location)
+            end
+            ItunesController::ItunesControllerLogging::info(result.join("\n"))
+            ItunesController::ItunesControllerLogging::info("")
+            count+=1
+        end
+        ItunesController::ItunesControllerLogging::info("Found #{count} dead tracks")
     end
 end
+
+app=AddFilesApp.new("listDeadTracks.rb")
+app.exec()
+

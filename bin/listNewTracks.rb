@@ -20,63 +20,65 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-require 'itunesController/version'
-require 'itunesController/itunescontroller_factory'
+require 'itunesController/application'
+require 'itunesController/logging'
 
 require 'rubygems'
 require 'fileutils'
-  
-# The file extensions to be considered as media files
-MEDIA_TYPES = [".m4v","mp3",".mp4"]
-    
-# Updates a list of files with with the media files found with a directory.
-# This will recursivly search for meadia files
-# ::files
-#   This is a list that all the found media files are added to
-# ::dir
-#   The media directory to look for files in
-def listMediaFiles ( files,dir )
-    (Dir.entries(dir)- %w[ . .. ]).each { |name|
-        file=dir+"/"+name
-        if (!File.directory?(file))
-            ext=File.extname(file)
-            name=File.basename(file)
-            if (MEDIA_TYPES.index(ext)!=nil)
-            files.push(file)
-            end
-        else
-            listMediaFiles(files,file)
-        end
-    }
-end
 
-# Returns a list of media files that are have not been added to the
-# itunes library
-# @param [Array[String]] dirs List of directiores to search for new tracks
-# @param libraryTracks The tracks within the library
-# @return The list of files that are not in the libaray
-def findNewMediaFiles(dirs,libraryTracks)
-    libraryFiles=[]
-    libraryTracks.each do | track |      
-        libraryFiles.push(track)        
+class App < ItunesController::Application
+
+    MEDIA_TYPES = [".m4v","mp3",".mp4"]
+
+    # Used to display the command line useage
+    def displayUsage()
+        puts("Usage: "+@appName+" [options] directories...")
+        puts("")
+        puts("Specific options:")
+        puts("    -l, --log FILE                   Optional paramter used to log messages to")
+        puts("    -h, --help                       Display this screen")
     end
-    files=[]
-    dirs.each do | dir | 
-        listMediaFiles(files,dir)
-    end    
-    
-    files.delete_if{|file| libraryFiles.index(file)!=nil}
 
-    return files
+    def checkAppOptions()
+        if ARGV.length == 0
+            usageError("No directories given.")
+        end
+        ARGV.each do | path |
+            errors = false
+            if (!File.exists?(path) || !File.directory?(path))
+               ItunesController::ItunesControllerLogging::error("#{path} is not a directory or cannot be found") 
+               errors = true
+            end 
+            if (errors)
+                exit(1)
+            end
+        end
+    end
+
+    def processMediaFiles ( controller,dir )
+        (Dir.entries(dir)- %w[ . .. ]).each { |name|
+            file=dir+"/"+name
+            if (!File.directory?(file))
+                ext=File.extname(file)
+                name=File.basename(file)
+                if (MEDIA_TYPES.index(ext)!=nil)
+                    if (!controller.trackInLibrary?(file))
+                        ItunesController::ItunesControllerLogging::info("#{file}") 
+                    end
+                end
+            else
+                processMediaFiles(controller,file)
+            end
+        }
+    end
+
+    def execApp(controller)
+        ARGV.each do | path |
+            ItunesController::ItunesControllerLogging::info("Checking for new files in '#{path}'") 
+            processMediaFiles(controller,path)
+        end
+    end
 end
 
-if ARGV.length != 1
-    puts "usage: listNewTracks.rb directories..."
-    exit
-end
-
-controller = ItunesController::ITunesControllerFactory::createController()
-newFiles=findNewMediaFiles(ARGV,controller.listFilesInLibrary())
-newFiles.each do | file |
-    puts(file)
-end
+app=App.new("listNewTracks.rb")
+app.exec()

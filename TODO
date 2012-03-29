@@ -4,3 +4,5 @@ Speed up removing files
 Replace apple script usage with ruby script bridge
 Add server command to update files in the library with new details in the file
 	- Make sure it keeps the play counts intact
+
+Add --version command line option
