@@ -27,14 +27,7 @@ module ItunesController
 
         # The constructor        
         def initialize()
-        end
-    
-        # Used to get the libaray play lists
-        # @abstract Must be overridden
-        # @return The iTunes playlist
-        def getLibraryPlaylists
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
+        end     
     
         # Used to get the iTunes version
         # @abstract Must be overridden
@@ -56,37 +49,7 @@ module ItunesController
         # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
             raise "ERROR: Your trying to instantiate an abstract class"
-        end
-           
-        # Used to get a list of tracks that have the given locations
-        # @abstract Must be overridden
-        # @param [Array[String]] locations a list of track locations to find
-        # @return [Array] A list of tracks that were found 
-        def findTracksWithLocations(locations)
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
-    
-        # Used to get a track with the given location
-        # @abstract Must be overridden
-        # @param [String] location The location of the track to find
-        # @return The track that was found, or nil if it could not be found
-        def findTrackWithLocation(location)
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
-    
-        # Used to find the dead tracks (tracks whoes file references don't exist) within the
-        # iTunes libaray
-        # @return [Array] A list of dead tracks
-        def findDeadTracks()
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
-    
-        # Used to list all the files in the library
-        # @abstract Must be overridden
-        # @return [Array] A list of files in the iTunes library
-        def listFilesInLibrary()
-            raise "ERROR: Your trying to instantiate an abstract class"
-        end
+        end                                     
            
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @abstract Must be overridden

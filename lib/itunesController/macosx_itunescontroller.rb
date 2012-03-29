@@ -50,12 +50,6 @@ module ItunesController
             @libraryPlaylists=library.libraryPlaylists
         end
     
-        # Used to get the libaray play lists
-        # @return The iTunes playlist
-        def getLibraryPlaylists
-            return @libraryPlaylists
-        end
-    
         # Used to get the iTunes version
         # @return [String] The itunes version
         def version
@@ -100,78 +94,7 @@ module ItunesController
             end
             
             return tracks;
-        end        
-    
-        # Used to get a list of tracks that have the given locations
-        # @param [Array[String]] locations a list of track locations to find
-        # @return [Array[OSX::ITunesFileTrack]] A list of tracks that were found 
-        def findTracksWithLocations(locations)
-            tracks=[]
-            @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do |track|
-                    #if (track.location != nil && track.location.isFileURL)
-                    if (track.location != nil)
-                        if (locations.index(track.location.path))
-                            tracks.push(track)
-                            if (tracks.size == locations.size)
-                                return tracks
-                            end
-                        end
-                    end
-                end
-            end
-            return tracks
-        end
-    
-        # Used to get a track with the given location
-        # @param [String] location The location of the track to find
-        # @return The track that was found, or nil if it could not be found
-        def findTrackWithLocation(location)
-            @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do |track|
-                    if (track.location.isFileURL)
-                        if (track.location.path==location)
-                        return track
-                        end
-                    end
-                end
-            end
-            return nil
-        end
-    
-        # Used to find the dead tracks (tracks whoes file references don't exist) within the
-        # iTunes libaray
-        # @return [Array] A list of dead tracks
-        def findDeadTracks()
-            deadTracks=[]
-            @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do | track |
-                    if (track.location==nil)
-                        deadTracks.push(track)
-                    elsif (track.location!=nil && track.location.isFileURL)
-                        if (!File.exist?(track.location.path))
-                            deadTracks.push(track)
-                        end
-                    end
-                end
-            end
-            return deadTracks
-        end
-    
-        # Used to list all the files in the library
-        # @abstract Must be overridden
-        # @return [Array[String]] A list of files in the iTunes library
-        def listFilesInLibrary()
-            files=[]
-            @libraryPlaylists.each do | playlist |
-                playlist.fileTracks.each do |track|                                       
-                    if (track.location !=nil && track.location.isFileURL)
-                        files.push(track.location.path)
-                    end
-                end
-            end
-            return files
-        end
+        end                               
         
        def getTracks(&b)
            ItunesController::ItunesControllerLogging::debug("Retriving track information...")

@@ -33,10 +33,6 @@ module ItunesController
         def initialize
         end
 
-        def getLibraryPlaylists
-            return nil
-        end
-
         def version
             return "Dummy"
         end
@@ -83,47 +79,7 @@ module ItunesController
         def getSourceLibrary()
             COMMAND_LOG.push("getSourceLibrary()")
             return nil
-        end
-
-        # Used to get a list of tracks that have the given locations. This is a dummy implementaion that 
-        # is used with tests. It pushes messages into the ItunesController::DummyITunesController::COMMAND_LOG 
-        # so that tests can check the result.
-        # @param [Array[String]] locations a list of track locations to find
-        # @return [Array] A list of tracks that were found
-        def findTracksWithLocations(locations)
-            COMMAND_LOG.push("findTracksWithLocations(locations)")
-            return locations
-        end
-
-        # Used to get a track with the given location. This is a dummy implementaion that is used with tests. 
-        # It pushes messages into the ItunesController::DummyITunesController::COMMAND_LOG so that tests can
-        # check the result.
-        # @param [String] location The location of the track to find
-        # @return The track that was found, or nil if it could not be found
-        def findTrackWithLocation(location)
-            COMMAND_LOG.push("findTracksWithLocation(location)")
-            return nil
-        end
-
-        # Used to find the dead tracks (tracks whoes file references don't exist) within the
-        # iTunes libaray .This is a dummy implementaion that is used with tests. It pushes messages into the
-        # ItunesController::DummyITunesController::COMMAND_LOG so that tests can check the result.
-        # @return [Array] A list of dead tracks
-        def findDeadTracks()
-            deadTracks=[]
-            COMMAND_LOG.push("findDeadTracks()")
-            return deadTracks
-        end
-
-        # Used to list all the files in the library. This is a dummy implementaion that is used with tests.
-        # It pushes messages into the ItunesController::DummyITunesController::COMMAND_LOG so that tests 
-        # can check the result.
-        # @return [Array] A list of files in the iTunes library
-        def listFilesInLibrary()
-            files=[]
-            COMMAND_LOG.push("listFilesInLibrary()")
-            return files
-        end
+        end                       
 
         def findPlaylists(types)
             playlists=[]
