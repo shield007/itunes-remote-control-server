@@ -12,15 +12,13 @@ require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/application'
 
-class AddFilesApp < ItunesController::Application
+class App < ItunesController::Application
 
     # Used to display the command line useage
     def displayUsage()
         puts("Usage: "+@appName+" [options] files...")
         puts("")
-        puts("Specific options:")
-        puts("    -l, --log FILE                   Optional paramter used to log messages to")
-        puts("    -h, --help                       Display this screen")
+        puts(genericOptionDescription())
     end
 
     def checkAppOptions()
@@ -42,5 +40,5 @@ class AddFilesApp < ItunesController::Application
     end
 end
 
-app=AddFilesApp.new("trackInfo.rb")
+app=App.new("trackInfo.rb")
 app.exec()

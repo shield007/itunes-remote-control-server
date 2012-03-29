@@ -35,13 +35,19 @@ module ItunesController
             @options[:logFile] = nil
         end
 
+        def genericOptionDescription()
+            result=[]
+            result.push("Specific options:")
+            result.push("    -l, --log FILE                   Optional paramter used to log messages to")
+            result.push("    -h, --help                       Display this screen")
+            return result.joint("\n")
+        end
+
         # Used to display the command line useage
         def displayUsage()
             puts("Usage: "+@appName+" [options]")
             puts("")
-            puts("Specific options:")
-            puts("    -l, --log FILE                   Optional paramter used to log messages to")
-            puts("    -h, --help                       Display this screen")
+            puts(genericOptionDescription())
         end
 
         # Used to display a error message and the command line usesage

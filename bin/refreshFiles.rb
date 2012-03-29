@@ -15,9 +15,7 @@ class App < ItunesController::Application
     def displayUsage()
         puts("Usage: "+@appName+" [options] files...")
         puts("")
-        puts("Specific options:")
-        puts("    -l, --log FILE                   Optional paramter used to log messages to")
-        puts("    -h, --help                       Display this screen")
+        puts(genericOptionDescription())
     end
 
     def checkAppOptions()

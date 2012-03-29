@@ -10,19 +10,12 @@
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
 
-class AddFilesApp < ItunesController::Application
+class App < ItunesController::Application
 
-    # Used to display the command line useage
     def displayUsage()
-        puts("Usage: "+@appName+" [options]")
+        puts("Usage: "+@appName+" [options] files...") 
         puts("")
-        puts("Specific options:")
-        puts("    -l, --log FILE                   Optional paramter used to log messages to")
-        puts("    -h, --help                       Display this screen")
-    end
-
-    def checkAppOptions()
-        usageError("No config file specified. Use --config option.")
+        puts(genericOptionDescription())
     end
 
     def execApp(controller)
@@ -32,5 +25,5 @@ class AddFilesApp < ItunesController::Application
     end
 end
 
-app=AddFilesApp.new("addFiles.rb")
+app=App.new("addFiles.rb")
 app.exec()

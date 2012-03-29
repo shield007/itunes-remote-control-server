@@ -12,19 +12,7 @@ require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/application'
 
-class AddFilesApp < ItunesController::Application
-
-    # Used to display the command line useage
-    def displayUsage()
-        puts("Usage: "+@appName+" [options]")
-        puts("")
-        puts("Specific options:")
-        puts("    -l, --log FILE                   Optional paramter used to log messages to")
-        puts("    -h, --help                       Display this screen")
-    end
-
-    def checkAppOptions()
-    end
+class App < ItunesController::Application
 
     def execApp(controller)
         deadTracks=controller.findDeadTracks
@@ -46,6 +34,6 @@ class AddFilesApp < ItunesController::Application
     end
 end
 
-app=AddFilesApp.new("listDeadTracks.rb")
+app=App.new("listDeadTracks.rb")
 app.exec()
 
