@@ -1,3 +1,4 @@
+require 'tempfile'
 require 'test/unit'
 require 'socket'
 require 'timeout'
@@ -5,6 +6,7 @@ require 'timeout'
 require 'itunesController/config'
 require 'itunesController/dummy_itunescontroller'
 require 'itunesController/controllserver'
+require 'itunesController/cachedcontroller'
 
 class BaseServerTest < Test::Unit::TestCase 
     
@@ -43,9 +45,10 @@ class BaseServerTest < Test::Unit::TestCase
         ItunesController::DummyITunesController::COMMAND_LOG.take_while {
             | el |
         }
-        
-        
-        controller = ItunesController::DummyITunesController.new
+        @dbFile = Tempfile.new('dummyDatabase.db') 
+        puts("Using dummy database at: " +@dbFile.path)
+        controller = ItunesController::CachedController.new(itunes,@dbFile.path)
+        itunes = ItunesController::DummyITunesController.new
         config=ItunesController::ServerConfig.new
         config.port = findAvaliablePort
         @port = config.port
@@ -60,6 +63,7 @@ class BaseServerTest < Test::Unit::TestCase
         while !@server.stopped?
         end
         @server.join
+        @dbFile.unlink
     end
 
     def test_dummy

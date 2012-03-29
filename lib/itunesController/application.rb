@@ -89,7 +89,7 @@ module ItunesController
         end
 
         def createController()
-            return ItunesController::CachedController.new
+            return ItunesController::CachedController.new(ItunesController::ITunesControllerFactory::createController())
         end
     
         def exec()

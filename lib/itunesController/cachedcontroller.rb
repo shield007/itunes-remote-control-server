@@ -20,7 +20,6 @@
 
 require 'itunesController/logging'
 require 'itunesController/itunescontroller'
-require 'itunesController/itunescontroller_factory'
 require 'itunesController/database'
 require 'itunesController/track'
 
@@ -28,7 +27,7 @@ module ItunesController
 
     class CachedController
 
-        def initialize(controller=ItunesController::ITunesControllerFactory::createController(),dbPath=nil)
+        def initialize(controller,dbPath=nil)
             @controller = controller
             @database = ItunesController::Database.new(@controller,dbPath)
             @cachedOnCreate=cacheTracks()
