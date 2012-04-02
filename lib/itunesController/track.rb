@@ -30,6 +30,10 @@ module ItunesController
             @databaseId = databaseId
             @title = title
         end
+        
+        def to_s
+            return "Location: #{@location} - Database ID: #{@databaseId} - Title: #{@tite} "
+        end
     end
 
 end

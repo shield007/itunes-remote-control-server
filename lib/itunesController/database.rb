@@ -41,6 +41,7 @@ module ItunesController
             if (!File.directory?(File.dirname(dbPath)))
                 FileUtils::mkdir_p(File.dirname(dbPath))
             end
+            ItunesController::ItunesControllerLogging::info("Database path #{dbPath}")
             @db=SQLite3::Database.new( dbPath )
 
             createTables()
@@ -154,6 +155,7 @@ module ItunesController
 
      private
         def createTables()
+            ItunesController::ItunesControllerLogging::debug("Checking database tables exist")
             @db.execute("create table if not exists tracks ( databaseId INTEGER PRIMARY KEY, "+
                                                             "location TEXT NOT NULL, "+
                                                             "name TEXT NOT NULL) ")

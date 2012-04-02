@@ -47,8 +47,8 @@ class BaseServerTest < Test::Unit::TestCase
         }
         @dbFile = Tempfile.new('dummyDatabase.db') 
         puts("Using dummy database at: " +@dbFile.path)
-        controller = ItunesController::CachedController.new(itunes,@dbFile.path)
         itunes = ItunesController::DummyITunesController.new
+        controller = ItunesController::CachedController.new(itunes,@dbFile.path)        
         config=ItunesController::ServerConfig.new
         config.port = findAvaliablePort
         @port = config.port

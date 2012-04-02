@@ -29,8 +29,14 @@ module ItunesController
 
         # The list of commands performed
         COMMAND_LOG = []
+            
         # The constructor
         def initialize
+            @@fileCount=0
+        end
+        
+        def self.setFileCount(fileCount)
+            @@fileCount = fileCount
         end
 
         def version
@@ -63,28 +69,36 @@ module ItunesController
         # with tests. It pushes messages into the ItunesController::DummyITunesController::COMMAND_LOG 
         # so that tests can check the result.
         # @param [Array[String]] A list of files to add to the itunes library
-        # @return True if it sucesseds, or false if their is a error
+        # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
-            COMMAND_LOG.push("addFilesToLibrary(files)")
-            files.each do | file |
-                COMMAND_LOG.push("addFilesToLibrary("+file+")")
+            tracks=[]
+            COMMAND_LOG.push("addFilesToLibrary(files)")            
+            files.each do | file |                                                                             
+                track=ItunesController::Track.new(file,@@fileCount,"Test #{@@fileCount}")                
+                ItunesController::ItunesControllerLogging::debug("Adding track #{track}")              
+                tracks.push(track)
+                @@fileCount+=1                
+                COMMAND_LOG.push("addFilesToLibrary("+file+")")                
             end
-            return true
+            return tracks
         end
-
-        # Used to get the libaray iTunes source. This is a dummy implementaion that is used with tests.
-        # It pushes messages into the ItunesController::DummyITunesController::COMMAND_LOG so that tests 
-        # can check the result.
-        # @return The iTunes source for the library
-        def getSourceLibrary()
-            COMMAND_LOG.push("getSourceLibrary()")
-            return nil
-        end                       
-
+        
         def findPlaylists(types)
             playlists=[]
             COMMAND_LOG.push("findPlaylists(types)")
             return playlists
+        end
+        
+        def getTrackCount()
+            COMMAND_LOG.push("getTrackCount()")
+            return @@fileCount
+        end
+        
+        def getTracks(&b)
+            COMMAND_LOG.push("getTracks()")
+            for i in (1..@@fileCount)
+                b.call(ItunesController::Track.new("/blah/test#{i}.m4v",i,"Test #{i}"),i,@@fileCount,false)
+            end
         end
 
     end

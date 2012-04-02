@@ -84,7 +84,8 @@ module ItunesController
         end
 
         def addTrack(path)
-            ids=@controller.addFilesToLibrary([path])
+            ItunesController::ItunesControllerLogging::debug("Adding track #{path}")
+            ids=@controller.addFilesToLibrary([path])            
             if (ids.length==1)
                 if (@database.getTrackById(ids[0].databaseId)!=nil)
                     ItunesController::ItunesControllerLogging::info("Track '#{path}' allready in the database with the id #{ids[0].databaseId}")

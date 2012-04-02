@@ -123,9 +123,10 @@ class ServerTest < BaseServerTest
 
     def test_AddFiles
         puts("\n-- Test Start: #{this_method()}")
-        setupServer
-        begin
-            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+        ItunesController::DummyITunesController::setFileCount(0)
+        orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+        setupServer        
+        begin                       
             client=DummyClient.new
             client.connect("localhost",@port)            
             client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
@@ -137,11 +138,17 @@ class ServerTest < BaseServerTest
             client.sendCommand(ItunesController::CommandName::HELO, 220);
             
             commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-            assert_equal(orgSize+4,commandLog.size());            
-            assert_equal("addFilesToLibrary(files)",commandLog[orgSize]);
-            assert_equal("addFilesToLibrary(/blah)",commandLog[orgSize+1]);
-            assert_equal("addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",commandLog[orgSize+2]);
-            assert_equal("addFilesToLibrary(/blah/blah2)",commandLog[orgSize+3]);
+            commandLog.each do | entry |
+                puts "Entry: "+entry
+            end
+            assert_equal(orgSize+7,commandLog.size());      
+            assert_equal("getTrackCount()",commandLog[orgSize])      
+            assert_equal("addFilesToLibrary(files)",commandLog[orgSize+1]);
+            assert_equal("addFilesToLibrary(/blah)",commandLog[orgSize+2]);
+            assert_equal("addFilesToLibrary(files)",commandLog[orgSize+3]);
+            assert_equal("addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",commandLog[orgSize+4]);
+            assert_equal("addFilesToLibrary(files)",commandLog[orgSize+5]);
+            assert_equal("addFilesToLibrary(/blah/blah2)",commandLog[orgSize+6]);
             
             client.sendCommand(ItunesController::CommandName::QUIT,221)
             client.disconnect
