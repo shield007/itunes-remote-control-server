@@ -48,7 +48,7 @@ class App < ItunesController::Application
 
     def parseAppOptions(opts)
         opts.on('-p','--port PORT','The port number to start the server on. Defaults to 7000') do |port|
-            options[:port] = port;
+            @options[:port] = port;
         end
         opts.on('-c','--config FILE','The configuration file') do |value|
             @options[:config] = value

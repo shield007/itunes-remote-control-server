@@ -451,6 +451,7 @@ module ItunesController
         # @param io A IO Stream that is used to talk to the connected client     
         def serve(io)
             ItunesController::ItunesControllerLogging::info("Connected")
+            
             @state.clean
             io.print "001 hello\r\n"
             loop do
@@ -462,8 +463,7 @@ module ItunesController
                         break unless ok                    
                     else
                         io.print "500 ERROR\r\n"
-                    end
-    
+                    end                                           
                 end
             end
             io.print "Send:002 bye\r\n"

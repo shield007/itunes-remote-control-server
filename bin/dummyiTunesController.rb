@@ -20,6 +20,8 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'tempfile'
+
 require 'itunesController/config'
 require 'itunesController/controllserver'
 require 'itunesController/dummy_itunescontroller'
@@ -54,7 +56,7 @@ class App < ItunesController::Application
 
     def parseAppOptions(opts)
         opts.on('-p','--port PORT','The port number to start the server on. Defaults to 7000') do |port|
-            options[:port] = port;
+            @options[:port] = port;
         end
         opts.on('-c','--config FILE','The configuration file') do |value|
             @options[:config] = value
@@ -62,7 +64,9 @@ class App < ItunesController::Application
     end
 
     def createController()
-        itunes=ItunesController::DummyITunesController.new
+        ItunesController::DummyITunesController::resetCommandLog()
+        ItunesController::DummyITunesController::resetTracks()
+        itunes=ItunesController::DummyITunesController.new()
         return ItunesController::CachedController.new(itunes,@dbPath)
     end
 
@@ -81,7 +85,7 @@ class App < ItunesController::Application
     end
 end
 
-dbFile = TempFile.new('dummyDatabase.db')
+dbFile = Tempfile.new('dummyDatabase.db')
 begin
     dbFile.unlink
     app=App.new("itunesController.rb",dbFile.path)
