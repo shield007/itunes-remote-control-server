@@ -29,7 +29,7 @@ module ItunesController
         
         # The log file, if defined then logging opertions will be sent to this file
         @@logFile = nil       
-        @@logLevel = DEBUG
+        @@logLevel = INFO
         
         # Used to set the location of the log file
         # @param [String] file The log file location
@@ -85,22 +85,34 @@ module ItunesController
         
         # Used to print logging information at debug level
         # @param [String] msg The message to print
-        def self.error(msg)
+        # @param exception If not nil then this exception detials will be printed
+        def self.error(msg,exception=nil)
             if @@logLevel <= ERROR
                 msg="ERROR:"+msg
-                printMsg(msg)        
+                printMsg(msg,true)        
+                if (exception!=nil)                
+                    printMsg("     - #{exception.message}",true)
+                    exception.backtrace.each do | line |
+                        printMsg("     * #{line}",true)
+                    end
+                end
             end       
-        end   
+        end                  
     
     private
     
-        def self.printMsg(msg)
+        def self.printMsg(msg,error=false)
             if (@@logFile!=nil) 
                 out_file = File.new(@@logFile,"w") do | f |
                     f.puts(msg) 
                 end
             else                
-                puts(msg)
+                if (error)
+                    $stderr.puts(msg)
+                else
+                    $stdout.puts(msg)                                   
+                end
+                
             end        
         end
     end

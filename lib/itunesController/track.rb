@@ -32,7 +32,7 @@ module ItunesController
         end
         
         def to_s
-            return "Location: #{@location} - Database ID: #{@databaseId} - Title: #{@tite} "
+            return "Location: '#{@location}' - Database ID: #{@databaseId} - Title: '#{@title}' "
         end
     end
 

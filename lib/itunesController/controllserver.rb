@@ -302,7 +302,7 @@ module ItunesController
             def processData(line,io)
                 count=0
                 @state.files.each do | path |
-                    @itunes.refreshTrack(path)
+                    @itunes.updateTrack(path)
                     count+=1
                 end
                 @state.files=[]
@@ -482,10 +482,15 @@ module ItunesController
         def processCommands(io,data)
             @commands.each do | cmd |
                 if (cmd.requiredLoginState==nil || cmd.requiredLoginState==@state.state)
-                    ok, op = cmd.processLine(data,io)
-                    if (ok!=nil)
-                        ItunesController::ItunesControllerLogging::debug("Command processed: #{cmd.name}")
-                        return ok,op
+                    begin
+                        ok, op = cmd.processLine(data,io)
+                        if (ok!=nil)
+                            ItunesController::ItunesControllerLogging::debug("Command processed: #{cmd.name}")
+                            return ok,op
+                        end
+                    rescue => exc                
+                        ItunesController::ItunesControllerLogging::error("Unable to execute command",exc)                        
+                        raise exc.exception(exc.message)
                     end
                 end
             end

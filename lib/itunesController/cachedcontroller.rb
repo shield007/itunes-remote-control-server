@@ -46,14 +46,15 @@ module ItunesController
             removeTrackByInfo(trackInfo)
         end
 
-        def removeTrackByInfo(trackInfo)
+        def removeTrackByInfo(trackInfo)            
+            ItunesController::ItunesControllerLogging::debug("Removing track: '#{trackInfo}'")
             foundTracks=@controller.searchLibrary(trackInfo.title)
             if (foundTracks==nil || foundTracks.length==0)
-                ItunesController::ItunesControllerLogging::error("Unable to find track with path '#{path}' and title '#{trackInfo.title}'")
+                ItunesController::ItunesControllerLogging::error("Unable to find track #{trackInfo}'")
                 return nil
             end
             foundTracks.each do | t |
-                if (t.databaseID == trackInfo.databaseId)
+                if (t.databaseID == trackInfo.databaseId)                  
                    @controller.removeTracksFromLibrary([t])
                    count=@database.getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i
                    count=count-1
@@ -65,7 +66,7 @@ module ItunesController
                    end
                    @database.removeTrack(trackInfo)
                 end
-            end
+            end            
         end
 
         def updateTrack(path)

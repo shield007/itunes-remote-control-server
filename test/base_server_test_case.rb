@@ -41,12 +41,19 @@ class BaseServerTest < Test::Unit::TestCase
         return -1
     end
     
-    def setupServer
-        ItunesController::DummyITunesController::COMMAND_LOG.take_while {
+    def setupServer(tracks=nil)
+        ItunesController::DummyITunesController::resetCommandLog()
+        ItunesController::DummyITunesController::resetTracks()        
+        if (tracks!=nil)
+            tracks.each do | track |
+                ItunesController::DummyITunesController::forceAddTrack(track)
+            end 
+        end        
+        
+        ItunesController::DummyITunesController::getCommandLog().take_while {
             | el |
         }
-        @dbFile = Tempfile.new('dummyDatabase.db') 
-        puts("Using dummy database at: " +@dbFile.path)
+        @dbFile = Tempfile.new('dummyDatabase.db')
         itunes = ItunesController::DummyITunesController.new
         controller = ItunesController::CachedController.new(itunes,@dbFile.path)        
         config=ItunesController::ServerConfig.new
@@ -67,6 +74,34 @@ class BaseServerTest < Test::Unit::TestCase
     end
 
     def test_dummy
+    end
+    
+    def assertCommandLog(expected)
+        actual=ItunesController::DummyITunesController::getCommandLog()
+        error=false
+        if (expected.size()!=actual.size()) 
+            puts("Worng number of command log entries")
+            error = true
+        end
+            
+        
+        for i in (0..expected.size())
+            if (expected[i]!=actual[i])
+                error=true
+            end
+        end
+        if (error)
+            puts("Command log did not match expected.")
+            puts("Expected:")
+            expected.each do | line |
+                puts("  "+line)
+            end
+            puts("Actual:")
+            actual.each do | line |
+                puts("  "+line)
+            end
+            raise("Command log did not match expected.")
+        end
     end
         
 end

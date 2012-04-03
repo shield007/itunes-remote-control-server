@@ -1,5 +1,6 @@
 require 'base_server_test_case'
 require 'dummy_client'
+require 'itunesController/track'
 
 class ServerTest < BaseServerTest
     
@@ -85,8 +86,7 @@ class ServerTest < BaseServerTest
     def test_InvalidLoginDetails
         puts("\n-- Test Start: #{this_method()}")
         setupServer
-        begin
-            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+        begin            
             client=DummyClient.new
             client.connect("localhost",@port)
             begin
@@ -98,7 +98,7 @@ class ServerTest < BaseServerTest
             rescue
             end
             client.disconnect
-            assert_equal(orgSize,ItunesController::DummyITunesController::COMMAND_LOG.size());
+            assertCommandLog(["getTrackCount() = 0"])            
         ensure
             teardownServer
         end
@@ -110,10 +110,9 @@ class ServerTest < BaseServerTest
         setupServer
         begin
             client=DummyClient.new
-            client.connect("localhost",@port)
-            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+            client.connect("localhost",@port)            
             client.sendCommand(ItunesController::CommandName::REMOVEDEADFILES,500)            
-            assert_equal(orgSize,ItunesController::DummyITunesController::COMMAND_LOG.size());
+            assertCommandLog(["getTrackCount() = 0"])
             client.disconnect
         ensure
             teardownServer
@@ -122,9 +121,7 @@ class ServerTest < BaseServerTest
     end
 
     def test_AddFiles
-        puts("\n-- Test Start: #{this_method()}")
-        ItunesController::DummyITunesController::setFileCount(0)
-        orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+        puts("\n-- Test Start: #{this_method()}")                
         setupServer        
         begin                       
             client=DummyClient.new
@@ -137,19 +134,12 @@ class ServerTest < BaseServerTest
             client.sendCommand(ItunesController::CommandName::ADDFILES, 220);
             client.sendCommand(ItunesController::CommandName::HELO, 220);
             
-            commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-            commandLog.each do | entry |
-                puts "Entry: "+entry
-            end
-            assert_equal(orgSize+7,commandLog.size());      
-            assert_equal("getTrackCount()",commandLog[orgSize])      
-            assert_equal("addFilesToLibrary(files)",commandLog[orgSize+1]);
-            assert_equal("addFilesToLibrary(/blah)",commandLog[orgSize+2]);
-            assert_equal("addFilesToLibrary(files)",commandLog[orgSize+3]);
-            assert_equal("addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",commandLog[orgSize+4]);
-            assert_equal("addFilesToLibrary(files)",commandLog[orgSize+5]);
-            assert_equal("addFilesToLibrary(/blah/blah2)",commandLog[orgSize+6]);
+            commandLog = ItunesController::DummyITunesController::getCommandLog()            
             
+            assertCommandLog(["getTrackCount() = 0",
+                              "addFilesToLibrary(/blah)",
+                              "addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",
+                              "addFilesToLibrary(/blah/blah2)"])      
             client.sendCommand(ItunesController::CommandName::QUIT,221)
             client.disconnect
         ensure
@@ -161,26 +151,38 @@ class ServerTest < BaseServerTest
     
     def test_RemoveFiles
         puts("\n-- Test Start: #{this_method()}")
-        setupServer
-        begin
-            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
-            client=DummyClient.new
-            client.connect("localhost",@port)            
-            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
-            
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah1", 220);
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
-            client.sendCommand(ItunesController::CommandName::REMOVEFILES, 220);
-            client.sendCommand(ItunesController::CommandName::HELO, 220);
-            
-            commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-            assert_equal(orgSize+5,commandLog.size());
-            assert_equal("findTracksWithLocations(locations)",commandLog[orgSize]);
-            assert_equal("removeTracksFromLibrary(tracks)",commandLog[orgSize+1]);
-            
-            client.sendCommand(ItunesController::CommandName::QUIT,221)
-            client.disconnect
+        setupServer([ItunesController::Track.new("/blah",1,"Test 1"),
+                     ItunesController::Track.new("/blah1/shows's/S01E01 - The Episode.m4v",2,"Test 2"),
+                     ItunesController::Track.new("/blah1/blah2",3,"Test 3")])        
+        begin   
+            Dir.tmpdir do                    
+                client=DummyClient.new
+                client.connect("localhost",@port)            
+                client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
+
+                files=[Dir.pwd+"/blah",
+                       Dir.pwd+"/blah1/shows's/S01E01 - The Episode.m4v",
+                       Dir.pwd+"/blah/blah2"]
+                files.each do | file |
+                    File.open(file, "w") {}
+                    client.sendCommand(ItunesController::CommandName::FILE+":"+file, 220);
+                end                
+                client.sendCommand(ItunesController::CommandName::REMOVEFILES, 220);
+                client.sendCommand(ItunesController::CommandName::HELO, 220);
+                
+                commandLog = ItunesController::DummyITunesController::getCommandLog()
+                expected=[]
+                expected.push("getTrackCount() = 0")
+                files.each do | file |
+                    expected.push("addFilesToLibrary("+file+")")
+                end               
+                files.each do | file |
+                    expected.push("removeTracksFromLibrary(Location: '#{file}' - Database ID: 0 - Name: 'Test 0' )")
+                end
+                assertCommandLog(expected)                                                                    
+                client.sendCommand(ItunesController::CommandName::QUIT,221)
+                client.disconnect
+            end
         ensure
             teardownServer
             assert(@server.stopped?)
@@ -189,42 +191,47 @@ class ServerTest < BaseServerTest
     end
     
     def test_RefreshFiles
-        puts("\n-- Test Start: #{this_method()}")
-        setupServer
-        begin
-            orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
-            client=DummyClient.new
-            client.connect("localhost",@port)            
-            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
-            
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah1", 220);
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
-            client.sendCommand(ItunesController::CommandName::REFRESHFILES, 220);
-            client.sendCommand(ItunesController::CommandName::HELO, 220);
-            
-            commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-            assert_equal(orgSize+5,commandLog.size());
-            assert_equal("findTracksWithLocations(locations)",commandLog[orgSize]);
-            assert_equal("refreshTracks(tracks)",commandLog[orgSize+1]);
-            assert_equal("refreshTracks(/blah)",commandLog[orgSize+2]);
-            assert_equal("refreshTracks(/blah1)",commandLog[orgSize+3]);
-            assert_equal("refreshTracks(/blah/blah2)",commandLog[orgSize+4]);
-            
-            client.sendCommand(ItunesController::CommandName::QUIT,221)
-            client.disconnect
-        ensure
-            teardownServer
-            assert(@server.stopped?)
+        Dir.tmpdir do
+            puts("\n-- Test Start: #{this_method()}")
+            tracks = [ItunesController::Track.new(Dir.pwd+"/blah",1,"Test 1"),
+                      ItunesController::Track.new(Dir.pwd+"/blah1/shows's/S01E01 - The Episode.m4v",2,"Test 2"),
+                      ItunesController::Track.new(Dir.pwd+"/blah1/blah2",3,"Test 3")]
+            files=[]
+            tracks.each do | t |
+                File.open(file, "w") {}
+                files.push(t.location)
+            end
+            setupServer(tracks)
+            begin                                
+                client=DummyClient.new
+                client.connect("localhost",@port)            
+                client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)                                
+                client.sendCommand(ItunesController::CommandName::REFRESHFILES, 220);
+                client.sendCommand(ItunesController::CommandName::HELO, 220);
+                
+                commandLog = ItunesController::DummyITunesController::getCommandLog()
+                assertCommandLog(["getTrackCount() = 0",
+                                  "addFilesToLibrary(/blah)",
+                                  "addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",
+                                  "addFilesToLibrary(/blah/blah2)",
+                                  "refreshTracks(Location: '/blah' - Database ID: 0 - Name: 'Test 0' )",
+                                  "refreshTracks(Location: '/blah1' - Database ID: 1 - Name: 'Test 1' )",            
+                                  "refreshTracks(Location: '/blah/blah2' - Database ID: 2 - Name: 'Test 2' )"])            
+                
+                client.sendCommand(ItunesController::CommandName::QUIT,221)
+                client.disconnect            
+            ensure
+                teardownServer
+                assert(@server.stopped?)
+            end
+            puts("--Test Finish:#{this_method()}")
         end
-        puts("--Test Finish:#{this_method()}")
     end
     
     def test_ClearFiles
        puts("\n-- Test Start: #{this_method()}")
        setupServer
-       begin
-           orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+       begin           
            client=DummyClient.new
            client.connect("localhost",@port)            
            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
@@ -234,9 +241,8 @@ class ServerTest < BaseServerTest
            client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
            client.sendCommand(ItunesController::CommandName::CLEARFILES, 220);
            client.sendCommand(ItunesController::CommandName::HELO, 220);
-           
-           commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-           assert_equal(orgSize,commandLog.size());           
+                      
+           assertCommandLog(["getTrackCount() = 0"])           
            
            client.sendCommand(ItunesController::CommandName::QUIT,221)
            client.disconnect
@@ -250,8 +256,7 @@ class ServerTest < BaseServerTest
    def test_ClearFiles2
        puts("\n-- Test Start: #{this_method()}")
        setupServer
-       begin
-           orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
+       begin           
            client=DummyClient.new
            client.connect("localhost",@port)            
            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
@@ -259,8 +264,7 @@ class ServerTest < BaseServerTest
            client.sendCommand(ItunesController::CommandName::CLEARFILES, 220);
            client.sendCommand(ItunesController::CommandName::HELO, 220);
            
-           commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-           assert_equal(orgSize,commandLog.size());           
+           assertCommandLog(["getTrackCount() = 0"])           
            
            client.sendCommand(ItunesController::CommandName::QUIT,221)
            client.disconnect
@@ -273,9 +277,11 @@ class ServerTest < BaseServerTest
    
    def test_RemoveDeadFiles
        puts("\n-- Test Start: #{this_method()}")
-       setupServer
+       tracks=[ItunesController::Track.new("/blah",1,"Test 1"),
+       ItunesController::Track.new("/blah1/shows's/S01E01 - The Episode.m4v",2,"Test 2"),
+       ItunesController::Track.new("/blah1/blah2",3,"Test 3")]
+       setupServer(tracks)
        begin
-           orgSize=ItunesController::DummyITunesController::COMMAND_LOG.size()
            client=DummyClient.new
            client.connect("localhost",@port)            
            client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
@@ -283,11 +289,15 @@ class ServerTest < BaseServerTest
            client.sendCommand(ItunesController::CommandName::REMOVEDEADFILES, 220);
            client.sendCommand(ItunesController::CommandName::HELO, 220);
            
-           commandLog = ItunesController::DummyITunesController::COMMAND_LOG
-           assert_equal(orgSize+2,commandLog.size());
-           assert_equal("findDeadTracks()",commandLog[orgSize]);
-           assert_equal("removeTracksFromLibrary(tracks)",commandLog[orgSize+1]);
-           
+           commandLog = ItunesController::DummyITunesController::getCommandLog()                     
+           expected=[]
+           expected.push("getTrackCount() = 3")
+           expected.push("getTrackCount() = 3")
+           expected.push("getTracks()")
+           tracks.each do | t |           
+               expected.push("removeTracksFromLibrary(Location: '#{t.location}' - Database ID: #{t.databaseId} - Name: '#{t.title}' )")
+           end
+           assertCommandLog(expected)
            client.sendCommand(ItunesController::CommandName::QUIT,221)
            client.disconnect
        ensure

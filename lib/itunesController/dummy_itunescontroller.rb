@@ -19,6 +19,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 require 'itunesController/itunescontroller'
+require 'itunesController/dummy_itunes_track'
 
 module ItunesController
     # This is a dummy implementation of the itunes controller which can be used
@@ -26,17 +27,27 @@ module ItunesController
     # that are recived are logged in the COMMNAD_LOG list. Tests can read
     # these to make sure they did the correct thing
     class DummyITunesController < ItunesController::BaseITunesController
-
-        # The list of commands performed
-        COMMAND_LOG = []
-            
+                   
         # The constructor
-        def initialize
-            @@fileCount=0
+        def initialize            
         end
         
-        def self.setFileCount(fileCount)
-            @@fileCount = fileCount
+        def self.getCommandLog()
+            return @@commandLog
+        end
+        
+        def self.resetCommandLog()
+            @@commandLog=[]
+        end
+        
+        def self.resetTracks()
+            @@tracks=[]
+        end
+        
+        def self.forceAddTrack(track)
+            ItunesController::ItunesControllerLogging::debug("Force Adding track #{track}")
+            dummyTrack=DummyItunesTrack.new(track.location,track.databaseId,track.title)
+            @@tracks.push(dummyTrack)
         end
 
         def version
@@ -48,9 +59,8 @@ module ItunesController
         # ItunesController::DummyITunesController::COMMAND_LOG so that tests can check the result.
         # @param track The track
         def refreshTracks(tracks)
-            COMMAND_LOG.push("refreshTracks(tracks)")
             tracks.each do | track |
-                COMMAND_LOG.push("refreshTracks("+track+")")
+                @@commandLog.push("refreshTracks(#{track})")
             end
         end
 
@@ -59,9 +69,9 @@ module ItunesController
         # can check the result.
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
-            COMMAND_LOG.push("removeTracksFromLibrary(tracks)")
             tracks.each do | track |
-                COMMAND_LOG.push("removeTracksFromLibrary("+track+")")
+                @@commandLog.push("removeTracksFromLibrary(#{track})")
+                @@tracks.delete(track)
             end
         end
 
@@ -71,35 +81,52 @@ module ItunesController
         # @param [Array[String]] A list of files to add to the itunes library
         # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
-            tracks=[]
-            COMMAND_LOG.push("addFilesToLibrary(files)")            
+            tracks=[]          
             files.each do | file |                                                                             
-                track=ItunesController::Track.new(file,@@fileCount,"Test #{@@fileCount}")                
+                track=ItunesController::Track.new(file,@@tracks.length,"Test #{@@tracks.length}")                
                 ItunesController::ItunesControllerLogging::debug("Adding track #{track}")              
-                tracks.push(track)
-                @@fileCount+=1                
-                COMMAND_LOG.push("addFilesToLibrary("+file+")")                
+                dummyTrack=DummyItunesTrack.new(track.location,track.databaseId,track.title)
+                tracks.push(track)                
+                @@tracks.push(dummyTrack)                           
+                @@commandLog.push("addFilesToLibrary("+file+")")                
             end
             return tracks
         end
         
         def findPlaylists(types)
             playlists=[]
-            COMMAND_LOG.push("findPlaylists(types)")
+            @@commandLog.push("findPlaylists(types)")
             return playlists
         end
         
         def getTrackCount()
-            COMMAND_LOG.push("getTrackCount()")
-            return @@fileCount
+            @@commandLog.push("getTrackCount() = #{@@tracks.length}")
+            return @@tracks.length
         end
         
         def getTracks(&b)
-            COMMAND_LOG.push("getTracks()")
-            for i in (1..@@fileCount)
-                b.call(ItunesController::Track.new("/blah/test#{i}.m4v",i,"Test #{i}"),i,@@fileCount,false)
+            @@commandLog.push("getTracks()")
+            for i in (0..@@tracks.length-1)
+                track=@@tracks[i]                
+                dead=!File.exist?(track.location)
+                ItunesController::ItunesControllerLogging::debug("Getting track: #{track}, dead = #{dead}")
+                b.call(ItunesController::Track.new(track.location,track.databaseID,track.name),i,@@tracks.length,dead)
             end
+        end
+        
+        def searchLibrary(title)
+            tracks=[]
+            ItunesController::ItunesControllerLogging::debug("Searching for tracks with title '#{title}'")            
+            @@tracks.each do | track |
+                if (track.name == title)                    
+                    tracks.push(track)                    
+                    ItunesController::ItunesControllerLogging::debug("Found track '#{track}'")
+                end
+            end
+            return tracks
         end
 
     end
+    
 end
+
