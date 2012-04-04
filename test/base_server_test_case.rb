@@ -76,6 +76,7 @@ class BaseServerTest < Test::Unit::TestCase
     end
     
     def assertCommandLog(expected)
+        sleep(2)
         @server.waitForEmptyJobQueue()
         actual=ItunesController::DummyITunesController::getCommandLog()
         error=false
