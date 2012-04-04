@@ -29,6 +29,7 @@ require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
+require 'itunesController/database/sqlite3_backend'
 
 class App < ItunesController::Application
 
@@ -67,7 +68,8 @@ class App < ItunesController::Application
         ItunesController::DummyITunesController::resetCommandLog()
         ItunesController::DummyITunesController::resetTracks()
         itunes=ItunesController::DummyITunesController.new()
-        return ItunesController::CachedController.new(itunes,@dbPath)
+        dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbPath)
+        return ItunesController::CachedController.new(itunes,dbBackend)
     end
 
     def execApp(controller)

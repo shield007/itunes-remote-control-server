@@ -19,9 +19,11 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+
 require 'itunesController/cachedcontroller'
 require 'itunesController/logging'
 require 'itunesController/version'
+require 'itunesController/database/sqlite3_backend'
 
 require 'rubygems'
 require 'optparse'
@@ -102,7 +104,8 @@ module ItunesController
         end
 
         def createController()
-            return ItunesController::CachedController.new(ItunesController::ITunesControllerFactory::createController())
+            dbBackend = ItunesController::SQLite3DatabaseBackend.new(nil)
+            return ItunesController::CachedController.new(ItunesController::ITunesControllerFactory::createController(),dbBackend)
         end
     
         def exec()
