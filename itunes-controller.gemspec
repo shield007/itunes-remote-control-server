@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency('test-unit')
   s.add_dependency('escape')
   s.add_dependency('sqlite3')
-  s.add_dependency('etc')
+  s.add_dependency('etc')  
 end

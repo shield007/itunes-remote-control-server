@@ -64,8 +64,7 @@ class App < ItunesController::Application
         if (@options[:port]!=nil)
             port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controller)
-        server.start
+        server=ItunesController::ITunesControlServer.new(config,port,controller)        
         server.join
     end
 end

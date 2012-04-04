@@ -79,15 +79,14 @@ class App < ItunesController::Application
         if (@options[:port]!=nil)
             port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controller)
-        server.start
+        server=ItunesController::ITunesControlServer.new(config,port,controller)        
         server.join
     end
 end
 
 dbFile = Tempfile.new('dummyDatabase.db')
-begin
-    dbFile.unlink
+begin    
+    ItunesController::ItunesControllerLogging::info("Started dummy itunes controller with db path #{dbFile.path}")
     app=App.new("itunesController.rb",dbFile.path)
     app.exec()
 ensure

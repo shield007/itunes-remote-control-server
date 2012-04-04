@@ -20,6 +20,8 @@
 #
 
 require 'gserver'
+require 'delayed_job'
+
 require 'itunesController/version'
 require 'itunesController/debug'
 require 'itunesController/logging'
@@ -53,10 +55,7 @@ module ItunesController
         REMOVEFILES="REMOVEFILES"
         # This command will remove any files in the itunes library where the path points at a file
         # that does not exist.
-        REMOVEDEADFILES="REMOVEDEADFILES"
-        # This command lists the files in the itunes library which have paths pointing at files 
-        # that can't be found
-        LISTDEADFILES="LISTDEADFILES"
+        REMOVEDEADFILES="REMOVEDEADFILES"        
         # This command is used to tell iTunes to refresh the metadata from the file of files registered 
         # with the FILE command from the itunes library then clear the file list.
         REFRESHFILES="REFRESHFILES"
@@ -96,7 +95,7 @@ module ItunesController
     #                                          ServerState::AUTHED. If nil then works in any login state.
     # @attr_reader [String] name The command name
     class ServerCommand
-        attr_reader :requiredLoginState,:name
+        attr_reader :requiredLoginState,:name,:singleThreaded
         
         # The constructor
         # @param [String] name The command name
@@ -105,11 +104,12 @@ module ItunesController
         #                                    ServerState::AUTHED. If nil then works in any login state.
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class    
-        def initialize(name,requiredLoginState,state,itunes)
+        def initialize(name,requiredLoginState,singleThreaded,state,itunes)
             @name=name
             @state=state
             @itunes=itunes
             @requiredLoginState=requiredLoginState
+            @singleThreaded=singleThreaded
         end
     
         # This is a virtual method that must be overridden by command classes. This method
@@ -121,6 +121,9 @@ module ItunesController
         #                          send to the client
         def processData(data,io)
             raise "ERROR: Your trying to instantiate an abstract class"
+        end
+        
+        def executeSingleThreaded()            
         end
     
         # @param [String] line A line of text recived from the client containg the command and it's parameters
@@ -146,7 +149,7 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::HELO,nil,state,itunes)
+            super(ItunesController::CommandName::HELO,nil,false,state,itunes)
         end
     
         # Sends a response to the client "220 ok"
@@ -167,7 +170,7 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::QUIT,nil,state,itunes)
+            super(ItunesController::CommandName::QUIT,nil,false,state,itunes)
         end
 
         # Sends the response to the client "221 bye" and causes the client to disconnect
@@ -189,7 +192,7 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::LOGIN,nil,state,itunes)
+            super(ItunesController::CommandName::LOGIN,nil,false,state,itunes)
         end
     
         # The line is processed to get the username, then the response "222 Password?" is sent to the
@@ -217,7 +220,7 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::PASSWORD,ServerState::DOING_AUTH,state,itunes)
+            super(ItunesController::CommandName::PASSWORD,ServerState::DOING_AUTH,false,state,itunes)
         end
     
         # The line is processed to get the password. Then the authentication deatials are checked.
@@ -259,13 +262,13 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::CLEARFILES,ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::CLEARFILES,ServerState::AUTHED,false,state,itunes)
         end
-    
+           
         def processData(line,io)
-            @state.files=[]
+            @state.files=[]            
             return true, "220 ok\r\n"
-        end
+        end      
     end
     
     # This command is used to add files registered with the FILE command to itunes then clear
@@ -276,15 +279,18 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::ADDFILES,ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::ADDFILES,ServerState::AUTHED,true,state,itunes)
         end
     
-        def processData(line,io)
+        def processData(line,io)            
+            return true, "220 ok\r\n"
+        end
+        
+        def executeSingleThreaded()
             @state.files.each do | path |
                 @itunes.addTrack(path)
             end
             @state.files=[]
-            return true, "220 ok\r\n"
         end
     end
         
@@ -292,23 +298,26 @@ module ItunesController
     # to update the meta data from the information stored in the files.
     class RefreshFilesCommand < ServerCommand
             
-            # The constructor
-            # @param [ItunesController::ServerState] state The status of the connected client within the server
-            # @param [ItunesController::BaseITunesController] itunes The itunes controller class
-            def initialize(state,itunes)
-                super(ItunesController::CommandName::REFRESHFILES,ServerState::AUTHED,state,itunes)
-            end
-        
-            def processData(line,io)
-                count=0
-                @state.files.each do | path |
-                    @itunes.updateTrack(path)
-                    count+=1
-                end
-                @state.files=[]
-                return true, "220 frefreshed #{count}\r\n"
-            end
+        # The constructor
+        # @param [ItunesController::ServerState] state The status of the connected client within the server
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
+        def initialize(state,itunes)
+            super(ItunesController::CommandName::REFRESHFILES,ServerState::AUTHED,true,state,itunes)
         end
+    
+        def processData(line,io)            
+            return true, "220 ok\r\n"
+        end
+        
+        def executeSingleThreaded()
+            count=0
+            @state.files.each do | path |
+                @itunes.updateTrack(path)
+                count+=1
+            end
+            @state.files=[]
+        end
+    end
     
     # This command is used to remove files registered with the FILE command from the itunes 
     # library then clear the file list.
@@ -318,17 +327,20 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::REMOVEFILES,ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::REMOVEFILES,ServerState::AUTHED,true,state,itunes)
         end
     
-        def processData(line,io)
+        def processData(line,io)            
+            return true, "220 ok\r\n"
+        end
+        
+        def executeSingleThreaded()
             count=0
             @state.files.each do | path |
                 @itunes.removeTrack(path)
                 count+=1
             end
             @state.files=[]
-            return true, "220 removed #{count} from library\r\n"
         end
     end
     
@@ -340,44 +352,18 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::REMOVEDEADFILES,ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::REMOVEDEADFILES,ServerState::AUTHED,true,state,itunes)
         end
     
         def processData(line,io)
-            count=@itunes.removeDeadTracks()
-            return true, "220 removed #{count} from library\r\n"
+            
+            return true, "220 ok\r\n"
         end
-    end
-    
-    # This command lists the files in the itunes library which have paths pointing at files 
-    # that can't be found
-    class ListDeadFilesCommand < ServerCommand
         
-        # The constructor
-        # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
-        def initialize(state,itunes)
-            super(ItunesController::CommandName::LISTDEADFILES,ServerState::AUTHED,state,itunes)
+        def executeSingleThreaded()
+            @itunes.removeDeadTracks()
         end
-    
-        def processData(line,io)
-            deadTracks=@itunes.findDeadTracks
-            count=0
-            deadTracks.each do | deadTrack |
-                result=[]
-                result.push("Name: "+deadTrack.title)
-                result.push("Database ID: "+deadTrack.databaseId.to_s)
-                if (deadTrack.location==nil)
-                    result.push("Location: Unknown")
-                else
-                    result.push("Location: "+deadTrack.location)
-                end
-                io.puts(result.join(":"))
-                count+=1
-            end
-            return true, "220 found #{deadTracks.count} dead tracks\r\n"
-        end
-    end
+    end       
     
     # The file command is used to tell the server about files that should be worked on.
     # These files are the path as they are found on the server. This command takes the 
@@ -388,16 +374,16 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::FILE,ServerState::AUTHED,state,itunes)
+            super(ItunesController::CommandName::FILE,ServerState::AUTHED,false,state,itunes)
         end
     
         def processData(line,io)
             if (line =~ /^\:(.+)$/)
                 @state.files.push($1)
                 return true, "220 ok\r\n"
-            end
+            end            
             return true, "503 ERROR expected file\r\n"
-        end
+        end        
     end
     
     # This command is used to return version information
@@ -407,20 +393,20 @@ module ItunesController
         # @param [ItunesController::ServerState] state The status of the connected client within the server
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class
         def initialize(state,itunes)
-            super(ItunesController::CommandName::VERSION,nil,state,itunes)
+            super(ItunesController::CommandName::VERSION,nil,false,state,itunes)
         end
                        
         def processData(line,io)
             io.puts("ITunes control server:" +ItunesController::VERSION)
             io.puts("Apple iTunes version: "+@itunes.getItunesVersion)
             return true, "220 ok\r\n"
-        end
+        end                               
     end
     
     # The TCP Socket server used to listen on connections and process commands whcih control itunes.
     # see ItunesController::CommandName for a list of supported commands     
     class ITunesControlServer < GServer             
-              
+                      
         # The constructor
         # @param [ItunesController::ServerConfig] config The server configuration
         # @param [Number] port The port to listen on
@@ -439,19 +425,41 @@ module ItunesController
                 AddFilesCommand.new(@state,@itunes),
                 RemoveFilesCommand.new(@state,@itunes),
                 RemoveDeadFilesCommand.new(@state,@itunes),
-                ListDeadFilesCommand.new(@state,@itunes),
                 FileCommand.new(@state,@itunes),
                 RefreshFilesCommand.new(@state,@itunes),
                 VersionCommand.new(@state,@itunes)
             ]
-                 
+            @jobQueue=Queue.new
+            Thread.abort_on_exception = true
+            @exit=false
+            @jobQueueThread=Thread.new {
+                loop do                    
+                    processJobs()
+                    if (@exit)
+                        break;
+                    end
+                    sleep(1)
+                end                
+            }            
+            start()                                                 
+        end
+        
+        def killServer()
+            @exit=true
+            @jobQueueThread.join
+            join()
+        end
+        
+        def processJobs()            
+            job=@jobQueue.pop
+            ItunesController::ItunesControllerLogging::info("Popped command and executeing #{job.name}")
+            job.executeSingleThreaded()
         end
            
         # This method is called when a client is connected and finished when the client disconnects.
         # @param io A IO Stream that is used to talk to the connected client     
-        def serve(io)
-            ItunesController::ItunesControllerLogging::info("Connected")
-            
+        def serve(io)            
+            ItunesController::ItunesControllerLogging::info("Connected")                       
             @state.clean
             io.print "001 hello\r\n"
             loop do
@@ -464,6 +472,9 @@ module ItunesController
                     else
                         io.print "500 ERROR\r\n"
                     end                                           
+                end
+                if (@exit)
+                    break;
                 end
             end
             io.print "Send:002 bye\r\n"
@@ -484,7 +495,10 @@ module ItunesController
                 if (cmd.requiredLoginState==nil || cmd.requiredLoginState==@state.state)
                     begin
                         ok, op = cmd.processLine(data,io)
-                        if (ok!=nil)
+                        if (ok!=nil)    
+                            if (cmd.singleThreaded) 
+                                @jobQueue << cmd
+                            end
                             ItunesController::ItunesControllerLogging::debug("Command processed: #{cmd.name}")
                             return ok,op
                         end
@@ -495,6 +509,6 @@ module ItunesController
                 end
             end
             return nil,nil
-        end
+        end                
     end
 end

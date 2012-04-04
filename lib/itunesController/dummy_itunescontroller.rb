@@ -60,6 +60,7 @@ module ItunesController
         # @param track The track
         def refreshTracks(tracks)
             tracks.each do | track |
+                ItunesController::ItunesControllerLogging::debug("Refresh track #{track}")
                 @@commandLog.push("refreshTracks(#{track})")
             end
         end
@@ -70,6 +71,7 @@ module ItunesController
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
             tracks.each do | track |
+                ItunesController::ItunesControllerLogging::debug("Remove track #{track}")
                 @@commandLog.push("removeTracksFromLibrary(#{track})")
                 @@tracks.delete(track)
             end
