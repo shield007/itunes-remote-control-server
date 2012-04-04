@@ -123,7 +123,10 @@ module ItunesController
             raise "ERROR: Your trying to instantiate an abstract class"
         end
         
-        def executeSingleThreaded()            
+        # This is executed when the command is popped from the job queue. It is used to force single
+        # threaded access to itunes
+        # @param [ServerState] state The state of the server
+        def executeSingleThreaded(state)
         end
     
         # @param [String] line A line of text recived from the client containg the command and it's parameters
@@ -282,15 +285,18 @@ module ItunesController
             super(ItunesController::CommandName::ADDFILES,ServerState::AUTHED,true,state,itunes)
         end
     
-        def processData(line,io)            
+        def processData(line,io)
+            @state.files=[]            
             return true, "220 ok\r\n"
         end
         
-        def executeSingleThreaded()
-            @state.files.each do | path |
+        # This is executed when the command is popped from the job queue. It is used to force single
+        # threaded access to itunes
+        # @param [ServerState] state The state of the server
+        def executeSingleThreaded(state)
+            state.files.each do | path |
                 @itunes.addTrack(path)
-            end
-            @state.files=[]
+            end            
         end
     end
         
@@ -305,17 +311,18 @@ module ItunesController
             super(ItunesController::CommandName::REFRESHFILES,ServerState::AUTHED,true,state,itunes)
         end
     
-        def processData(line,io)            
+        def processData(line,io)
+            @state.files=[]            
             return true, "220 ok\r\n"
         end
         
-        def executeSingleThreaded()
-            count=0
-            @state.files.each do | path |
+        # This is executed when the command is popped from the job queue. It is used to force single
+        # threaded access to itunes
+        # @param [ServerState] state The state of the server
+        def executeSingleThreaded(state)            
+            state.files.each do | path |
                 @itunes.updateTrack(path)
-                count+=1
-            end
-            @state.files=[]
+            end            
         end
     end
     
@@ -330,17 +337,18 @@ module ItunesController
             super(ItunesController::CommandName::REMOVEFILES,ServerState::AUTHED,true,state,itunes)
         end
     
-        def processData(line,io)            
+        def processData(line,io)
+            @state.files=[]            
             return true, "220 ok\r\n"
         end
         
-        def executeSingleThreaded()
-            count=0
-            @state.files.each do | path |
+        # This is executed when the command is popped from the job queue. It is used to force single
+        # threaded access to itunes
+        # @param [ServerState] state The state of the server
+        def executeSingleThreaded(state)            
+            state.files.each do | path |
                 @itunes.removeTrack(path)
-                count+=1
-            end
-            @state.files=[]
+            end            
         end
     end
     
@@ -360,7 +368,10 @@ module ItunesController
             return true, "220 ok\r\n"
         end
         
-        def executeSingleThreaded()
+        # This is executed when the command is popped from the job queue. It is used to force single
+        # threaded access to itunes
+        # @param [ServerState] state The state of the server
+        def executeSingleThreaded(state)
             @itunes.removeDeadTracks()
         end
     end       
@@ -401,6 +412,23 @@ module ItunesController
             io.puts("Apple iTunes version: "+@itunes.getItunesVersion)
             return true, "220 ok\r\n"
         end                               
+    end
+    
+    class Job
+        attr_reader :command,:state
+        
+        def initialize(command,state)
+            @state = state
+            @command = command
+        end
+        
+        def execute()
+            @command.executeSingleThreaded(@state)
+        end
+        
+        def to_s
+            return @command.name
+        end
     end
     
     # The TCP Socket server used to listen on connections and process commands whcih control itunes.
@@ -444,6 +472,12 @@ module ItunesController
             start()                                                 
         end
         
+        def waitForEmptyJobQueue
+            while (@jobQueue.size()>0)
+                sleep(1)
+            end
+        end
+        
         def killServer()
             @exit=true
             @jobQueueThread.join
@@ -452,8 +486,8 @@ module ItunesController
         
         def processJobs()            
             job=@jobQueue.pop
-            ItunesController::ItunesControllerLogging::info("Popped command and executeing #{job.name}")
-            job.executeSingleThreaded()
+            ItunesController::ItunesControllerLogging::debug("Popped command and executeing #{job}")
+            job.execute()
         end
            
         # This method is called when a client is connected and finished when the client disconnects.
@@ -494,10 +528,11 @@ module ItunesController
             @commands.each do | cmd |
                 if (cmd.requiredLoginState==nil || cmd.requiredLoginState==@state.state)
                     begin
+                        previousState=@state.clone
                         ok, op = cmd.processLine(data,io)
                         if (ok!=nil)    
                             if (cmd.singleThreaded) 
-                                @jobQueue << cmd
+                                @jobQueue << Job.new(cmd,previousState)
                             end
                             ItunesController::ItunesControllerLogging::debug("Command processed: #{cmd.name}")
                             return ok,op

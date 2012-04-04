@@ -61,8 +61,7 @@ class BaseServerTest < Test::Unit::TestCase
         @port = config.port
         config.username = BaseServerTest::USER
         config.password = BaseServerTest::PASSWORD
-        @server=ItunesController::ITunesControlServer.new(config,config.port,controller)
-        @server.start
+        @server=ItunesController::ITunesControlServer.new(config,config.port,controller)        
     end
     
     def teardownServer
@@ -77,6 +76,7 @@ class BaseServerTest < Test::Unit::TestCase
     end
     
     def assertCommandLog(expected)
+        @server.waitForEmptyJobQueue()
         actual=ItunesController::DummyITunesController::getCommandLog()
         error=false
         if (expected.size()!=actual.size()) 
