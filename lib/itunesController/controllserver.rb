@@ -20,7 +20,6 @@
 #
 
 require 'gserver'
-require 'delayed_job'
 
 require 'itunesController/version'
 require 'itunesController/debug'
