@@ -7,6 +7,10 @@ GEMS="$GEMS itunes-controller"
 
 # Compile the gem
 rake
+if [ $? -ne 0 ] 
+then
+    exit 1
+fi
 
 # Create the jar
 jruby -S gem install -i ./itunes-controller $GEMS --no-rdoc --no-ri
