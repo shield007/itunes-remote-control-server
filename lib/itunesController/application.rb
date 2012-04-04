@@ -21,6 +21,7 @@
 
 require 'itunesController/cachedcontroller'
 require 'itunesController/logging'
+require 'itunesController/version'
 
 require 'rubygems'
 require 'optparse'
@@ -38,7 +39,9 @@ module ItunesController
         def genericOptionDescription()
             result=[]
             result.push("Specific options:")
-            result.push("    -l, --log FILE                   Optional paramter used to log messages to")
+            result.push("    -f, --log_file FILE              Optional paramter used to log messages to")
+            result.push("    -l, --log_config LEVEL           Optional paramter used to log level [DEBUG|INFO|WARN|ERROR]")               
+            result.push("    -v, --version                    Display version of the application")
             result.push("    -h, --help                       Display this screen")
             return result.join("\n")
         end
@@ -73,12 +76,22 @@ module ItunesController
                     @options[:logFile] = value
                     ItunesController::ItunesControllerLogging::setLogFile(@options[:logFile])
                 end
-                opts.on('-l','--log_config FILE','Optional paramter used to log level [DEBUG|INFO|WARN|ERROR]') do |value|
+                opts.on('-l','--log_config LEVEL','Optional paramter used to log level [DEBUG|INFO|WARN|ERROR]') do |value|
                     @options[:logConfig] = value
                     ItunesController::ItunesControllerLogging::setLogLevelFromString(@options[:logConfig])
                 end
                 parseAppOptions(opts)
 
+                opts.on_tail( '-v', '--version', 'Display version of the application' ) do
+                    puts "itunes-remote-control-server "+ItunesController::VERSION
+                    puts "Copyright (C) 2012 John-Paul Stanford"
+                    puts "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>."
+                    puts "This is free software: you are free to change and redistribute it."
+                    puts "There is NO WARRANTY, to the extent permitted by law."
+                    puts ""
+                    puts "Authors: John-Paul Stanford <dev@stanwood.org.uk>"
+                    puts "Website: http://code.google.com/p/itunes-remote-control-server/"
+                end
                 opts.on_tail( '-h', '--help', 'Display this screen' ) do
                     puts opts
                     exit
