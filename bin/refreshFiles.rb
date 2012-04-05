@@ -26,7 +26,7 @@ class App < ItunesController::Application
 
     def execApp(controller)
         ARGV.each do | path |
-            controller.refreshTracks(tracks)
+            controller.updateTrack(path)
         end
     end
 end
