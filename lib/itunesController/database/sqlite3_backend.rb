@@ -44,8 +44,20 @@ module ItunesController
            return @db.prepare(sql)         
         end
         
+        def executeStatement(stmt,*args)
+            begin
+                return stmt.execute(*args)
+            rescue SQLite3::ConstraintException => e
+                raise ItunesController::DatabaseConstraintException, e.message
+            end
+        end
+        
         def execute(sql)
-            return @db.execute(sql)
+            begin
+                return @db.execute(sql)
+            rescue SQLite3::ConstraintException => e
+                raise ItunesController::DatabaseConstraintException, e.message
+            end
         end
         
         def close()

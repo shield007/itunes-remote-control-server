@@ -20,16 +20,21 @@
 
 module ItunesController
 
+    class DatabaseConstraintException < Exception
+    end
+    
     class DatabaseBackend               
         
-        def prepare(sql)
-            
+        def prepare(sql)            
         end
         
         def execute(sql)
         end
         
         def close()
+        end
+        
+        def executeStatement(stmt,*args)            
         end
              
     end

@@ -44,7 +44,7 @@ module ItunesController
             if (track.location!=nil)
                 loc = track.location.to_s
             end
-            stmt.execute(id,loc,title)
+            @backend.executeStatement(stmt,id,loc,title)            
         end
 
         def addTrack(track)
@@ -54,14 +54,14 @@ module ItunesController
             loc=track.location.to_s
             #ItunesController::ItunesControllerLogging::debug("Adding track to database with id=#{id}, title='#{title}' and location='#{loc}'")
             begin  
-                stmt.execute(id,loc,title)
-            rescue SQLite3::ConstraintException
+                @backend.executeStatement(stmt,id,loc,title)
+            rescue ItunesController::DatabaseConstraintException
                 stmt2 = @backend.prepare("select * from tracks where location = ?")
-                rows=stmt2.execute(loc) 
+                rows=@backend.executeStatement(stmt,loc) 
                 if (rows.next!=nil)
                     ItunesController::ItunesControllerLogging::warn("Duplicate track reference detected with databaseId #{id}, title '#{title}' and location '#{loc}'")
                     stmt3 = @backend.prepare("insert into dupe_tracks(databaseId,location,name) values(?,?,?)")
-                    stmt3.execute(id,loc,title)
+                    @backend.executeStatement(stmt,id,loc,title)
                 else
                     ItunesController::ItunesControllerLogging::warn("Unable to add track to database with #{id}, title '#{title}' and location '#{loc}'")
                 end
@@ -71,11 +71,11 @@ module ItunesController
         def removeTrack(track)
             ItunesController::ItunesControllerLogging::debug("Removing track from database with id=#{track.databaseId.to_i}'")
             stmt = @backend.prepare("delete from tracks where databaseId=?")
-            stmt.execute(track.databaseId.to_i)
+            @backend.executeStatement(stmt,track.databaseId.to_i)
             stmt = @backend.prepare("delete from dead_tracks where databaseId=?")
-            stmt.execute(track.databaseId.to_i)
+            @backend.executeStatement(stmt,track.databaseId.to_i)
             stmt = @backend.prepare("delete from dupe_tracks where databaseId=?")
-            stmt.execute(track.databaseId.to_i)
+            @backend.executeStatement(stmt,track.databaseId.to_i)
         end
 
         def removeTracks()
@@ -87,14 +87,14 @@ module ItunesController
 
         def setParam(key,value)
             stmt = @backend.prepare("delete from params where key=?")
-            stmt.execute key
+            @backend.executeStatement(stmt,key)
             stmt = @backend.prepare("insert into params(key,value) values(?,?)")
-            stmt.execute key,value
+            @backend.executeStatement(stmt,key,value)
         end
 
         def getParam(key,default)
             stmt=@backend.prepare("select value from params where key = ?")
-            rows = stmt.execute(key)
+            rows = @backend.executeStatement(stmt,key)
             row=rows.next
             if (row!=nil)
                 return row[0]
@@ -105,7 +105,7 @@ module ItunesController
 
         def getTrack(path)
             stmt=@backend.prepare("select databaseId,location,name from tracks where location=?")
-            rows = stmt.execute(path)
+            rows = @backend.executeStatement(stmt,path)
             row=rows.next
             if (row!=nil)
                 return ItunesController::Track.new(row[1],row[0].to_i,row[2])
@@ -116,7 +116,7 @@ module ItunesController
         def getDeadTracks()
             result=[]
             stmt=@backend.prepare("select databaseId,location,name from dead_tracks")
-            rows = stmt.execute()
+            rows = @backend.executeStatement(stmt)
             while ((row = rows.next)!=nil)
                 result.push(ItunesController::Track.new(row[1],row[0].to_i,row[2]))
             end
@@ -125,7 +125,7 @@ module ItunesController
 
         def getTrackById(id)
             stmt=@backend.prepare("select databaseId,location,name from tracks where databaseId=?")
-            rows = stmt.execute(id)
+            rows = @backend.executeStatement(stmt,id)
             row=rows.next
             if (row!=nil)
                 return ItunesController::Track.new(row[1],row[0].to_i,row[2])
