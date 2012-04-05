@@ -57,11 +57,11 @@ module ItunesController
                 @backend.executeStatement(stmt,id,loc,title)
             rescue ItunesController::DatabaseConstraintException
                 stmt2 = @backend.prepare("select * from tracks where location = ?")
-                rows=@backend.executeStatement(stmt,loc) 
+                rows=@backend.executeStatement(stmt2,loc) 
                 if (rows.next!=nil)
                     ItunesController::ItunesControllerLogging::warn("Duplicate track reference detected with databaseId #{id}, title '#{title}' and location '#{loc}'")
                     stmt3 = @backend.prepare("insert into dupe_tracks(databaseId,location,name) values(?,?,?)")
-                    @backend.executeStatement(stmt,id,loc,title)
+                    @backend.executeStatement(stmt3,id,loc,title)
                 else
                     ItunesController::ItunesControllerLogging::warn("Unable to add track to database with #{id}, title '#{title}' and location '#{loc}'")
                 end
