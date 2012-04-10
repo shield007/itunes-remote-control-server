@@ -19,9 +19,9 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw/
+if ItunesController::Patform::isWindows()
   require 'itunesController/windows_itunescontroller.rb'
-elsif RUBY_PLATFORM =~ /darwin/
+elsif ItunesController::Platform::isMacOSX()
   require 'itunesController/macosx_itunescontroller.rb'
 else
   raise("Unsupported operating system #{RUBY_PLATFORM}.")
@@ -38,9 +38,9 @@ module ItunesController
         # @return [ItunesController::BaseITunesController] The itunes controller
         # @raise If the platform is unsupported
         def self.createController()
-            if RUBY_PLATFORM =~ /mswin|mingw/
+            if ItunesController::Patform::isWindows()
               return ItunesController::WindowsITunesController.new()
-            elsif RUBY_PLATFORM =~ /darwin/
+            elsif ItunesController::Platform::isMacOSX()
               return ItunesController::MacOSXITunesController.new()
             else
               raise("Unsupported operating system #{RUBY_PLATFORM}.")
