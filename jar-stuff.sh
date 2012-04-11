@@ -5,18 +5,20 @@ GEMS="$GEMS sqlite3"
 GEMS="$GEMS escape"
 GEMS="$GEMS itunes-controller"
 
+JRUBY_ARGS="--1.9"
+
 # Compile the gem
-rake
+jruby $JRUBY_ARGS -S rake gem
 if [ $? -ne 0 ] 
 then
     exit 1
 fi
 
 # Create the jar
-jruby -S gem install -i ./itunes-controller $GEMS --no-rdoc --no-ri
+jruby  $JRUBY_ARGS -S gem install -i ./itunes-controller $GEMS --no-rdoc --no-ri
 jar cf itunes-controller-dummy-server.jar -C itunes-controller .
 
 rm -rf ./itunes-controller
 
 # Display the results
-jruby -ritunes-controller-dummy-server.jar -S gem list
+jruby $JRUBY_ARGS -ritunes-controller-dummy-server.jar -S gem list
