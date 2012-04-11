@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GEMS="etc"
+GEMS=""
 GEMS="$GEMS sqlite3"
 GEMS="$GEMS escape"
 GEMS="$GEMS itunes-controller"

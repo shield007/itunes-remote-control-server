@@ -23,12 +23,25 @@ module ItunesController
 
     class Platform
 
+        def self.getUserHomeDir()
+            homes = ["HOME", "HOMEPATH"]
+            realHome = homes.detect {|h| ENV[h] != nil}
+            if not realHome
+                raise "Could not find home directory"
+            end
+            return realHome
+        end
+
         def self.isWindows()
             return RUBY_PLATFORM =~ /mswin|mingw/
         end
 
         def self.isMacOSX()
             return RUBY_PLATFORM =~ /darwin/
+        end
+
+        def self.isLinux()
+            return RUBY_PLATFORM =~ /linux/
         end
 
         def self.isJRuby()

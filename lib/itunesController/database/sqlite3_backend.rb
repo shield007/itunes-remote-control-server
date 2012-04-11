@@ -19,11 +19,11 @@
 #
 
 require 'itunesController/logging'
+require 'itunesController/platform'
 require 'itunesController/database/backend'
 
 require 'rubygems'
 require 'sqlite3'
-require 'etc'
 
 module ItunesController
 
@@ -31,7 +31,7 @@ module ItunesController
         
         def initialize(dbPath=nil)
             if (dbPath==nil)
-                dbPath="#{Etc.getpwuid.dir}/.itunesController/database.db"
+                dbPath=ItunesController::Platform::getUserHomeDir()+"/.itunesController/database.db"
             end
             if (!File.directory?(File.dirname(dbPath)))
                 FileUtils::mkdir_p(File.dirname(dbPath))

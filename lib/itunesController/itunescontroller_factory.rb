@@ -19,6 +19,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'itunesController/platform'
 if ItunesController::Patform::isWindows()
   require 'itunesController/windows_itunescontroller.rb'
 elsif ItunesController::Platform::isMacOSX()
@@ -38,7 +39,7 @@ module ItunesController
         # @return [ItunesController::BaseITunesController] The itunes controller
         # @raise If the platform is unsupported
         def self.createController()
-            if ItunesController::Patform::isWindows()
+            if ItunesController::Platform::isWindows()
               return ItunesController::WindowsITunesController.new()
             elsif ItunesController::Platform::isMacOSX()
               return ItunesController::MacOSXITunesController.new()

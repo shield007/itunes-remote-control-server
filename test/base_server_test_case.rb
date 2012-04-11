@@ -4,10 +4,12 @@ require 'test/unit'
 require 'socket'
 require 'timeout'
 
+require 'itunesController/platform'
 require 'itunesController/config'
 require 'itunesController/dummy_itunescontroller'
 require 'itunesController/controllserver'
 require 'itunesController/cachedcontroller'
+
 require 'itunesController/database/sqlite3_backend'
 
 class BaseServerTest < Test::Unit::TestCase 
