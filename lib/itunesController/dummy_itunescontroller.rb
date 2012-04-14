@@ -115,6 +115,7 @@ module ItunesController
                 b.call(ItunesController::Track.new(track.location,track.databaseID,track.name),i,@@tracks.length,dead)
             end
         end
+             
         
         def searchLibrary(title)
             tracks=[]
@@ -126,6 +127,13 @@ module ItunesController
                 end
             end
             return tracks
+        end
+        
+        # Used to get the database of a itunes track
+        # @param track the track
+        # @return The database id
+        def getTrackDatabaseId(track)
+            return track.getDatabaseId()
         end
 
     end

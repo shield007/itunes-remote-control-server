@@ -78,6 +78,13 @@ module ItunesController
             raise "ERROR: Your trying to instantiate an abstract class"
         end
 
+        # Used to get the database of a itunes track
+        # @abstract Must be overridden
+        # @param track the track
+        # @return The database id
+        def getTrackDatabaseId(track)
+            raise "ERROR: Your trying to instantiate an abstract class"
+        end
     
     end
 end

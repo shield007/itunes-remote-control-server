@@ -29,7 +29,6 @@ require 'itunesController/kinds'
 require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/track'
-
 require 'rubygems'
 require 'escape'
 require 'open3'
@@ -37,49 +36,50 @@ require 'osx/cocoa'
 
 include OSX
 OSX.require_framework 'ScriptingBridge'
+
 module ItunesController
-    
+
     # This is a iTunes controller class used to talk to itunes. This runs on macosx and makes
-    # use of the OSC ruby bindings. It also uses application "osascript" to execute apple scripts. 
+    # use of the OSC ruby bindings. It also uses application "osascript" to execute apple scripts.
     class MacOSXITunesController < ItunesController::BaseITunesController
-        
+
         # The constructor
         def initialize()
             @iTunes = SBApplication.applicationWithBundleIdentifier:'com.apple.iTunes'
             library=getSourceLibrary()
             @libraryPlaylists=library.libraryPlaylists
         end
-    
+
         # Used to get the iTunes version
         # @return [String] The itunes version
         def version
             return @iTunes.version.to_s+" (Mac OSX)"
         end
-    
+
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
             ItunesController::ItunesControllerLogging::debug("refreshing tracks...")
             tracks.reverse.each do | track |
                 track.refresh
-            end            
+            end
         end
-        
-        # Used to remove tracks from the libaray        
+
+        # Used to remove tracks from the libaray
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
-        def removeTracksFromLibrary(tracks)            
+        def removeTracksFromLibrary(tracks)
             ItunesController::ItunesControllerLogging::debug("removing tracks...")
             tracks.reverse.each do | track |
                 track.delete
             end
         end
 
-        # Used to add a list of files to the itunes library        
-        # @param [Array[String]] A list of files to add to the itunes library    
+        # Used to add a list of files to the itunes library
+        # @param [Array[String]] A list of files to add to the itunes library
         # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
             tracks=[]
-            files.each do | file |                
+            files.each do | file |
                 script="tell application \"iTunes\"\n"
                 script=script+"    set theTrack to (add POSIX file \"#{file}\")\n"
                 script=script+"    return (database ID of theTrack & name of theTrack)\n"
@@ -88,83 +88,90 @@ module ItunesController
                 if (output =~ /(\d+), (.*)/)
                     track=ItunesController::Track.new(file,$1.to_i,$2)
                     tracks.push(track)
-                else 
+                else
                     ItunesController::ItunesControllerLogging::error("Unable to add file '#{file}': " + output)
                 end
             end
-            
+
             return tracks;
-        end                               
+        end
+
+        # Used to get the database of a itunes track
+        # @param track the track
+        # @return The database id
+        def getTrackDatabaseId(track)
+            return track.databaseID
+        end
         
-       def getTracks(&b)
-           ItunesController::ItunesControllerLogging::debug("Retriving track information...")
-           playlist=@libraryPlaylists[0]
-           fileTracks = playlist.fileTracks
-           size = fileTracks.length()
-           count = 1
-           fileTracks.each do | track |                                   
-               location=track.location 
-               path=nil
-               dead=false
-               if (location!=nil && location.isFileURL)
-                  path=location.path
-                  if (!File.exist?(location.path))          
-                      dead = true
-                  end
-               else
-                   dead = true
-               end
+        def getTracks(&b)
+            ItunesController::ItunesControllerLogging::debug("Retriving track information...")
+            playlist=@libraryPlaylists[0]
+            fileTracks = playlist.fileTracks
+            size = fileTracks.length()
+            count = 1
+            fileTracks.each do | track |
+                location=track.location
+                path=nil
+                dead=false
+                if (location!=nil && location.isFileURL)
+                    path=location.path
+                    if (!File.exist?(location.path))
+                        dead = true
+                    end
+                else
+                    dead = true
+                end
 
-               if (count % 1000 == 0)
-                  ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
-               end
-               if (track.name!=nil) 
-                   b.call(ItunesController::Track.new(path,track.databaseID,track.name),count,size,dead)
-               end
-               count=count+1
-           end
-           ItunesController::ItunesControllerLogging::debug("Found tracks #{count-1} of #{size}")
-           return size
-       end
-       
-       # Used to find the number of tracks in the library
-       # @return [Number] The number of tracks
-       def getTrackCount()
-           playlist=@libraryPlaylists[0]
-           return playlist.fileTracks.length()
-       end
+                if (count % 1000 == 0)
+                    ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
+                end
+                if (track.name!=nil)
+                    b.call(ItunesController::Track.new(path,track.databaseID,track.name),count,size,dead)
+                end
+                count=count+1
+            end
+            ItunesController::ItunesControllerLogging::debug("Found tracks #{count-1} of #{size}")
+            return size
+        end
 
-       # Used to search the itunes library
-       # @param term The search term
-       # @return [Array] a list of iTunes track that match the search term
-       def searchLibrary(term)
-           tracks=[]
-           @libraryPlaylists.each do | playlist |
-               #ItunesController::ItunesControllerDebug::pm_objc(playlist)
-               #foundTracks = playlist.searchFor(term,'kSrS')
-               foundTracks = playlist.searchFor_only_(term,1799449708)
-               if (foundTracks!=nil)
-                   foundTracks.each do | t |
-                       tracks.push(t)
-                   end
-               end
-           end
-           return tracks
-       end
-           
+        # Used to find the number of tracks in the library
+        # @return [Number] The number of tracks
+        def getTrackCount()
+            playlist=@libraryPlaylists[0]
+            return playlist.fileTracks.length()
+        end
+
+        # Used to search the itunes library
+        # @param term The search term
+        # @return [Array] a list of iTunes track that match the search term
+        def searchLibrary(term)
+            tracks=[]
+            @libraryPlaylists.each do | playlist |
+                #ItunesController::ItunesControllerDebug::pm_objc(playlist)
+                #foundTracks = playlist.searchFor(term,'kSrS')
+                foundTracks = playlist.searchFor_only_(term,1799449708)
+                if (foundTracks!=nil)
+                    foundTracks.each do | t |
+                        tracks.push(t)
+                    end
+                end
+            end
+            return tracks
+        end
+
     private
-    
-        # Used to get the libaray iTunes source        
+
+        # Used to get the libaray iTunes source
         # @return The iTunes source for the library
         def getSourceLibrary()
             @iTunes.sources.each do |source|
                 if (source.kind == SourceKind::Library.kind)
-                return source
+                    return source
                 end
             end
             return nil
         end
-    
+
         # Used to find playlists of a given media kind
         # @param types The types
         # @return [Array] A list of playlists
@@ -186,13 +193,13 @@ module ItunesController
 
             return playlists
         end
-    
+
         # Used to execute a apple script using the system "osascript" command.
         # @private
-        # @param script the Script contents        
+        # @param script the Script contents
         def executeScript(script)
             stdin, stdout, stderr = Open3.popen3(Escape.shell_command(["osascript","-e",script]))
             return stdout.readlines.join('\n').strip
-        end             
+        end
     end
 end

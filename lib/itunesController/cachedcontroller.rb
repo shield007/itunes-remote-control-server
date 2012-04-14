@@ -54,7 +54,7 @@ module ItunesController
                 return nil
             end
             foundTracks.each do | t |
-                if (t.databaseID == trackInfo.databaseId)                  
+                if (@controller.getTrackDatabaseId(t) == trackInfo.databaseId)                  
                    @controller.removeTracksFromLibrary([t])
                    count=@database.getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i
                    count=count-1
@@ -77,9 +77,9 @@ module ItunesController
             end
             foundTracks=@controller.searchLibrary(trackInfo.title)
             foundTracks.each do | t |
-                if (t.databaseID == trackInfo.databaseId)
+                if (@controller.getTrackDatabaseId(t) == trackInfo.databaseId)
                    @controller.refreshTracks([t])
-                   ItunesController::ItunesControllerLogging::info("Refreshed track  '#{trackInfo.location}' metadate")
+                   ItunesController::ItunesControllerLogging::info("Refreshed track  '#{trackInfo.location}' metadata")
                 end
             end
         end
@@ -114,7 +114,7 @@ module ItunesController
             foundTracks=@controller.searchLibrary(trackInfo.title)
             tracks=[]
             foundTracks.each do | t |
-                if (t.databaseID == trackInfo.databaseId)
+                if (@controller.getTrackDatabaseId(t) == trackInfo.databaseId)
                     tracks.push(t)
                 end
             end

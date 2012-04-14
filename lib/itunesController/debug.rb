@@ -111,8 +111,13 @@ module ItunesController
                 result.push("Type: Film")
             end
             result.push("Name: "+track.name)
-            result.push("Database ID: "+track.databaseID.to_s)
-            result.push("Location: "+track.location.path)
+            if (Platform.isWindows())
+                result.push("Database ID: "+track.TrackDatabaseID.to_s)
+                result.push("Location: "+track.location)
+            else
+                result.push("Database ID: "+track.databaseID.to_s)
+                result.push("Location: "+track.location.path)
+            end            
             return result.join("\n")
         end
     end

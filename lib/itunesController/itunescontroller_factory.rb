@@ -20,7 +20,7 @@
 #
 
 require 'itunesController/platform'
-if ItunesController::Patform::isWindows()
+if ItunesController::Platform::isWindows()
   require 'itunesController/windows_itunescontroller.rb'
 elsif ItunesController::Platform::isMacOSX()
   require 'itunesController/macosx_itunescontroller.rb'
@@ -28,7 +28,7 @@ else
   raise("Unsupported operating system #{RUBY_PLATFORM}.")
 end
 
-require 'itunesController/database.rb'
+require 'itunesController/database/database'
 
 module ItunesController
     

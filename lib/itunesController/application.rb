@@ -24,6 +24,7 @@ require 'itunesController/cachedcontroller'
 require 'itunesController/logging'
 require 'itunesController/version'
 require 'itunesController/database/sqlite3_backend'
+require 'itunesController/itunescontroller_factory'
 
 require 'rubygems'
 require 'optparse'
