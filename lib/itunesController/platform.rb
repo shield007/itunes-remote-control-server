@@ -29,7 +29,8 @@ module ItunesController
             if not realHome
                 raise "Could not find home directory"
             end
-            return realHome
+            
+            return ENV[realHome]
         end
 
         def self.isWindows()
