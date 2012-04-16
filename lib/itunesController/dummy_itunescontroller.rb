@@ -133,7 +133,7 @@ module ItunesController
         # @param track the track
         # @return The database id
         def getTrackDatabaseId(track)
-            return track.getDatabaseId()
+            return track.databaseID
         end
 
     end
