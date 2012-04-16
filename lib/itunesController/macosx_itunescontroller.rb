@@ -146,8 +146,7 @@ module ItunesController
         # @return [Array] a list of iTunes track that match the search term
         def searchLibrary(term)
             tracks=[]
-            @libraryPlaylists.each do | playlist |
-                #ItunesController::ItunesControllerDebug::pm_objc(playlist)
+            @libraryPlaylists.each do | playlist |           
                 #foundTracks = playlist.searchFor(term,'kSrS')
                 foundTracks = playlist.searchFor_only_(term,1799449708)
                 if (foundTracks!=nil)
