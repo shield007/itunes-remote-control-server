@@ -293,6 +293,7 @@ module ItunesController
         # threaded access to itunes
         # @param [ServerState] state The state of the server
         def executeSingleThreaded(state)
+            @itunes.cacheTracks()
             state.files.each do | path |
                 @itunes.addTrack(path)
             end            
@@ -310,7 +311,7 @@ module ItunesController
             super(ItunesController::CommandName::REFRESHFILES,ServerState::AUTHED,true,state,itunes)
         end
     
-        def processData(line,io)
+        def processData(line,io)            
             @state.files=[]            
             return true, "220 ok\r\n"
         end
@@ -318,7 +319,8 @@ module ItunesController
         # This is executed when the command is popped from the job queue. It is used to force single
         # threaded access to itunes
         # @param [ServerState] state The state of the server
-        def executeSingleThreaded(state)            
+        def executeSingleThreaded(state)
+            @itunes.cacheTracks()            
             state.files.each do | path |
                 @itunes.updateTrack(path)
             end            
@@ -344,7 +346,8 @@ module ItunesController
         # This is executed when the command is popped from the job queue. It is used to force single
         # threaded access to itunes
         # @param [ServerState] state The state of the server
-        def executeSingleThreaded(state)            
+        def executeSingleThreaded(state)  
+            @itunes.cacheTracks()          
             state.files.each do | path |
                 @itunes.removeTrack(path)
             end            
@@ -371,6 +374,7 @@ module ItunesController
         # threaded access to itunes
         # @param [ServerState] state The state of the server
         def executeSingleThreaded(state)
+            @itunes.cacheTracks()
             @itunes.removeDeadTracks()
         end
     end       
@@ -430,6 +434,28 @@ module ItunesController
         end
     end
     
+    class CreateControllerCommand < ServerCommand
+        # The constructor
+        # @param [ItunesController::ServerState] state The status of the connected client within the server
+        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
+        def initialize(controllerCreator)
+            super("CreateController",nil,false,nil,nil)
+            @controllerCreator=controllerCreator
+        end
+                       
+        def processData(line,io)            
+            return true, "220 ok\r\n"
+        end  
+        
+        def executeSingleThreaded(state)
+            @controller=@controllerCreator.createController
+        end
+        
+        def getController()
+            return @controller
+        end
+    end
+    
     # The TCP Socket server used to listen on connections and process commands whcih control itunes.
     # see ItunesController::CommandName for a list of supported commands     
     class ITunesControlServer < GServer             
@@ -440,8 +466,25 @@ module ItunesController
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class         
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
-            ItunesController::ItunesControllerLogging::info("Started iTunes controll server on port #{port}")                   
-            @itunes=itunes                 
+            ItunesController::ItunesControllerLogging::info("Started iTunes controll server on port #{port}")    
+            @exit=false   
+            @jobQueue=Queue.new
+            @jobQueueThread=Thread.new {
+                loop do                    
+                    processJobs()
+                    if (@exit)
+                        break;
+                    end
+                    sleep(1)
+                end                
+            }             
+            cmd=CreateControllerCommand.new(itunes)
+            @jobQueue << Job.new(cmd,nil)
+            while (cmd.getController()==nil)  
+                sleep(1)             
+            end
+            
+            @itunes=cmd.getController()                 
             @state=ServerState.new(config)
             @commands=[
                 HelloCommand.new(@state,@itunes),
@@ -456,18 +499,10 @@ module ItunesController
                 RefreshFilesCommand.new(@state,@itunes),
                 VersionCommand.new(@state,@itunes)
             ]
-            @jobQueue=Queue.new
+           
             Thread.abort_on_exception = true
-            @exit=false
-            @jobQueueThread=Thread.new {
-                loop do                    
-                    processJobs()
-                    if (@exit)
-                        break;
-                    end
-                    sleep(1)
-                end                
-            }            
+           
+                       
             start()                                                 
         end
         

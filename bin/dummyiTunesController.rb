@@ -22,6 +22,7 @@
 
 require 'tempfile'
 
+require 'itunesController/controller_creator'
 require 'itunesController/config'
 require 'itunesController/controllserver'
 require 'itunesController/dummy_itunescontroller'
@@ -30,6 +31,17 @@ require 'itunesController/logging'
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
 require 'itunesController/database/sqlite3_backend'
+
+class DummyControllerCreator < ItunesController::ControllerCreator
+    
+    def initialize(controller)
+        @controller = controller
+    end
+    
+    def createController()
+        return @controller
+    end
+end
 
 class App < ItunesController::Application
 
@@ -62,17 +74,17 @@ class App < ItunesController::Application
         opts.on('-c','--config FILE','The configuration file') do |value|
             @options[:config] = value
         end
-    end
+    end    
 
     def createController()
         ItunesController::DummyITunesController::resetCommandLog()
         ItunesController::DummyITunesController::resetTracks()
         itunes=ItunesController::DummyITunesController.new()
-        dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbPath)
-        return ItunesController::CachedController.new(itunes,dbBackend)
+        dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbPath)      
+        return DummyControllerCreator.new(ItunesController::CachedController.new(itunes,dbBackend))
     end
 
-    def execApp(controller)
+    def execApp(controllerCreator)
         port=DEFAULT_PORT
         config=ItunesController::ServerConfig.readConfig(@options[:config])
         if (config.port!=nil) 
@@ -81,7 +93,7 @@ class App < ItunesController::Application
         if (@options[:port]!=nil)
             port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controller)        
+        server=ItunesController::ITunesControlServer.new(config,port,controllerCreator)        
         server.join
     end
 end

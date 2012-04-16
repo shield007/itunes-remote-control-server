@@ -9,8 +9,20 @@ require 'itunesController/config'
 require 'itunesController/dummy_itunescontroller'
 require 'itunesController/controllserver'
 require 'itunesController/cachedcontroller'
+require 'itunesController/controller_creator'
 
 require 'itunesController/database/sqlite3_backend'
+
+class DummyControllerCreator < ItunesController::ControllerCreator
+    
+    def initialize(controller)
+        @controller = controller
+    end
+    
+    def createController()
+        return @controller
+    end
+end
 
 class BaseServerTest < Test::Unit::TestCase 
     
@@ -66,7 +78,7 @@ class BaseServerTest < Test::Unit::TestCase
         @port = config.port
         config.username = BaseServerTest::USER
         config.password = BaseServerTest::PASSWORD
-        @server=ItunesController::ITunesControlServer.new(config,config.port,controller)        
+        @server=ItunesController::ITunesControlServer.new(config,config.port,DummyControllerCreator.new(controller))        
     end
     
     def teardownServer

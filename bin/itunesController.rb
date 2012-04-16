@@ -26,6 +26,7 @@ require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
+require 'itunesController/sqlite_creator'
 
 class App < ItunesController::Application
 
@@ -54,8 +55,12 @@ class App < ItunesController::Application
             @options[:config] = value
         end
     end
+    
+    def createController
+        return ItunesController::SQLLiteControllerCreator.new
+    end
 
-    def execApp(controller)
+    def execApp(controllerCreator)        
         port=DEFAULT_PORT
         config=ItunesController::ServerConfig.readConfig(@options[:config])
         if (config.port!=nil) 
@@ -64,7 +69,7 @@ class App < ItunesController::Application
         if (@options[:port]!=nil)
             port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controller)        
+        server=ItunesController::ITunesControlServer.new(config,port,controllerCreator)        
         server.join
     end
 end

@@ -114,7 +114,9 @@ module ItunesController
 
         # Used to find the number of tracks in the library
         # @return [Number] The number of tracks
-        def getTrackCount()                                            
+        def getTrackCount()              
+            puts @libraryPlaylists.class
+            ItunesController::ItunesControllerDebug::pm_ole(@libraryPlaylists)                              
             return @libraryPlaylists.Tracks.Count()
         end
 

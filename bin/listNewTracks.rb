@@ -22,6 +22,7 @@
 
 require 'itunesController/application'
 require 'itunesController/logging'
+require 'itunesController/sqlite_creator'
 
 require 'rubygems'
 require 'fileutils'
@@ -70,7 +71,12 @@ class App < ItunesController::Application
         }
     end
 
-    def execApp(controller)
+    def createController
+        return ItunesController::SQLLiteControllerCreator.new
+    end
+    
+    def execApp(controllerCreator)
+        controller = controllerCreator.createController()
         ARGV.each do | path |
             ItunesController::ItunesControllerLogging::info("Checking for new files in '#{path}'") 
             processMediaFiles(controller,path)

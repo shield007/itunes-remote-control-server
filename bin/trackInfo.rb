@@ -7,6 +7,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'itunesController/sqlite_creator'
 require 'itunesController/cachedcontroller'
 require 'itunesController/debug'
 require 'itunesController/logging'
@@ -27,7 +28,12 @@ class App < ItunesController::Application
         end
     end
 
-    def execApp(controller)
+    def createController
+        return ItunesController::SQLLiteControllerCreator.new
+    end
+    
+    def execApp(controllerCreator)
+        controller = controllerCreator.createController()
         ARGV.each do | path |
             track=controller.getTrack(path)
             if (track!=nil)

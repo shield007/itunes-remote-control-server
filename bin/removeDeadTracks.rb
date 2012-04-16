@@ -8,13 +8,19 @@
 #
 
 require 'itunesController/cachedcontroller'
+require 'itunesController/sqlite_creator'
 require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/application'
 
 class App < ItunesController::Application
 
-    def execApp(controller)
+    def createController
+        return ItunesController::SQLLiteControllerCreator.new
+    end
+    
+    def execApp(controllerCreator)
+        controller = controllerCreator.createController()
         count=controller.removeDeadTracks()
         ItunesController::ItunesControllerLogging::info("Removed #{count} dead tracks")
     end

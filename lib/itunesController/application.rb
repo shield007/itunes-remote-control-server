@@ -23,8 +23,6 @@
 require 'itunesController/cachedcontroller'
 require 'itunesController/logging'
 require 'itunesController/version'
-require 'itunesController/database/sqlite3_backend'
-require 'itunesController/itunescontroller_factory'
 
 require 'rubygems'
 require 'optparse'
@@ -102,17 +100,12 @@ module ItunesController
             end
             optparse.parse!
             checkOptions()
-        end
-
-        def createController()
-            dbBackend = ItunesController::SQLite3DatabaseBackend.new(nil)
-            return ItunesController::CachedController.new(ItunesController::ITunesControllerFactory::createController(),dbBackend)
-        end
+        end        
     
         def exec()
             parseOptions
-            controller = createController()
-            execApp(controller)
+            controllerCreator = createController()
+            execApp(controllerCreator)
             #controller.close()
         end
 
@@ -126,7 +119,7 @@ module ItunesController
         def checkAppOptions()
         end
 
-        def execApp(controller)
+        def execApp(controllerCreator)
             raise "ERROR: Your trying to instantiate an abstract class"
         end
 

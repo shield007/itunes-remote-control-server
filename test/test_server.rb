@@ -137,6 +137,7 @@ class ServerTest < BaseServerTest
             commandLog = ItunesController::DummyITunesController::getCommandLog()            
             
             assertCommandLog(["getTrackCount() = 0",
+                              "getTrackCount() = 0",
                               "addFilesToLibrary(/blah)",
                               "addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",
                               "addFilesToLibrary(/blah/blah2)"])      
@@ -294,6 +295,7 @@ class ServerTest < BaseServerTest
            expected.push("getTrackCount() = 3")
            expected.push("getTrackCount() = 3")
            expected.push("getTracks()")
+           expected.push("getTrackCount() = 3")
            tracks.each do | t |           
                expected.push("removeTracksFromLibrary(Location: '#{t.location}' - Database ID: #{t.databaseId} - Name: '#{t.title}' )")
            end

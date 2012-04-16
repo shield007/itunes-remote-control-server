@@ -9,6 +9,7 @@
 
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
+require 'itunesController/sqlite_creator'
 
 class App < ItunesController::Application
 
@@ -17,8 +18,13 @@ class App < ItunesController::Application
         puts("")
         puts(genericOptionDescription())
     end
+    
+    def createController
+        return ItunesController::SQLLiteControllerCreator.new
+    end
 
-    def execApp(controller)
+    def execApp(controllerCreator)
+        controller = controllerCreator.createController()
         ARGV.each do | path |
             controller.addTrack(path)
         end

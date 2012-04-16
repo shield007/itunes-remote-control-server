@@ -11,10 +11,16 @@ require 'itunesController/cachedcontroller'
 require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/application'
+require 'itunesController/sqlite_creator'
 
 class App < ItunesController::Application
 
-    def execApp(controller)
+    def createController
+            return ItunesController::SQLLiteControllerCreator.new
+        end
+    
+    def execApp(controllerCreator)
+        controller = controllerCreator.createController()
         deadTracks=controller.findDeadTracks
         count=0
         deadTracks.each do | deadTrack | 
