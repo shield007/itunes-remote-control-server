@@ -103,7 +103,7 @@ module ItunesController
     
         def self.printMsg(msg,error=false)
             if (@@logFile!=nil) 
-                out_file = File.new(@@logFile,"w") do | f |
+                out_file = File.open(@@logFile,"w") do | f |
                     f.puts(msg) 
                 end
             else                
