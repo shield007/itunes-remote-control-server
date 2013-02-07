@@ -63,7 +63,7 @@ module ItunesController
         def self.info(msg)
             if @@logLevel <= INFO
                 time = Time.now
-                msg="INFO:"+time.to_a+":"+msg            
+                msg="INFO:"+time.to_s+":"+msg            
                 printMsg(msg)
             end
         end        
@@ -73,7 +73,7 @@ module ItunesController
         def self.warn(msg)
             if @@logLevel <= WARN
                 time = Time.now     
-                msg="WARN:"+time.to_a+":"+msg       
+                msg="WARN:"+time.to_s+":"+msg       
                 printMsg(msg)
             end
         end        
@@ -83,7 +83,7 @@ module ItunesController
         def self.debug(msg)
             if @@logLevel <= DEBUG
                 time = Time.now                
-                msg="DEBUG:"+time.to_a+":"+msg              
+                msg="DEBUG:"+time.to_s+":"+msg              
                 printMsg(msg)
             end
         end       
@@ -94,7 +94,7 @@ module ItunesController
         def self.error(msg,exception=nil)
             if @@logLevel <= ERROR
                 time = Time.now
-                msg="ERROR:"+time.to_a+":"+msg
+                msg="ERROR:"+time.to_s+":"+msg
                 printMsg(msg,true)        
                 if (exception!=nil)                
                     printMsg("     - #{exception.message}",true)
