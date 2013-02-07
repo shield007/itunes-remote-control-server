@@ -53,7 +53,7 @@ module ItunesController
             elsif (level=="ERROR")
                 @@logLevel = ERROR
             else
-                error("Unkown log configuration '#{level}'")
+                error("Unknown log configuration '#{level}'")
                 exit(1)
             end
         end
@@ -61,7 +61,9 @@ module ItunesController
         # Used to print logging information at info level
         # @param [String] msg The message to print
         def self.info(msg)
-            if @@logLevel <= INFO            
+            if @@logLevel <= INFO
+                time = Time.now
+                msg="INFO:"+time.to_a+":"+msg            
                 printMsg(msg)
             end
         end        
@@ -69,7 +71,9 @@ module ItunesController
         # Used to print logging information at warn level
         # @param [String] msg The message to print
         def self.warn(msg)
-            if @@logLevel <= WARN            
+            if @@logLevel <= WARN
+                time = Time.now     
+                msg="WARN:"+time.to_a+":"+msg       
                 printMsg(msg)
             end
         end        
@@ -78,7 +82,8 @@ module ItunesController
         # @param [String] msg The message to print
         def self.debug(msg)
             if @@logLevel <= DEBUG
-                msg="DEBUG:"+msg
+                time = Time.now                
+                msg="DEBUG:"+time.to_a+":"+msg              
                 printMsg(msg)
             end
         end       
@@ -88,7 +93,8 @@ module ItunesController
         # @param exception If not nil then this exception detials will be printed
         def self.error(msg,exception=nil)
             if @@logLevel <= ERROR
-                msg="ERROR:"+msg
+                time = Time.now
+                msg="ERROR:"+time.to_a+":"+msg
                 printMsg(msg,true)        
                 if (exception!=nil)                
                     printMsg("     - #{exception.message}",true)
