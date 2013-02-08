@@ -141,11 +141,14 @@ module ItunesController
                         @database.addDeadTrack(t)
                     else
                         @database.addTrack(t)
+                    end                    
+                    if (count % 150 == 0)
+                        ItunesController::ItunesControllerLogging::info("Cached tracks #{count}/#{size}")
                     end
                 }
                 return true
             else
-                ItunesController::ItunesControllerLogging::debug("Tracks uptodate")
+                ItunesController::ItunesControllerLogging::debug("Track cache uptodate")
             end
             return false
         end

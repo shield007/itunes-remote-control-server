@@ -79,10 +79,11 @@ module ItunesController
         end
 
         def removeTracks()
-            ItunesController::ItunesControllerLogging::debug("Removing all tracks")
+            ItunesController::ItunesControllerLogging::debug("Removing all references to tracks in cache...")
             @backend.execute("delete from tracks")
             @backend.execute("delete from dead_tracks")
             @backend.execute("delete from dupe_tracks")
+            ItunesController::ItunesControllerLogging::debug("Tracks references removed from cache")
         end
 
         def setParam(key,value)
