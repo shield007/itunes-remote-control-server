@@ -19,39 +19,36 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'log4r'
+require 'log4r/configurator'
+include Log4r
+
 module ItunesController    
     
-    class ItunesControllerLogging     
-        DEBUG=1   
-        INFO=2
-        WARN=3
-        ERROR=4          
+    class ItunesControllerLogging                      
+        @@log = Logger.new("log")
         
-        # The log file, if defined then logging opertions will be sent to this file
-        @@logFile = nil       
-        @@logLevel = INFO
-        
+        @@log.outputters = Outputter.stdout
+        @@log.level = Log4r::INFO
+              
         # Used to set the location of the log file
         # @param [String] file The log file location
         def self.setLogFile(file)
-            @@logFile = file 
-        end
-        
-        # Use to set the loggin level
-        # @param [Number] level The logging level
-        def self.setLogLevel(level)
-            @@logLevel = level
-        end
+            file = FileOutputter.new('fileOutputter', :filename => file,:trunc => false)
+            format = PatternFormatter.new(:pattern => "[%l] %d :: %m")
+            file.formatter = format
+            mylog.add(file)
+        end               
         
         def self.setLogLevelFromString(level)
             if (level=="DEBUG")
-                @@logLevel = DEBUG
+              @@log.level = Log4r::DEBUG
             elsif (level=="INFO")
-                @@logLevel = INFO
+              @@log.level = Log4r::INFO
             elsif (level=="WARN")
-                @@logLevel = WARN
+              @@log.level = Log4r::WARN
             elsif (level=="ERROR")
-                @@logLevel = ERROR
+              @@log.level = Log4r::ERROR
             else
                 error("Unknown log configuration '#{level}'")
                 exit(1)
@@ -61,65 +58,26 @@ module ItunesController
         # Used to print logging information at info level
         # @param [String] msg The message to print
         def self.info(msg)
-            if @@logLevel <= INFO
-                time = Time.now
-                msg="INFO:"+time.to_s+":"+msg            
-                printMsg(msg)
-            end
+            @@log.info(msg)
         end        
 
         # Used to print logging information at warn level
         # @param [String] msg The message to print
         def self.warn(msg)
-            if @@logLevel <= WARN
-                time = Time.now     
-                msg="WARN:"+time.to_s+":"+msg       
-                printMsg(msg)
-            end
+            @@log.warn(msg)
         end        
         
         # Used to print logging information at debug level
         # @param [String] msg The message to print
         def self.debug(msg)
-            if @@logLevel <= DEBUG
-                time = Time.now                
-                msg="DEBUG:"+time.to_s+":"+msg              
-                printMsg(msg)
-            end
+            @@log.debug(msg)
         end       
         
         # Used to print logging information at debug level
         # @param [String] msg The message to print
         # @param exception If not nil then this exception detials will be printed
         def self.error(msg,exception=nil)
-            if @@logLevel <= ERROR
-                time = Time.now
-                msg="ERROR:"+time.to_s+":"+msg
-                printMsg(msg,true)        
-                if (exception!=nil)                
-                    printMsg("     - #{exception.message}",true)
-                    exception.backtrace.each do | line |
-                        printMsg("     * #{line}",true)
-                    end
-                end
-            end       
-        end                  
-    
-    private
-    
-        def self.printMsg(msg,error=false)
-            if (@@logFile!=nil) 
-                out_file = File.open(@@logFile,"a") do | f |
-                    f.puts(msg) 
-                end
-            else                
-                if (error)
-                    $stderr.puts(msg)
-                else
-                    $stdout.puts(msg)                                   
-                end
-                
-            end        
-        end
+            @@log.debug(msg)            
+        end                           
     end
 end
