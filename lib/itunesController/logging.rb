@@ -35,7 +35,7 @@ module ItunesController
         def self.setLogFile(file)
             format = PatternFormatter.new(:pattern => "[%l] %d :: %m")
             file = FileOutputter.new('fileOutputter', :filename => file,:trunc => false, :formatter => format)
-            mylog.add(file)
+            @@log.add(file)
         end               
         
         def self.setLogLevelFromString(level)
