@@ -520,7 +520,7 @@ module ItunesController
         
         def processJobs()            
             job=@jobQueue.pop
-            ItunesController::ItunesControllerLogging::debug("Popped command and executeing #{job}")
+            ItunesController::ItunesControllerLogging::debug("Popped command and executing #{job}")
             job.execute()
         end
            

@@ -89,7 +89,7 @@ module ItunesController
             ids=@controller.addFilesToLibrary([path])            
             if (ids.length==1)
                 if (@database.getTrackById(ids[0].databaseId)!=nil)
-                    ItunesController::ItunesControllerLogging::info("Track '#{path}' allready in the database with the id #{ids[0].databaseId}")
+                    ItunesController::ItunesControllerLogging::info("Track '#{path}' all ready in the database with the id #{ids[0].databaseId}")
                     return nil
                 end
                 track=ids[0]
@@ -178,7 +178,7 @@ module ItunesController
             count=@controller.getTrackCount()
             cacheCount=@database.getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i
             if (count!=cacheCount)
-                ItunesController::ItunesControllerLogging::debug("Need to reach tracks. iTunes has #{count} and cache has #{cacheCount}.")
+                ItunesController::ItunesControllerLogging::debug("Need to recache tracks. iTunes has #{count} and cache has #{cacheCount}.")
                 return true
             end
             return false
