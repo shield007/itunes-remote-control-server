@@ -20,7 +20,6 @@
 #
 
 require 'log4r'
-require 'log4r/configurator'
 include Log4r
 
 module ItunesController    
@@ -34,9 +33,8 @@ module ItunesController
         # Used to set the location of the log file
         # @param [String] file The log file location
         def self.setLogFile(file)
-            file = FileOutputter.new('fileOutputter', :filename => file,:trunc => false)
             format = PatternFormatter.new(:pattern => "[%l] %d :: %m")
-            file.formatter = format
+            file = FileOutputter.new('fileOutputter', :filename => file,:trunc => false, :formatter => format)
             mylog.add(file)
         end               
         
