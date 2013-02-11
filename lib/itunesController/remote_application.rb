@@ -50,6 +50,7 @@ module ItunesController
             checkAppOptions        
         end
     
+        # Parse the command line options
         def parseOptions
             optparse = OptionParser.new do|opts|
                 opts.banner = "Usage: "+@appName+" [options]"
@@ -98,25 +99,31 @@ module ItunesController
         def checkAppOptions()
         end               
         
+        # Create a connection to the remote server
         def connect()
             @client=Net::Telnet::new('Host' => @config.hostname,
                                      'Port' => @config.port,
                                      'Telnetmode' => false)
         end
         
+        # Login to the remote server
         def login()
             sendCommand(ItunesController::CommandName::LOGIN+":"+@config.username,222); 
             sendCommand(ItunesController::CommandName::PASSWORD+":"+@config.password,223); 
         end
         
+        # Check the remote server is responding
         def ping()
             sendCommand('#{ItunesController::CommandName::HELO}:#{password}',220)
         end
         
+        # Terminate connection to the remote server
         def quit()
             sendCommand(ItunesController::CommandName::QUIT,221)
         end
         
+        # Notify the remote server of a file that an action is to be performed on
+        # @param file The file
         def file(file)
             sendCommand('#{ItunesController::CommandName::FILE}:#{path}',220)
         end
