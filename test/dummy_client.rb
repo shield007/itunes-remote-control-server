@@ -37,7 +37,7 @@ class DummyClient
                     end
                 end
             end         
-            raise "Did not recive expected response from server"   
+            raise "Did not receive expected response from server"   
         end        
     end
         
