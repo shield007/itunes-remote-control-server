@@ -1,59 +1,39 @@
-#
-# Copyright (C) 2011-2012  John-Paul.Stanford <dev@stanwood.org.uk>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Author:: John-Paul Stanford <dev@stanwood.org.uk>
-# Copyright:: Copyright (C) 2011  John-Paul.Stanford <dev@stanwood.org.uk>
-# License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
-#
-
-
-require 'itunesController/cachedcontroller'
 require 'itunesController/logging'
 require 'itunesController/version'
+require 'itunesController/config'
+require 'itunesController/controllserver'
 
 require 'rubygems'
 require 'optparse'
+require 'net/telnet'
 
 module ItunesController
-
-    class Application
-
+    class RemoteApplication
+        
         def initialize(appName)
             @appName = appName
             @options = {}
             @options[:logFile] = nil
         end
-
+    
         def genericOptionDescription()
             result=[]
             result.push("Specific options:")
+            result.push("    -c, --config FILE                The configuration file")
             result.push("    -f, --log_file FILE              Optional paramter used to log messages to")
             result.push("    -l, --log_config LEVEL           Optional paramter used to log level [DEBUG|INFO|WARN|ERROR]")               
             result.push("    -v, --version                    Display version of the application")
             result.push("    -h, --help                       Display this screen")
             return result.join("\n")
         end
-
+    
         # Used to display the command line useage
         def displayUsage()
             puts("Usage: "+@appName+" [options]")
             puts("")
             puts(genericOptionDescription())
-        end
-
+        end        
+    
         # Used to display a error message and the command line usesage
         # @param [String] message The error message
         def usageError(message)
@@ -61,18 +41,23 @@ module ItunesController
             displayUsage()
             exit(1)
         end
-
+    
         # Used to check the command line options are valid
         def checkOptions
-            checkAppOptions
+            if (@options[:config]==nil)
+                usageError("No config file specified. Use --config option.")
+            end
+            checkAppOptions        
         end
-
+    
         def parseOptions
             optparse = OptionParser.new do|opts|
                 opts.banner = "Usage: "+@appName+" [options]"
                 opts.separator ""
                 opts.separator "Specific options:"
-
+                opts.on('-c','--config FILE','The configuration file') do |value|
+                    @options[:config] = value
+                end
                 opts.on('-f','--log_file FILE','Optional paramter used to log messages to') do |value|
                     @options[:logFile] = value
                     ItunesController::ItunesControllerLogging::setLogFile(@options[:logFile])
@@ -82,9 +67,9 @@ module ItunesController
                     ItunesController::ItunesControllerLogging::setLogLevelFromString(@options[:logConfig])
                 end
                 parseAppOptions(opts)
-
+    
                 opts.on_tail( '-v', '--version', 'Display version of the application' ) do
-                    puts "itunes-remote-control-server "+ItunesController::VERSION
+                    puts "#{@appName} "+ItunesController::VERSION
                     puts "Copyright (C) 2012 John-Paul Stanford"
                     puts "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>."
                     puts "This is free software: you are free to change and redistribute it."
@@ -100,28 +85,81 @@ module ItunesController
                 end
             optparse.parse!
             checkOptions()
-        end        
+        end   
+        
     
-        def exec()
-            parseOptions
-            controllerCreator = createController()
-            execApp(controllerCreator)
-            #controller.close()
-        end
-
         def getOptions()
             return @options
         end
-
+    
         def parseAppOptions(opts)
         end
-
+    
         def checkAppOptions()
+        end               
+        
+        def connect()
+            @client=Net::Telnet::new('Host' => @config.hostname,
+                                     'Port' => @config.port,
+                                     'Telnetmode' => false)
         end
-
-        def execApp(controllerCreator)
+        
+        def login()
+            sendCommand(ItunesController::CommandName::LOGIN+":"+@config.username,222); 
+            sendCommand(ItunesController::CommandName::PASSWORD+":"+@config.password,223); 
+        end
+        
+        def ping()
+            sendCommand('#{ItunesController::CommandName::HELO}:#{password}',220)
+        end
+        
+        def quit()
+            sendCommand(ItunesController::CommandName::QUIT,221)
+        end
+        
+        def file(file)
+            sendCommand('#{ItunesController::CommandName::FILE}:#{path}',220)
+        end
+        
+        def addFiles()
+            sendCommand('#{ItunesController::CommandName::ADDFILES}',220)       
+        end
+            
+        def sendCommand(cmd, expectedCode)
+            @client.cmd(cmd) do | response |            
+                if (response!=nil)            
+                    response.each_line do | line |                                
+                        if ( line =~ /(\d+).*/)                    
+                            code=$1
+                            if (code.to_i==expectedCode)                    
+                                return;
+                            end
+                        end
+                    end
+                end
+                ItunesController::ItunesControllerLogging::error("Did not receive expected response from server")
+                exit(2)            
+            end        
+        end
+        
+        def readConfig()        
+            @config=ItunesController::ClientConfig.readConfig(@options[:config])
+            if (!ItunesController::ClientConfig::validate(@config))
+                exit(1)
+            end
+        end
+        
+        def exec()        
+            parseOptions()
+            readConfig()
+            connect()        
+            login()
+            execApp()
+            quit()
+        end
+        
+        def execApp()
             raise "ERROR: Your trying to instantiate an abstract class"
         end
-
     end
 end
