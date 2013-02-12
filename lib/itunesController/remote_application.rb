@@ -52,7 +52,7 @@ module ItunesController
         end
     
         # Parse the command line options
-        def parseOptions
+        def parseOptions(args)
             optparse = OptionParser.new do|opts|
                 opts.banner = "Usage: "+@appName+" [options]"
                 opts.separator ""
@@ -85,7 +85,7 @@ module ItunesController
                     exit
                 end
                 end
-            optparse.parse!
+            optparse.parse!(args)
             checkOptions()
         end   
         
@@ -192,12 +192,12 @@ module ItunesController
             end
         end
         
-        def exec()        
-            parseOptions()
+        def exec(args)        
+            parseOptions(args)
             readConfig()
             connect()        
             login()
-            execApp()
+            execApp(args)
             quit()
         end
         

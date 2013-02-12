@@ -9,7 +9,7 @@
 
 require 'itunesController/remote_application'
 
-class App < ItunesController::RemoteApplication   
+class AppRemoveFiles < ItunesController::RemoteApplication   
     
     def displayUsage()
         puts("Usage: "+@appName+" [options] files...") 
@@ -17,11 +17,11 @@ class App < ItunesController::RemoteApplication
         puts(genericOptionDescription())
     end
     
-    def execApp()
-        if (ARGV.length()==0)
+    def execApp(args)
+        if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line to remove from iTunes")
         else
-            ARGV.each do | path |
+            args.each do | path |
                 file(path)                       
             end
             removeFiles()
@@ -29,5 +29,7 @@ class App < ItunesController::RemoteApplication
     end
 end
 
-app=App.new("itunes-remote-remove-files.rb")
-app.exec()
+if $0 == __FILE__
+    app=AppRemoveFiles.new("itunes-remote-remove-files.rb")
+    app.exec(args)
+end

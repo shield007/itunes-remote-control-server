@@ -98,12 +98,13 @@ class App < ItunesController::Application
     end
 end
 
-dbFile = Tempfile.new('dummyDatabase.db')
-begin    
-    ItunesController::ItunesControllerLogging::info("Started dummy itunes controller with db path #{dbFile.path}")
-    app=App.new("itunesController.rb",dbFile.path)
-    app.exec()
-ensure
-    dbFile.unlink
+if $0 == __FILE__
+    dbFile = Tempfile.new('dummyDatabase.db')
+    begin    
+        ItunesController::ItunesControllerLogging::info("Started dummy itunes controller with db path #{dbFile.path}")
+        app=App.new("itunesController.rb",dbFile.path)
+        app.exec()
+    ensure
+        dbFile.unlink
+    end
 end
-

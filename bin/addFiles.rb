@@ -31,5 +31,7 @@ class App < ItunesController::Application
     end
 end
 
-app=App.new("addFiles.rb")
-app.exec()
+if $0 == __FILE__
+    app=App.new("addFiles.rb")
+    app.exec()
+end

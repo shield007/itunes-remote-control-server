@@ -74,5 +74,7 @@ class App < ItunesController::Application
     end
 end
 
-app=App.new("itunesController.rb")
-app.exec()
+if $0 == __FILE__
+    app=App.new("itunesController.rb")
+    app.exec()
+end
