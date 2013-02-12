@@ -44,8 +44,9 @@ module ItunesController
     
         # Used to check the command line options are valid
         def checkOptions
-            if (@options[:config]==nil)
-                usageError("No config file specified. Use --config option.")
+            if (@options[:config]==nil) 
+                                           
+                usageError("No configuration file specified. Use --config option.")
             end
             checkAppOptions        
         end
@@ -135,6 +136,14 @@ module ItunesController
         
         def addFiles()
             sendCommand(ItunesController::CommandName::ADDFILES,220)       
+        end
+        
+        def refreshFiles()
+            sendCommand(ItunesController::CommandName::REFRESHFILES,220)
+        end
+        
+        def removeFiles()
+            sendCommand(ItunesController::CommandName::REMOVEFILES,220)
         end
         
         def waitFor(expected)
