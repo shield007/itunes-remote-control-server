@@ -104,40 +104,67 @@ module ItunesController
             @client=Net::Telnet::new('Host' => @config.hostname,
                                      'Port' => @config.port,
                                      'Telnetmode' => false)
+            waitFor(001)
+            ItunesController::ItunesControllerLogging::info("Connected")
+            
         end
         
         # Login to the remote server
         def login()
             sendCommand(ItunesController::CommandName::LOGIN+":"+@config.username,222); 
-            sendCommand(ItunesController::CommandName::PASSWORD+":"+@config.password,223); 
+            sendCommand(ItunesController::CommandName::PASSWORD+":"+@config.password,223);
+            ItunesController::ItunesControllerLogging::info("Logged in") 
         end
         
         # Check the remote server is responding
         def ping()
-            sendCommand('#{ItunesController::CommandName::HELO}:#{password}',220)
+            sendCommand("#{ItunesController::CommandName::HELO}",220)
         end
         
         # Terminate connection to the remote server
         def quit()
             sendCommand(ItunesController::CommandName::QUIT,221)
+            ItunesController::ItunesControllerLogging::info("Terminated connection")
         end
         
         # Notify the remote server of a file that an action is to be performed on
         # @param file The file
         def file(file)
-            sendCommand('#{ItunesController::CommandName::FILE}:#{path}',220)
+            sendCommand(ItunesController::CommandName::FILE+"#{path}",220)
         end
         
         def addFiles()
-            sendCommand('#{ItunesController::CommandName::ADDFILES}',220)       
+            sendCommand(ItunesController::CommandName::ADDFILES,220)       
+        end
+        
+        def waitFor(expected)
+            @client.waitfor(/\n/) do |response|
+                if (response!=nil)            
+                    response.each_line do | line |                                                       
+                        if ( line =~ /(\d+).*/)                    
+                            code=$1                            
+                            if (code.to_i==expected)                    
+                                return;
+                            end
+                        end
+                    end
+                end
+            end
         end
             
         def sendCommand(cmd, expectedCode)
+            if (cmd =~ /PASSWORD:(.*)/)
+                cleanedCmd = "PASSWORD:<hidden>"
+                ItunesController::ItunesControllerLogging::debug("Send command #{cleanedCmd} and wait for #{expectedCode}")
+            else
+                ItunesController::ItunesControllerLogging::debug("Send command #{cmd} and wait for #{expectedCode}")
+            end            
+            
             @client.cmd(cmd) do | response |            
                 if (response!=nil)            
-                    response.each_line do | line |                                
+                    response.each_line do | line |                              
                         if ( line =~ /(\d+).*/)                    
-                            code=$1
+                            code=$1                            
                             if (code.to_i==expectedCode)                    
                                 return;
                             end

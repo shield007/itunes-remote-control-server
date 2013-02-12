@@ -17,11 +17,15 @@ class App < ItunesController::RemoteApplication
         puts(genericOptionDescription())
     end
     
-    def execApp()                       
-        ARGV.each do | path |
-            file(path)                       
-        end
-        addFiles()
+    def execApp()
+        if (ARGV.length()==0)
+            ItunesController::ItunesControllerLogging::error("No files given on the command line to add to iTunes")
+        else
+            ARGV.each do | path |
+                file(path)                       
+            end
+            addFiles()
+        end                               
     end
 end
 
