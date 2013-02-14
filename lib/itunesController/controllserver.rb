@@ -155,7 +155,7 @@ module ItunesController
         end
     
         # Sends a response to the client "220 ok"
-        # @param [String] data The commands parameters if their are any
+        # @param [String] line The line of data
         # @param io A IO Stream that is used to talk to the connected client
         # @return [Boolean,String] The returned status of the command. If the first part is false, then
         #                          the server will disconnect the client. The second part is a string message
@@ -176,7 +176,7 @@ module ItunesController
         end
 
         # Sends the response to the client "221 bye" and causes the client to disconnect
-        # @param [String] data The commands parameters if their are any
+        # @param [String] line The line of data
         # @param io A IO Stream that is used to talk to the connected client
         # @return [Boolean,String] The returned status of the command. If the first part is false, then
         #                          the server will disconnect the client. The second part is a string message
@@ -199,7 +199,7 @@ module ItunesController
     
         # The line is processed to get the username, then the response "222 Password?" is sent to the
         # the client to request the password.
-        # @param [String] data The commands parameters if their are any
+        # @param [String] line The line of data
         # @param io A IO Stream that is used to talk to the connected client
         # @return [Boolean,String] The returned status of the command. If the first part is false, then
         #                          the server will disconnect the client. The second part is a string message
@@ -230,7 +230,7 @@ module ItunesController
         # ItunesController::ServerState::AUTH with a reply to the client of "223 Logged in".
         # If the autentication check fails, then a reply ""501 Incorrect username/password" is sent
         # and the client is disconnected.
-        # @param [String] data The commands parameters if their are any
+        # @param [String] line The line of data
         # @param io A IO Stream that is used to talk to the connected client
         # @return [Boolean,String] The returned status of the command. If the first part is false, then
         #                          the server will disconnect the client. The second part is a string message
@@ -435,9 +435,8 @@ module ItunesController
     end
     
     class CreateControllerCommand < ServerCommand
-        # The constructor
-        # @param [ItunesController::ServerState] state The status of the connected client within the server
-        # @param [ItunesController::BaseITunesController] itunes The itunes controller class
+        # The constructor        
+        # @param [ItunesController::BaseITunesController] controllerCreator The itunes controller class
         def initialize(controllerCreator)
             super("CreateController",nil,false,nil,nil)
             @controllerCreator=controllerCreator
