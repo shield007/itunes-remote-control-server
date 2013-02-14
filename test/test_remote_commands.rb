@@ -5,8 +5,23 @@ require 'stringio'
 
 class RemoteCommandTest < BaseServerTest
     
+    def initialize(name)
+        super(name)        
+    end     
+    
     def this_method
        caller[0][/`([^']*)'/, 1]
+    end
+    
+    def setup()           
+        setupServer()
+        createConfigFile()    
+    end
+    
+    def teardown()
+        teardownServer()
+        @configFile.delete()
+        assert(@server.stopped?)    
     end
     
     def createConfigFile()
@@ -38,28 +53,21 @@ class RemoteCommandTest < BaseServerTest
     end
             
     def test_add_files_help
-        puts("\n-- Test Start: #{this_method()}")
-        setupServer()        
-        begin
-            createConfigFile()
-            stdout=StringIO.new("","w+")
-            stderr=StringIO.new("","w+")              
-            begin 
-                app = AppAddFiles.new('itunes-remote-add-files.rb',stdout,stderr,DummyExitHandler.new())
-                app.exec(["-h"])
-            rescue ExitException => e
-                assert(e.code() == 0)
-            end            
-            puts "Lines: "+stdout.string            
-            assert(stderr.string.length() == 0)
-            assert(stdout.string.include?("Usage: itunes-remote-add-files.rb [options]"))
-            assert(stdout.string.include?("Specific options:"))            
-        ensure
-            teardownServer()
-            @configFile.delete()
-            assert(@server.stopped?)            
-        end
-        puts("-- Test Finish:#{this_method()}")
+        stdout=StringIO.new("","w+")
+        stderr=StringIO.new("","w+")              
+        begin 
+            app = AppAddFiles.new('itunes-remote-add-files.rb',stdout,stderr,DummyExitHandler.new())
+            app.exec(["-h"])
+        rescue ExitException => e
+            assert(e.code() == 0)
+        end                        
+        assert(stderr.string.length() == 0)
+        assert(stdout.string.include?("Usage: itunes-remote-add-files.rb [options]"))
+        assert(stdout.string.include?("Specific options:"))            
     end
+    
+    def test_add_files
+    end
+      
     
 end
