@@ -7,13 +7,22 @@ require 'rubygems'
 require 'optparse'
 require 'net/telnet'
 
-module ItunesController
+module ItunesController        
     class RemoteApplication
         
-        def initialize(appName)
+        class ExitHandler
+            def doExit(code=0)
+                exit(code)
+            end
+        end
+        
+        def initialize(appName,stdout=$stdout,stderr=$stdout,exitHandler=ExitHandler.new())
             @appName = appName
             @options = {}
             @options[:logFile] = nil
+            @stdout = stdout
+            @stderr = stderr
+            @exitHandler = exitHandler
         end
     
         def genericOptionDescription()
@@ -29,17 +38,17 @@ module ItunesController
     
         # Used to display the command line useage
         def displayUsage()
-            puts("Usage: "+@appName+" [options]")
-            puts("")
-            puts(genericOptionDescription())
+            @stdout.puts("Usage: "+@appName+" [options]")
+            @stdout.puts("")
+            @stdout.puts(genericOptionDescription())
         end        
     
         # Used to display a error message and the command line usesage
         # @param [String] message The error message
         def usageError(message)
-            $stderr.puts "ERROR: "+message
+            @stderr.puts "ERROR: "+message
             displayUsage()
-            exit(1)
+            @exitHandler.doExit(1)
         end
     
         # Used to check the command line options are valid
@@ -71,18 +80,18 @@ module ItunesController
                 parseAppOptions(opts)
     
                 opts.on_tail( '-v', '--version', 'Display version of the application' ) do
-                    puts "#{@appName} "+ItunesController::VERSION
-                    puts "Copyright (C) 2012 John-Paul Stanford"
-                    puts "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>."
-                    puts "This is free software: you are free to change and redistribute it."
-                    puts "There is NO WARRANTY, to the extent permitted by law."
-                    puts ""
-                    puts "Authors: John-Paul Stanford <dev@stanwood.org.uk>"
-                    puts "Website: http://code.google.com/p/itunes-remote-control-server/"
+                    @stdout.puts "#{@appName} "+ItunesController::VERSION
+                    @stdout.puts "Copyright (C) 2012 John-Paul Stanford"
+                    @stdout.puts "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>."
+                    @stdout.puts "This is free software: you are free to change and redistribute it."
+                    @stdout.puts "There is NO WARRANTY, to the extent permitted by law."
+                    @stdout.puts ""
+                    @stdout.puts "Authors: John-Paul Stanford <dev@stanwood.org.uk>"
+                    @stdout.puts "Website: http://code.google.com/p/itunes-remote-control-server/"
                 end
                 opts.on_tail( '-h', '--help', 'Display this screen' ) do
-                    puts opts
-                    exit
+                    @stdout.puts opts
+                    @exitHandler.doExit(0)
                 end
                 end
             optparse.parse!(args)
@@ -181,14 +190,14 @@ module ItunesController
                     end
                 end
                 ItunesController::ItunesControllerLogging::error("Did not receive expected response from server")
-                exit(2)            
+                @exitHandler.doExit(2)            
             end        
         end
         
         def readConfig()        
             @config=ItunesController::ClientConfig.readConfig(@options[:config])
             if (!ItunesController::ClientConfig::validate(@config))
-                exit(1)
+                @exitHandler.doExit(1)
             end
         end
         

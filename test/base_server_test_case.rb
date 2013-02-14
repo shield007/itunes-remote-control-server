@@ -73,12 +73,12 @@ class BaseServerTest < Test::Unit::TestCase
         itunes = ItunesController::DummyITunesController.new        
         dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbFile.path) 
         controller = ItunesController::CachedController.new(itunes,dbBackend)        
-        config=ItunesController::ServerConfig.new
-        config.port = findAvaliablePort
-        @port = config.port
-        config.username = BaseServerTest::USER
-        config.password = BaseServerTest::PASSWORD
-        @server=ItunesController::ITunesControlServer.new(config,config.port,DummyControllerCreator.new(controller))        
+        @config=ItunesController::ServerConfig.new
+        @config.port = findAvaliablePort
+        @port = @config.port
+        @config.username = BaseServerTest::USER
+        @config.password = BaseServerTest::PASSWORD
+        @server=ItunesController::ITunesControlServer.new(@config,@port,DummyControllerCreator.new(controller))        
     end
     
     def teardownServer

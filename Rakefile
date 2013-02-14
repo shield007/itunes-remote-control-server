@@ -6,6 +6,7 @@ task :default => :all
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
+  t.libs << 'bin'
 end
 
 YARD::Rake::YardocTask.new do |t|
