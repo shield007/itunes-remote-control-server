@@ -57,7 +57,7 @@ module ItunesController
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files.
         # This is a dummy implementaion that is used with tests. It pushes messages into the
         # ItunesController::DummyITunesController::COMMAND_LOG so that tests can check the result.
-        # @param track The track
+        # @param tracks The tracks
         def refreshTracks(tracks)
             tracks.each do | track |
                 ItunesController::ItunesControllerLogging::debug("Refresh track #{track}")
@@ -80,7 +80,7 @@ module ItunesController
         # Used to add a list of files to the itunes library. This is a dummy implementaion that is used 
         # with tests. It pushes messages into the ItunesController::DummyITunesController::COMMAND_LOG 
         # so that tests can check the result.
-        # @param [Array[String]] A list of files to add to the itunes library
+        # @param [Array[String]] files A list of files to add to the itunes library
         # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
             tracks=[]          

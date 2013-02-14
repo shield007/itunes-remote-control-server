@@ -45,7 +45,7 @@ module ItunesController
 
         # Used to add a list of files to the itunes library
         # @abstract Must be overridden
-        # @param [Array[String]] A list of files to add to the itunes library
+        # @param [Array[String]] files A list of files to add to the itunes library
         # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
             raise "ERROR: Your trying to instantiate an abstract class"
