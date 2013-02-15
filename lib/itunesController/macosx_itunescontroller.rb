@@ -104,7 +104,7 @@ module ItunesController
         end
         
         def getTracks(&b)
-            ItunesController::ItunesControllerLogging::debug("Retriving track information...")
+            ItunesController::ItunesControllerLogging::debug("Retrieving track information...")
             playlist=@libraryPlaylists[0]
             fileTracks = playlist.fileTracks
             size = fileTracks.length()
