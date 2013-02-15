@@ -15,7 +15,9 @@ class RemoteCommandTest < BaseServerTest
     
     def setup()           
         setupServer()
-        createConfigFile()    
+        createConfigFile()
+        @stdout=StringIO.new("","w+")
+        @stderr=StringIO.new("","w+")    
     end
     
     def teardown()
@@ -25,15 +27,13 @@ class RemoteCommandTest < BaseServerTest
     end
     
     def createConfigFile()
-        @configFile = Tempfile.new("itunesController.xml")
-        @configFile.open() do | file |            
-            file.puts("<itunesController port=\"#{@port}\" hostname=\"localhost\" >")
-            file.puts("  <users>")
-            file.puts("    <user username=\"#{@config.username}\" password=\"#{@config.password}\"/>")
-            file.puts("  </users>")
-            file.puts("</itunesController>")
-        end
-        
+        @configFile = Tempfile.new("itunesController.xml")               
+        @configFile << "<itunesController port=\"#{@port}\" hostname=\"localhost\" >\n"
+        @configFile << "  <users>\n"
+        @configFile << "    <user username=\"#{@config.username}\" password=\"#{@config.password}\"/>\n"
+        @configFile << "  </users>\n"
+        @configFile << "</itunesController>\n"
+        @configFile.flush()
     end
 
     class ExitException < Exception               
@@ -52,22 +52,43 @@ class RemoteCommandTest < BaseServerTest
         end
     end
             
-    def test_add_files_help
-        stdout=StringIO.new("","w+")
-        stderr=StringIO.new("","w+")              
+    def test_add_files_help                     
+        puts("\n-- Test Start: #{this_method()}")
         begin 
-            app = AppAddFiles.new('itunes-remote-add-files.rb',stdout,stderr,DummyExitHandler.new())
+            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
             app.exec(["-h"])
         rescue ExitException => e
             assert(e.code() == 0)
         end                        
-        assert(stderr.string.length() == 0)
-        assert(stdout.string.include?("Usage: itunes-remote-add-files.rb [options]"))
-        assert(stdout.string.include?("Specific options:"))            
+        assert(@stderr.string.length() == 0)
+        assert(@stdout.string.include?("Usage: itunes-remote-add-files.rb [options]"))
+        assert(@stdout.string.include?("Specific options:"))
+        puts("\n-- Test End: #{this_method()}")            
+    end
+    
+    def test_add_files_no_files
+        puts("\n-- Test Start: #{this_method()}")
+        begin        
+            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path()])
+        rescue ExitException => e
+            assert(e.code() == 0)
+        end                             
+        puts("\n-- Test End: #{this_method()}")
     end
     
     def test_add_files
-    end
-      
+        puts("\n-- Test Start: #{this_method()}")
+        begin        
+            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path(),"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
+        rescue ExitException => e
+            print @stdout.string
+            assert(e.code() == 0)
+        end              
+        print @stdout.string
+        print @stderr.string
+        puts("\n-- Test End: #{this_method()}")        
+    end              
     
 end

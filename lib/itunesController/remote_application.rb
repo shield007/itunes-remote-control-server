@@ -140,7 +140,7 @@ module ItunesController
         # Notify the remote server of a file that an action is to be performed on
         # @param file The file
         def file(file)
-            sendCommand(ItunesController::CommandName::FILE+"#{path}",220)
+            sendCommand(ItunesController::CommandName::FILE+":#{file}",220)
         end
         
         def addFiles()
@@ -189,7 +189,7 @@ module ItunesController
                         end
                     end
                 end
-                ItunesController::ItunesControllerLogging::error("Did not receive expected response from server")
+                ItunesController::ItunesControllerLogging::error("Did not receive expected response from server for command #{cmd}")
                 @exitHandler.doExit(2)            
             end        
         end
