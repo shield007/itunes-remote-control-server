@@ -1,5 +1,6 @@
 require 'base_server_test_case'
 require 'itunes-remote-add-files'
+require 'itunes-remote-list-tracks'
 
 require 'stringio'
 
@@ -66,6 +67,17 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test End: #{this_method()}")            
     end
     
+    def test_aalist_files
+        puts("\n-- Test Start: #{this_method()}")
+        begin        
+            app = AppListTracks.new('itunes-remote-list-tracks.rb',@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path()])
+        rescue ExitException => e
+            assert(e.code() == 0)
+        end                             
+        puts("\n-- Test End: #{this_method()}")
+    end
+    
     def test_add_files_no_files
         puts("\n-- Test Start: #{this_method()}")
         begin        
@@ -89,6 +101,8 @@ class RemoteCommandTest < BaseServerTest
         print @stdout.string
         print @stderr.string
         puts("\n-- Test End: #{this_method()}")        
-    end              
+    end
+    
+                  
     
 end
