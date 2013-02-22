@@ -69,9 +69,10 @@ class BaseServerTest < Test::Unit::TestCase
         ItunesController::DummyITunesController::getCommandLog().take_while {
             | el |
         }
-        @dbFile = Tempfile.new('dummyDatabase.db')
+        #@dbFile = Tempfile.new('dummyDatabase.db')
         itunes = ItunesController::DummyITunesController.new        
-        dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbFile.path) 
+#        dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbFile.path) 
+        dbBackend = ItunesController::SQLite3DatabaseBackend.new(":memory:")
         controller = ItunesController::CachedController.new(itunes,dbBackend)        
         @config=ItunesController::ServerConfig.new
         @config.port = findAvaliablePort
@@ -82,11 +83,15 @@ class BaseServerTest < Test::Unit::TestCase
     end
     
     def teardownServer
-        @server.stop
-        while !@server.stopped?
+        if @server!=nil
+            @server.stop
+            while !@server.stopped?
+            end
+            @server.join
         end
-        @server.join
-        @dbFile.unlink
+        if @dbFile!=nil
+            @dbFile.unlink
+        end
     end
 
     def test_dummy
