@@ -123,6 +123,15 @@ module ItunesController
             end
             return result
         end
+        
+        def getTracks()
+            result=[]
+            stmt=@backend.prepare("select databaseId,location,name from tracks")
+            rows = @backend.executeStatement(stmt)
+            while ((row = rows.next)!=nil)
+                result.push(ItunedsContorller::Track.new(row[1],row[0].to_i,row[2]))
+            end    
+        end
 
         def getTrackById(id)
             stmt=@backend.prepare("select databaseId,location,name from tracks where databaseId=?")
