@@ -84,7 +84,7 @@ module ItunesController
             end
         end
 
-        def addTrack(path)
+        def addTrack(path)            
             ItunesController::ItunesControllerLogging::debug("Adding track #{path}")
             ids=@controller.addFilesToLibrary([path])            
             if (ids.length==1)
@@ -92,11 +92,12 @@ module ItunesController
                     ItunesController::ItunesControllerLogging::info("Track '#{path}' all ready in the database with the id #{ids[0].databaseId}")
                     return nil
                 end
-                track=ids[0]
+                track=ids[0]                
                 @database.addTrack(track) 
-                count=@database.getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i
+                count=@database.getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i                
                 count=count+1
                 @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,count)
+                ItunesController::ItunesControllerLogging::debug("added track to DB path='#{path}' count='#{count}'")
                 ItunesController::ItunesControllerLogging::info("Added track '#{path}' with id #{ids[0].databaseId}")
                 return track
             else
@@ -151,6 +152,10 @@ module ItunesController
                 ItunesController::ItunesControllerLogging::debug("Track cache uptodate")
             end
             return false
+        end
+        
+        def getCachedTracks() 
+           return @database.getTracks() 
         end
 
         def findDeadTracks()

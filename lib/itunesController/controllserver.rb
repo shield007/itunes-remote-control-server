@@ -20,6 +20,7 @@
 #
 
 require 'gserver'
+require 'json'
 
 require 'itunesController/version'
 require 'itunesController/debug'
@@ -60,6 +61,8 @@ module ItunesController
         REFRESHFILES="REFRESHFILES"
         # This command is used to get version information
         VERSION="VERSION"
+        # This command is used to list tracks
+        LISTTRACKS="LISTTRACKS"
     end
     
     # Used to store the state within the server of each connected client
@@ -294,10 +297,33 @@ module ItunesController
         # @param [ServerState] state The state of the server
         def executeSingleThreaded(state)
             @itunes.cacheTracks()
-            state.files.each do | path |
+            state.files.each do | path |                               
                 @itunes.addTrack(path)
             end            
         end
+    end
+    
+    class ListTracksCommand < ServerCommand
+        def initialize(state,itunes)
+            super(ItunesController::CommandName::LISTTRACKS,ServerState::AUTHED,false,state,itunes)
+        end
+        
+        def processData(line,io)                             
+            result=""
+            tracks = []
+            @itunes.getCachedTracks().each do | track |
+                tracks.push({ 'location' => track.location,
+                              'databaseId' => track.databaseId,
+                              'title' => track.title}) 
+            end
+            tempHash = { "tracks" =>    tracks }            
+            JSON.pretty_generate(tempHash).each do | line |
+                result = result+"100:"+line.chomp+"\r\n" 
+            end                        
+            result = result+"220 ok\r\n"                                                
+            return true, result
+        end
+        
     end
         
     # This command is used to refresh files registerd with the FILE command. It tells iTunes
@@ -496,7 +522,8 @@ module ItunesController
                 RemoveDeadFilesCommand.new(@state,@itunes),
                 FileCommand.new(@state,@itunes),
                 RefreshFilesCommand.new(@state,@itunes),
-                VersionCommand.new(@state,@itunes)
+                VersionCommand.new(@state,@itunes),
+                ListTracksCommand.new(@state,@itunes)
             ]
            
             Thread.abort_on_exception = true
@@ -531,7 +558,7 @@ module ItunesController
             io.print "001 hello\r\n"
             loop do
                 if IO.select([io], nil, nil, 2)
-                    data = io.readpartial(4096)
+                    data = io.readpartial(4096)                    
                     ok,op = processCommands(io,data)
                     if (ok!=nil)
                         io.print op

@@ -6,6 +6,7 @@ require 'itunesController/controllserver'
 require 'rubygems'
 require 'optparse'
 require 'net/telnet'
+require 'json'
 
 module ItunesController        
     class RemoteApplication
@@ -155,6 +156,20 @@ module ItunesController
             sendCommand(ItunesController::CommandName::REMOVEFILES,220)
         end
         
+        def listTracks()
+            result=sendCommand(ItunesController::CommandName::LISTTRACKS,220)
+            result = JSON.parse(result)
+            tracks = result['tracks']
+            if (tracks==nil or tracks.length()==0)
+                @stdout.puts("No tracks found")
+            else
+                tracks.each do | track |
+                    @stdout.puts("Location: #{track['location']} - Title: #{track['title']} - DatabaseId: #{track['databaseId']}")
+                end
+                
+            end            
+        end
+        
         def waitFor(expected)
             @client.waitfor(/\n/) do |response|
                 if (response!=nil)            
@@ -169,7 +184,11 @@ module ItunesController
                 end
             end
         end
-            
+           
+        # Used to send a command to the server and wait for a response. 
+        # @param cmd The command to send
+        # @param expectedCode The code to wait for
+        # @return the command response       
         def sendCommand(cmd, expectedCode)
             if (cmd =~ /PASSWORD:(.*)/)
                 cleanedCmd = "PASSWORD:<hidden>"
@@ -178,19 +197,22 @@ module ItunesController
                 ItunesController::ItunesControllerLogging::debug("Send command #{cmd} and wait for #{expectedCode}")
             end            
             
+            result = ""
             @client.cmd(cmd) do | response |            
                 if (response!=nil)            
-                    response.each_line do | line |                              
-                        if ( line =~ /(\d+).*/)                    
-                            code=$1                            
-                            if (code.to_i==expectedCode)                    
-                                return;
+                    response.each_line do | line |                            
+                        if ( line =~ /(\d+)(.*)/)                    
+                            code=$1.to_i                                                        
+                            if (code==expectedCode)                    
+                                return result;
+                            elsif (code==100)
+                                result = result + $2[1..$2.length]+"\n"
                             end
                         end
                     end
                 end
                 ItunesController::ItunesControllerLogging::error("Did not receive expected response from server for command #{cmd}")
-                @exitHandler.doExit(2)            
+                @exitHandler.doExit(2)                            
             end        
         end
         

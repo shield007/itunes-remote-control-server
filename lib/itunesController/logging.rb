@@ -75,7 +75,13 @@ module ItunesController
         # @param [String] msg The message to print
         # @param exception If not nil then this exception detials will be printed
         def self.error(msg,exception=nil)
-            @@log.error(msg)            
+            @@log.error(msg)                        
+            if (exception!=nil)
+                @@log.error(exception.message)
+                exception.backtrace.each do | trace | 
+                    @@log.error("* " + trace)
+                end
+            end            
         end                           
     end
 end

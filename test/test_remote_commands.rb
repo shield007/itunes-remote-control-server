@@ -23,8 +23,12 @@ class RemoteCommandTest < BaseServerTest
     
     def teardown()
         teardownServer()
-        @configFile.delete()
-        assert(@server.stopped?)    
+        if @configFIle!=nil
+            @configFile.delete()
+        end
+        if @server!=nil
+            assert(@server.stopped?)
+        end    
     end
     
     def createConfigFile()
@@ -67,16 +71,19 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test End: #{this_method()}")            
     end
     
-    def test_aalist_files
+    def test_list_tracks_no_files_added
         puts("\n-- Test Start: #{this_method()}")
         begin        
             app = AppListTracks.new('itunes-remote-list-tracks.rb',@stdout,@stderr,DummyExitHandler.new())
             app.exec(["-c",@configFile.path()])
         rescue ExitException => e
             assert(e.code() == 0)
-        end                             
+        end          
+        assert(@stdout.string.include?("No tracks found"))
         puts("\n-- Test End: #{this_method()}")
     end
+    
+
     
     def test_add_files_no_files
         puts("\n-- Test Start: #{this_method()}")
@@ -93,13 +100,26 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test Start: #{this_method()}")
         begin        
             app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
-            app.exec(["-c",@configFile.path(),"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
         rescue ExitException => e
-            print @stdout.string
+            puts @stdout.string
+            $stderr.puts @stderr.string
             assert(e.code() == 0)
-        end              
-        print @stdout.string
-        print @stderr.string
+        end          
+        
+        @server.waitForEmptyJobQueue()
+        
+                
+        begin        
+            app = AppListTracks.new('itunes-remote-list-tracks.rb',@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path()])
+        rescue ExitException => e
+            assert(e.code() == 0)
+        end                          
+                
+        assert(@stdout.string.include?("Location: /blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
+        assert(@stdout.string.include?("Location: /blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
+                               
         puts("\n-- Test End: #{this_method()}")        
     end
     
