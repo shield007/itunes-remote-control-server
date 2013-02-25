@@ -170,6 +170,14 @@ module ItunesController
             end            
         end
         
+        def infoTrackByPath(path)
+            result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,220)            
+            result = JSON.parse(result)
+            @stdout.puts("Location: #{result['location']}")
+            @stdout.puts("Title: #{result['title']}")
+            @stdout.puts("DatabaseId: #{result['databaseId']}")
+        end
+        
         def waitFor(expected)
             @client.waitfor(/\n/) do |response|
                 if (response!=nil)            

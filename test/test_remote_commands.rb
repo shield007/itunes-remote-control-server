@@ -1,6 +1,7 @@
 require 'base_server_test_case'
 require 'itunes-remote-add-files'
 require 'itunes-remote-list-tracks'
+require 'itunes-remote-track-info'
 
 require 'stringio'
 
@@ -119,10 +120,22 @@ class RemoteCommandTest < BaseServerTest
                 
         assert(@stdout.string.include?("Location: /blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
         assert(@stdout.string.include?("Location: /blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
-                               
+   
+        
+        @stdout=StringIO.new("","w+")
+                                            
+        begin
+            app = TrackInfoListTracks.new("itunes-remote-track-info.rb",@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
+        rescue ExitException => e
+            puts @stdout.string
+            $stderr.puts @stderr.string            
+            assert(e.code() == 0)
+        end
+        
+        assert(@stdout.string.include?("Location: /blah/show_episode.m4v\nTitle: Test 0\nDatabaseId: 0\nLocation: /blah/show_episode_1.m4v\nTitle: Test 1\nDatabaseId: 1"))        
+        
         puts("\n-- Test End: #{this_method()}")        
-    end
-    
-                  
-    
+        
+    end    
 end

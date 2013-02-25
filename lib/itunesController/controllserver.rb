@@ -63,6 +63,8 @@ module ItunesController
         VERSION="VERSION"
         # This command is used to list tracks
         LISTTRACKS="LISTTRACKS"
+        # This command is used to get information about a track
+        TRACKINFO="TRACKINFO"
     end
     
     # Used to store the state within the server of each connected client
@@ -325,6 +327,33 @@ module ItunesController
         end
         
     end
+    
+    class TrackInfoCommand < ServerCommand
+        def initialize(state,itunes) 
+            super(ItunesController::CommandName::TRACKINFO,ServerState::AUTHED,false,state,itunes)
+        end
+        
+        def processData(line,io)
+            track = nil
+#            if (line =~ /^\:id\:(\d+)$/)
+#                track = @itunes.getTrackByDatabaseId($1.to_i)
+            if (line =~ /^\:path\:(.+)$/)
+                track = @itunes.getTrack($1)
+            end
+            result=""            
+            if track!=nil
+                JSON.pretty_generate({ 'location' => track.location,
+                                       'databaseId' => track.databaseID,
+                                       'title' => track.name}).each do | line |
+                    result = result+"100:"+line.chomp+"\r\n" 
+                end 
+            else 
+                result="100:{}\r\n"
+            end
+            result = result+"220 ok\r\n"                                                
+            return true, result
+        end
+    end
         
     # This command is used to refresh files registerd with the FILE command. It tells iTunes
     # to update the meta data from the information stored in the files.
@@ -523,7 +552,8 @@ module ItunesController
                 FileCommand.new(@state,@itunes),
                 RefreshFilesCommand.new(@state,@itunes),
                 VersionCommand.new(@state,@itunes),
-                ListTracksCommand.new(@state,@itunes)
+                ListTracksCommand.new(@state,@itunes),
+                TrackInfoCommand.new(@state,@itunes)
             ]
            
             Thread.abort_on_exception = true
