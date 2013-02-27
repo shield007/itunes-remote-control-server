@@ -2,6 +2,7 @@ require 'base_server_test_case'
 require 'itunes-remote-add-files'
 require 'itunes-remote-list-tracks'
 require 'itunes-remote-track-info'
+require 'itunes-remote-server-info'
 
 require 'stringio'
 
@@ -138,4 +139,18 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test End: #{this_method()}")        
         
     end    
+    
+    def test_info
+        puts("\n-- Test Start: #{this_method()}")
+        begin
+            app = AppServerInfo.new('itunes-remote-server-info.rb',@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path()])
+        rescue ExitException => e
+            assert(e.code() == 0)
+        end
+        puts @stdout.string
+        assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\n"))        
+        
+        puts("\n-- Test End: #{this_method()}")
+    end
 end

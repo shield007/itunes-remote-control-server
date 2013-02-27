@@ -2,6 +2,7 @@ require 'itunesController/logging'
 require 'itunesController/version'
 require 'itunesController/config'
 require 'itunesController/controllserver'
+require 'itunesController/codes'
 
 require 'rubygems'
 require 'optparse'
@@ -122,14 +123,14 @@ module ItunesController
         
         # Login to the remote server
         def login()
-            sendCommand(ItunesController::CommandName::LOGIN+":"+@config.username,222); 
-            sendCommand(ItunesController::CommandName::PASSWORD+":"+@config.password,223);
+            sendCommand(ItunesController::CommandName::LOGIN+":"+@config.username,ItunesController::Code::PasswordPrompt.to_i); 
+            sendCommand(ItunesController::CommandName::PASSWORD+":"+@config.password,ItunesController::Code::Authenticated.to_i);
             ItunesController::ItunesControllerLogging::info("Logged in") 
         end
         
         # Check the remote server is responding
         def ping()
-            sendCommand("#{ItunesController::CommandName::HELO}",220)
+            sendCommand("#{ItunesController::CommandName::HELO}",ItunesController::Code::OK.to_i)
         end
         
         # Terminate connection to the remote server
@@ -141,23 +142,30 @@ module ItunesController
         # Notify the remote server of a file that an action is to be performed on
         # @param file The file
         def file(file)
-            sendCommand(ItunesController::CommandName::FILE+":#{file}",220)
+            sendCommand(ItunesController::CommandName::FILE+":#{file}",ItunesController::Code::OK.to_i)
         end
         
         def addFiles()
-            sendCommand(ItunesController::CommandName::ADDFILES,220)       
+            sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)       
         end
         
         def refreshFiles()
-            sendCommand(ItunesController::CommandName::REFRESHFILES,220)
+            sendCommand(ItunesController::CommandName::REFRESHFILES,ItunesController::Code::OK.to_i)
         end
         
         def removeFiles()
-            sendCommand(ItunesController::CommandName::REMOVEFILES,220)
+            sendCommand(ItunesController::CommandName::REMOVEFILES,ItunesController::Code::OK.to_i)
+        end
+        
+        def serverInfo()
+            result=sendCommand(ItunesController::CommandName::VERSION,ItunesController::Code::OK.to_i)
+            result = JSON.parse(result)           
+            @stdout.puts("ITunes control server : #{result['server']}")
+            @stdout.puts("Apple iTunes version : #{result['iTunes']}")
         end
         
         def listTracks()
-            result=sendCommand(ItunesController::CommandName::LISTTRACKS,220)
+            result=sendCommand(ItunesController::CommandName::LISTTRACKS,ItunesController::Code::OK.to_i)
             result = JSON.parse(result)
             tracks = result['tracks']
             if (tracks==nil or tracks.length()==0)
@@ -171,11 +179,15 @@ module ItunesController
         end
         
         def infoTrackByPath(path)
-            result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,220)            
+            result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
             result = JSON.parse(result)
             @stdout.puts("Location: #{result['location']}")
             @stdout.puts("Title: #{result['title']}")
             @stdout.puts("DatabaseId: #{result['databaseId']}")
+        end
+        
+        def checkCache()
+            result=sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i)
         end
         
         def waitFor(expected)
@@ -213,7 +225,7 @@ module ItunesController
                             code=$1.to_i                                                        
                             if (code==expectedCode)                    
                                 return result;
-                            elsif (code==100)
+                            elsif (code==ItunesController::Code::JSON.to_i)
                                 result = result + $2[1..$2.length]+"\n"
                             end
                         end
