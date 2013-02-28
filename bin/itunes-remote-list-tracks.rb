@@ -24,6 +24,6 @@ end
 
 if $0 == __FILE__
     args = ARGV
-    app=AppAddFiles.new("itunes-remote-list-tracks.rb")
+    app=AppListTracks.new("itunes-remote-list-tracks.rb")
     app.exec(args)
 end

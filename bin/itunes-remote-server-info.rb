@@ -24,6 +24,6 @@ end
 
 if $0 == __FILE__
     args = ARGV
-    app=ServerInfo.new("itunes-remote-server-info.rb")
+    app=AppServerInfo.new("itunes-remote-server-info.rb")
     app.exec(args)
 end
