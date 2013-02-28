@@ -179,8 +179,7 @@ module ItunesController
         def close()
             @database.close()
         end
-
-    private
+    
         def needsRecacheTracks()
             # TODO better checks for changes between the cache and iTunes
             count=@controller.getTrackCount()

@@ -40,6 +40,8 @@ module ItunesController
         TRACKINFO="TRACKINFO"
         # This command is used to check the cache is uptodate and if not regenerate it
         CHECKCACHE="CHECKCACHE"
+        # This command is used to get info about the server
+        SERVERINFO="SERVERINFO"
     end
 
     # This is the base class of all server commands.
@@ -418,6 +420,23 @@ module ItunesController
             result=""
             tempHash = { "server" => ItunesController::VERSION,
                          "iTunes" =>  @itunes.getItunesVersion }
+            JSON.pretty_generate(tempHash).each do | line |
+                result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
+            end
+            result = result+"#{ItunesController::Code::OK} ok\r\n"
+            return true, result
+        end
+    end
+    
+    class ServerInfoCommand < ServerCommand
+        
+        def initialize(state,itunes)
+            super(ItunesController::CommandName::SERVERINFO,nil,false,state,itunes)
+        end
+
+        def processData(line,io)
+            result=""
+            tempHash = { "cacheDirty" => @itunes.needsRecacheTracks() }
             JSON.pretty_generate(tempHash).each do | line |
                 result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
             end

@@ -149,7 +149,7 @@ class RemoteCommandTest < BaseServerTest
             assert(e.code() == 0)
         end
         puts @stdout.string
-        assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\n"))        
+        assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\nCache Dirty: false\n"))        
         
         puts("\n-- Test End: #{this_method()}")
     end

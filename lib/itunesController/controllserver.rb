@@ -139,6 +139,7 @@ module ItunesController
                 ListTracksCommand.new(@state,@itunes),
                 TrackInfoCommand.new(@state,@itunes),
                 CheckCacheCommand.new(@state,@itunes),
+                ServerInfoCommand.new(@state,@itunes),
             ]
            
             Thread.abort_on_exception = true

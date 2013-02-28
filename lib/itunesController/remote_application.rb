@@ -162,6 +162,9 @@ module ItunesController
             result = JSON.parse(result)           
             @stdout.puts("ITunes control server : #{result['server']}")
             @stdout.puts("Apple iTunes version : #{result['iTunes']}")
+            result=sendCommand(ItunesController::CommandName::SERVERINFO,ItunesController::Code::OK.to_i)
+            result = JSON.parse(result)
+            @stdout.puts("Cache Dirty: #{result['cacheDirty']}")
         end
         
         def listTracks()
