@@ -131,25 +131,42 @@ module ItunesController
             return (trackInfo!=nil)
         end
 
-        def cacheTracks(force=false)
+        def cacheTracks(force=false, stream=nil)
             if (force || needsRecacheTracks())
                 ItunesController::ItunesControllerLogging::info("Caching tracks...")
+                if (stream!=nil)
+                     stream.puts("Caching tracks...")
+                end
                 @database.removeTracks()
                 @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,@controller.getTrackCount())
                 size=@controller.getTracks() { |t,count,size,dead|
                     if (dead)
                         ItunesController::ItunesControllerLogging::warn("Found dead track with databaseID #{t.databaseId}")
+                        if (stream!=nil)
+                             stream.puts("Found dead track with databaseID #{t.databaseId}")
+                        end
+                            
                         @database.addDeadTrack(t)
                     else
                         @database.addTrack(t)
                     end                    
                     if (count % 150 == 0)
                         ItunesController::ItunesControllerLogging::info("Cached tracks #{count}/#{size}")
+                        if (stream!=nil)
+                             stream.puts("Cached tracks #{count}/#{size}")
+                        end
                     end
-                }
+                }                
+                ItunesController::ItunesControllerLogging::info("Cached tracks #{size}/#{size}")
+                if (stream!=nil)
+                     stream.puts("Cached tracks #{size}/#{size}")
+                end                
                 return true
             else
                 ItunesController::ItunesControllerLogging::debug("Track cache uptodate")
+                if (stream!=nil)
+                     stream.puts("Track cache uptodate")
+                end
             end
             return false
         end

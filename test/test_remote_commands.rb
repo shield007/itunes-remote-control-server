@@ -1,8 +1,10 @@
+
 require 'base_server_test_case'
 require 'itunes-remote-add-files'
 require 'itunes-remote-list-tracks'
 require 'itunes-remote-track-info'
 require 'itunes-remote-server-info'
+require 'itunes-remote-check-cache'
 
 require 'stringio'
 
@@ -150,6 +152,20 @@ class RemoteCommandTest < BaseServerTest
         end
         puts @stdout.string
         assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\nCache Dirty: false\n"))        
+        
+        puts("\n-- Test End: #{this_method()}")
+    end
+    
+    def test_aacheck_cache
+        puts("\n-- Test Start: #{this_method()}")
+        begin
+            app = CheckCacheApp.new("itunes-remote-check-cache.rb",@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path()])
+        rescue ExitException => e            
+            assert(e.code() == 0)
+        end
+               
+        assert(@stdout.string.include?("Track cache uptodate\n"))        
         
         puts("\n-- Test End: #{this_method()}")
     end

@@ -1,4 +1,5 @@
 require 'itunesController/codes'
+require 'stringio'
 
 module ItunesController
     # Used to store the command names used in the server
@@ -255,9 +256,17 @@ module ItunesController
             super(ItunesController::CommandName::CHECKCACHE,ServerState::AUTHED,false,state,itunes)
         end
 
-        def processData(line,io)
-            @itunes.cacheTracks()
-            return true, "#{ItunesController::Code::OK} ok\r\n"
+        def processData(line,io)            
+            stream=StringIO.new("","w+")
+            @itunes.cacheTracks(false,stream)
+            
+            result=""
+            stream.string.each do | line |
+                result=result+"101:"+line+"\r\n"
+            end
+            result=result+"#{ItunesController::Code::OK} ok\r\n"
+                        
+            return true, result
         end
     end
 

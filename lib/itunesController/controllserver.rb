@@ -176,7 +176,7 @@ module ItunesController
                 if IO.select([io], nil, nil, 2)
                     data = io.readpartial(4096)                    
                     ok,op = processCommands(io,data)
-                    if (ok!=nil)
+                    if (ok!=nil)                                               
                         io.print op
                         break unless ok                    
                     else

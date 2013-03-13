@@ -190,12 +190,12 @@ module ItunesController
         end
         
         def checkCache()
-            result=sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i)
+            sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i,@stdout)            
         end
         
         def waitFor(expected)
             @client.waitfor(/\n/) do |response|
-                if (response!=nil)            
+                if (response!=nil)                               
                     response.each_line do | line |                                                       
                         if ( line =~ /(\d+).*/)                    
                             code=$1                            
@@ -212,7 +212,7 @@ module ItunesController
         # @param cmd The command to send
         # @param expectedCode The code to wait for
         # @return the command response       
-        def sendCommand(cmd, expectedCode)
+        def sendCommand(cmd, expectedCode,stream = nil)
             if (cmd =~ /PASSWORD:(.*)/)
                 cleanedCmd = "PASSWORD:<hidden>"
                 ItunesController::ItunesControllerLogging::debug("Send command #{cleanedCmd} and wait for #{expectedCode}")
@@ -223,13 +223,17 @@ module ItunesController
             result = ""
             @client.cmd(cmd) do | response |            
                 if (response!=nil)            
-                    response.each_line do | line |                            
-                        if ( line =~ /(\d+)(.*)/)                    
+                    response.each_line do | line |                                                   
+                        if ( line =~ /(\d+)(.*)/)                   
                             code=$1.to_i                                                        
                             if (code==expectedCode)                    
                                 return result;
-                            elsif (code==ItunesController::Code::JSON.to_i)
-                                result = result + $2[1..$2.length]+"\n"
+                            elsif (code==ItunesController::Code::JSON.to_i or code==ItunesController::Code::TEXT.to_i)
+                                data = $2[1..$2.length]+"\n"
+                                if stream != nil
+                                    stream.print(data)
+                                end
+                                result = result + data
                             end
                         end
                     end
@@ -237,7 +241,7 @@ module ItunesController
                 ItunesController::ItunesControllerLogging::error("Did not receive expected response from server for command #{cmd}")
                 @exitHandler.doExit(2)                            
             end        
-        end
+        end               
         
         def readConfig()        
             @config=ItunesController::ClientConfig.readConfig(@options[:config])

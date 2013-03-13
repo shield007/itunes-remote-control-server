@@ -3,6 +3,7 @@ module ItunesController
         Greet = "001"
         Disconnect = "002"
         JSON = "100"
+        TEXT = "101"
         OK = "220"
         Bye = "221"
         PasswordPrompt = "222"
