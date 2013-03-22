@@ -126,7 +126,15 @@ module ItunesController
                     ItunesController::ItunesControllerLogging::debug("Found tracks #{count} of #{size}")
                 end
                 if (track.name!=nil)
-                    b.call(ItunesController::Track.new(path,track.databaseID,track.name),count,size,dead)
+                    controllerTrack = ItunesController::Track.new(path,track.databaseID,track.name) 
+                    controllerTrack.watchCount=track.playedCount
+                    controllerTrack.kind=VideoKind::fromKind(track.videoKind.to_i)
+                    controllerTrack.seasonNumber=track.seasonNumber.to_i
+                    controllerTrack.episodeNumber=track.episodeNumber.to_i
+                    controllerTrack.showName=track.show.to_s
+                    controllerTrack.title=track.name.to_s
+                    
+                    b.call(controllerTrack,count,size,dead)
                 end
                 count=count+1
             end

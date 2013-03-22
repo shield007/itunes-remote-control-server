@@ -44,7 +44,7 @@ module ItunesController
                 return nil
             end
             removeTrackByInfo(trackInfo)
-        end
+        end               
 
         def removeTrackByInfo(trackInfo)            
             ItunesController::ItunesControllerLogging::debug("Removing track: '#{trackInfo}'")
@@ -101,7 +101,7 @@ module ItunesController
                 ItunesController::ItunesControllerLogging::info("Added track '#{path}' with id #{ids[0].databaseId}")
                 return track
             else
-                ItunesController::ItunesControllerLogging::info("Uable to add track #{path}")
+                ItunesController::ItunesControllerLogging::info("Unable to add track #{path}")
                 return nil
             end
         end

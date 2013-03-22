@@ -83,6 +83,51 @@ module ItunesController
         end
     end
     
+    # Enum of video kinds
+    # @attr [Number] kind The Source kind ID
+    # @attr [String] String the source display name
+    class VideoKind
+        
+        attr_accessor :kind, :displayName
+        
+        # The constructor
+        # @param [Number] kind The kind ID
+        # @param [String] displayName The kind display name        
+        def initialize(kind,displayName)
+            @kind = kind
+            @displayName = displayName
+        end
+            
+        # The TVShow Source Kind
+        TVShow=TVShow.new(1800823892,"TV Show")       
+        TVShow=TVShow.new(1800823885,"Movie")
+        TVShow=TVShow.new(1800823894,"Music Video")
+        TVShow=TVShow.new(1800302446,"None")        
+        # The unknown kind
+        Unknown=SpecialKind.new(-1,"Unknown") 
+    
+        @@values=[TVShowUnknown,Unknown]
+    
+        # A class scoped method used to get the kind associated with the kind ID
+        # @param kind The kind ID
+        # @return [ItunesController::SourceKind] The source kind object
+        def self.fromKind(kind)
+            @@values.each { | v1 |
+                if (v1.kind==kind)
+                return v1
+                end
+            }
+            return SourceKind.new(v1,"Unknown")
+        end
+    
+        # Used pretty print the kind to a string
+        # @return A string containing the kind display name and ID
+        def to_s            
+            return "#{displayName} (#{kind})"
+        end
+    end
+        
+    
     # Enum of source kinds
     # @attr [Number] kind The Source kind ID
     # @attr [String] String the source display name 
