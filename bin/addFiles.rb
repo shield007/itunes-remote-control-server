@@ -7,6 +7,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'rubygems'
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
 require 'itunesController/sqlite_creator'
