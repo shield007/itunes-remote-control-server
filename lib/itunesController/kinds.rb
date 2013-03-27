@@ -99,14 +99,14 @@ module ItunesController
         end
             
         # The TVShow Source Kind
-        TVShow=TVShow.new(1800823892,"TV Show")       
-        TVShow=TVShow.new(1800823885,"Movie")
-        TVShow=TVShow.new(1800823894,"Music Video")
-        TVShow=TVShow.new(1800302446,"None")        
+        TVShow=VideoKind.new(1800823892,"TV Show")       
+        Movie=VideoKind.new(1800823885,"Movie")
+        MusicVideo=VideoKind.new(1800823894,"Music Video")
+        None=VideoKind.new(1800302446,"None")        
         # The unknown kind
         Unknown=SpecialKind.new(-1,"Unknown") 
     
-        @@values=[TVShowUnknown,Unknown]
+        @@values=[TVShow,Movie,MusicVideo,None,Unknown]
     
         # A class scoped method used to get the kind associated with the kind ID
         # @param kind The kind ID
