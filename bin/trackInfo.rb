@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'rubygems'
 require 'itunesController/sqlite_creator'
 require 'itunesController/cachedcontroller'
 require 'itunesController/debug'

@@ -20,6 +20,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'rubygems'
 require 'itunesController/config'
 require 'itunesController/controllserver'
 require 'itunesController/debug'

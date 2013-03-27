@@ -20,11 +20,11 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'rubygems'
 require 'itunesController/application'
 require 'itunesController/logging'
 require 'itunesController/sqlite_creator'
 
-require 'rubygems'
 require 'fileutils'
 
 class App < ItunesController::Application
