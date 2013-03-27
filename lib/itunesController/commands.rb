@@ -307,6 +307,7 @@ module ItunesController
             end
             result=""
             if track!=nil
+                # TODO add other fields of the track that were fetched from iTunes
                 JSON.pretty_generate({ 'location' => track.location,
                     'databaseId' => track.databaseID,
                     'title' => track.name}).each do | line |
