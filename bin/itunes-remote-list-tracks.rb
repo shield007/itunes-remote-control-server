@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/remote_application'
 
 class AppListTracks < ItunesController::RemoteApplication   
@@ -23,7 +24,7 @@ class AppListTracks < ItunesController::RemoteApplication
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     args = ARGV
     app=AppListTracks.new("itunes-remote-list-tracks.rb")
     app.exec(args)

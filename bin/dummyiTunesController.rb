@@ -21,6 +21,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'tempfile'
 
 require 'itunesController/controller_creator'
@@ -99,7 +100,7 @@ class App < ItunesController::Application
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     dbFile = Tempfile.new('dummyDatabase.db')
     begin    
         ItunesController::ItunesControllerLogging::info("Started dummy itunes controller with db path #{dbFile.path}")

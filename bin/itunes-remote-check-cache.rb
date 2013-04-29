@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/remote_application'
 
 class CheckCacheApp < ItunesController::RemoteApplication          
@@ -17,7 +18,7 @@ class CheckCacheApp < ItunesController::RemoteApplication
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     args = ARGV
     app=CheckCacheApp.new("itunes-remote-check-cache.rb")
     app.exec(args)

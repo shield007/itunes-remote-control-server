@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/remote_application'
 
 class AppServerInfo < ItunesController::RemoteApplication   
@@ -23,7 +24,7 @@ class AppServerInfo < ItunesController::RemoteApplication
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     args = ARGV
     app=AppServerInfo.new("itunes-remote-server-info.rb")
     app.exec(args)

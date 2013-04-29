@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/remote_application'
 
 class AppRefreshFiles < ItunesController::RemoteApplication   
@@ -30,7 +31,7 @@ class AppRefreshFiles < ItunesController::RemoteApplication
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     args = ARGV
     app=AppRefreshFiles.new("itunes-remote-refresh-files.rb")
     app.exec(args)

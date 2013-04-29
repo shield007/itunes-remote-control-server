@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/cachedcontroller'
 require 'itunesController/sqlite_creator'
 require 'itunesController/application'
@@ -39,7 +40,7 @@ class App < ItunesController::Application
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     app=App.new("removeFiles.rb")
     app.exec()
 end

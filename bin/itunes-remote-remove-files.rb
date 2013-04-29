@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/remote_application'
 
 class AppRemoveFiles < ItunesController::RemoteApplication   
@@ -30,7 +31,7 @@ class AppRemoveFiles < ItunesController::RemoteApplication
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     app=AppRemoveFiles.new("itunes-remote-remove-files.rb")
     app.exec(args)
 end

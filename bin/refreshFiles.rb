@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/application'
 require 'itunesController/sqlite_creator'
 
@@ -38,7 +39,7 @@ class App < ItunesController::Application
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     app=App.new("refreshTracks.rb")
     app.exec()
 end

@@ -8,6 +8,7 @@
 #
 
 require 'rubygems'
+require 'pathname'
 require 'itunesController/remote_application'
 
 class AppAddFiles < ItunesController::RemoteApplication   
@@ -30,7 +31,7 @@ class AppAddFiles < ItunesController::RemoteApplication
     end
 end
 
-if $0 == __FILE__
+if __FILE__.end_with?(Pathname.new($0).basename)
     args = ARGV
     app=AppAddFiles.new("itunes-remote-add-files.rb")
     app.exec(args)
