@@ -3,11 +3,14 @@
 GEMS=""
 GEMS="$GEMS sqlite3"
 GEMS="$GEMS escape"
+GEMS="$GEMS log4r"
+GEMS="$GEMS json"
 GEMS="$GEMS itunes-controller"
 
 JRUBY_ARGS="--1.9"
 
 # Compile the gem
+rm *.gem
 jruby $JRUBY_ARGS -S rake gem
 if [ $? -ne 0 ] 
 then
