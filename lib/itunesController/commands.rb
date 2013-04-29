@@ -1,5 +1,7 @@
 require 'itunesController/codes'
+require 'rubygems'
 require 'stringio'
+require 'json'
 
 module ItunesController
     # Used to store the command names used in the server
@@ -261,7 +263,7 @@ module ItunesController
             @itunes.cacheTracks(false,stream)
             
             result=""
-            stream.string.each do | line |
+            stream.string.each_line do | line |
                 result=result+"101:"+line+"\r\n"
             end
             result=result+"#{ItunesController::Code::OK} ok\r\n"
@@ -284,7 +286,7 @@ module ItunesController
                     'title' => track.title})
             end
             tempHash = { "tracks" =>    tracks }
-            JSON.pretty_generate(tempHash).each do | line |
+            JSON.pretty_generate(tempHash).each_line do | line |
                 result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
             end
             result = result+"#{ItunesController::Code::OK} ok\r\n"
@@ -310,7 +312,7 @@ module ItunesController
                 # TODO add other fields of the track that were fetched from iTunes
                 JSON.pretty_generate({ 'location' => track.location,
                     'databaseId' => track.databaseID,
-                    'title' => track.name}).each do | line |
+                    'title' => track.name}).each_line do | line |
                     result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
                 end
             else
@@ -430,7 +432,7 @@ module ItunesController
             result=""
             tempHash = { "server" => ItunesController::VERSION,
                          "iTunes" =>  @itunes.getItunesVersion }
-            JSON.pretty_generate(tempHash).each do | line |
+            JSON.pretty_generate(tempHash).each_line do | line |
                 result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
             end
             result = result+"#{ItunesController::Code::OK} ok\r\n"
@@ -447,7 +449,7 @@ module ItunesController
         def processData(line,io)
             result=""
             tempHash = { "cacheDirty" => @itunes.needsRecacheTracks() }
-            JSON.pretty_generate(tempHash).each do | line |
+            JSON.pretty_generate(tempHash).each_line do | line |
                 result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
             end
             result = result+"#{ItunesController::Code::OK} ok\r\n"
