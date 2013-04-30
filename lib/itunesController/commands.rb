@@ -453,7 +453,13 @@ module ItunesController
 
         def processData(line,io)
             result=""
-            tempHash = { "cacheDirty" => @itunes.needsRecacheTracks() }
+            tempHash = { 
+                         "cacheDirty" => @itunes.needsRecacheTracks(),
+                         "cachedTrackCount" => @itunes.getDatabase().getTrackCount(),                
+                         "cachedDeadTrackCount" => @itunes.getDatabase().getDeadTrackCount(),
+                         "cachedLibraryTrackCount" => @itunes.getDatabase().getParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0).to_i,
+                         "libraryTrackCount" => @itunes.getLibraryTrackCount()
+                        }
             JSON.pretty_generate(tempHash).each_line do | line |
                 result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
             end

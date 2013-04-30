@@ -122,7 +122,7 @@ module ItunesController
                 result.push(ItunesController::Track.new(row[1],row[0].to_i,row[2]))
             end
             return result
-        end
+        end        
         
         def getTracks()
             result=[]
@@ -150,6 +150,10 @@ module ItunesController
 
         def getTrackCount()
             return @backend.execute("select count(*) from tracks")
+        end
+        
+        def getDeadTrackCount()
+            return @backend.execute("select count(*) from dead_tracks")
         end
 
      private

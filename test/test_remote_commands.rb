@@ -150,8 +150,8 @@ class RemoteCommandTest < BaseServerTest
         rescue ExitException => e
             assert(e.code() == 0)
         end
-        puts @stdout.string
-        assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\nCache Dirty: false\n"))        
+        puts @stdout.string        
+        assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\nCache Dirty: false\nCached Track Count: 0\nCached Dead Track Count: 0\nCached Library Track Count: 0\nLibrary Track Count: 0\n"))        
         
         puts("\n-- Test End: #{this_method()}")
     end
