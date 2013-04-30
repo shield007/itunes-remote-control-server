@@ -6,6 +6,7 @@ module ItunesController
         TEXT = "101"
         OK = "220"
         Bye = "221"
+        NOT_FOUND = "404"
         PasswordPrompt = "222"
         Authenticated = "223"
         ErrorGeneral = "500"

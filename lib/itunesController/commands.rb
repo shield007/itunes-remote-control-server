@@ -315,10 +315,12 @@ module ItunesController
                     'title' => track.name}).each_line do | line |
                     result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
                 end
+                result = result+"#{ItunesController::Code::OK} ok\r\n"
             else
                 result="#{ItunesController::Code::JSON}:{}\r\n"
+                result = result+"#{ItunesController::Code::NotFound} Not Found\r\n"
             end
-            result = result+"#{ItunesController::Code::OK} ok\r\n"
+            
             return true, result
         end
     end
