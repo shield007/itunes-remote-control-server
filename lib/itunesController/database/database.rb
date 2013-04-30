@@ -149,11 +149,19 @@ module ItunesController
         end
 
         def getTrackCount()
-            return @backend.execute("select count(*) from tracks")
+            rows = @backend.execute("select count(*) from tracks")
+            row=rows.next
+            if (row!=nil)
+                return row[0].to_i
+            end
         end
         
         def getDeadTrackCount()
-            return @backend.execute("select count(*) from dead_tracks")
+            rows = @backend.execute("select count(*) from dead_tracks")
+            row=rows.next
+            if (row!=nil)
+                return row[0].to_i
+            end
         end
 
      private
