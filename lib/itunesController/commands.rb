@@ -305,7 +305,10 @@ module ItunesController
             #            if (line =~ /^\:id\:(\d+)$/)
             #                track = @itunes.getTrackByDatabaseId($1.to_i)
             if (line =~ /^\:path\:(.+)$/)
+                ItunesController::ItunesControllerLogging::debug("Getting info for track: "+$1)
                 track = @itunes.getTrack($1)
+            else
+                return true,"#{ItunesController::Code::ErrorGeneral} Unable to parse path\r\n"
             end
             result=""
             if track!=nil
