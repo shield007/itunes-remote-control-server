@@ -106,22 +106,30 @@ module ItunesController
             end
         end
 
+        # Used to lookup a track from it's path
+        # @param path The path of the track
         def getTrack(path)
+            ItunesController::ItunesControllerLogging::debug("Looking for track #{path}")
+            # Get the track info from the database            
             trackInfo=@database.getTrack(path)
             if (trackInfo==nil)
                 ItunesController::ItunesControllerLogging::debug("Unable to find track with path: "+path)
                 return nil
             end
+            
+            ItunesController::ItunesControllerLogging::debug("Found track in the database #{trackInfo.title}")
             foundTracks=@controller.searchLibrary(trackInfo.title)
             tracks=[]
             foundTracks.each do | t |
                 if (@controller.getTrackDatabaseId(t) == trackInfo.databaseId)
                     tracks.push(t)
                 end
-            end
+            end                        
             if (tracks.length==1)
+                ItunesController::ItunesControllerLogging::debug("Found track in iTunes")
                 return tracks[0]
             else
+                ItunesController::ItunesControllerLogging::debug("Found #{tracks.length}, so unable to find a exact match")
                 return nil
             end
         end
