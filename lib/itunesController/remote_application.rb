@@ -165,6 +165,10 @@ module ItunesController
             result=sendCommand(ItunesController::CommandName::SERVERINFO,ItunesController::Code::OK.to_i)
             result = JSON.parse(result)
             @stdout.puts("Cache Dirty: #{result['cacheDirty']}")
+            @stdout.puts("Cached Track Count: #{result['cachedTrackCount']}")
+            @stdout.puts("Cached Dead Track Count: #{result['cachedDeadTrackCount']}")
+            @stdout.puts("Cached Library Track Count: #{result['cachedLibraryTrackCount']}")
+            @stdout.puts("Library Track Count: #{result['libraryTrackCount']}")
         end
         
         def listTracks()

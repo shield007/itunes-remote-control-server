@@ -1,1 +1,4 @@
-Test the extra track info on windows
+* Test the extra track info on windows
+* Add command line option to server to generate a file with the PID in it
+	* Test windows
+	* Test linux
