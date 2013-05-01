@@ -10,7 +10,7 @@ require 'net/telnet'
 require 'json'
 
 module ItunesController        
-    class RemoteApplication
+    class RemoteApplication               
         
         class ExitHandler
             def doExit(code=0)
@@ -188,10 +188,13 @@ module ItunesController
         
         def infoTrackByPath(path)
             result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
-            result = JSON.parse(result)
-            @stdout.puts("Location: #{result['location']}")
-            @stdout.puts("Title: #{result['title']}")
-            @stdout.puts("DatabaseId: #{result['databaseId']}")
+            result = JSON.parse(result)      
+            result.each do | k,v |
+                @stdout.puts("#{k}: #{v}")
+            end      
+#            @stdout.puts("Location: #{result['location']}")
+#            @stdout.puts("Title: #{result['title']}")
+#            @stdout.puts("DatabaseId: #{result['databaseId']}")
         end
         
         def checkCache()

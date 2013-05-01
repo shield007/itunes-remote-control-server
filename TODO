@@ -1,4 +1,16 @@
+TODO
+====
+
+Version 0.2
+-----------
+
 * Test the extra track info on windows
 * Add command line option to server to generate a file with the PID in it
 	* Test windows
 	* Test linux
+* Replace non remote scripts with version that talk to the server
+	- listDeadTracks.rb
+	- recreateTrackCace.rb
+	- removeDeadTracks.rb
+	- listNewTracks.rb
+* Make track info return more information about the track
