@@ -18,3 +18,4 @@ Version 0.2
 * Handle 500 error in track info command
 * Check that commands that take paths work with relative paths (convert to abs)
 * Check that commands that take paths work with escape characters and quoted file names 
+* Replace use of apple script
