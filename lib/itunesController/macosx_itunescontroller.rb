@@ -80,16 +80,12 @@ module ItunesController
         def addFilesToLibrary(files)
             tracks=[]
             files.each do | file |
-                script="tell application \"iTunes\"\n"
-                script=script+"    set theTrack to (add POSIX file \"#{file}\")\n"
-                script=script+"    return (database ID of theTrack & name of theTrack)\n"
-                script=script+"end tell\n"
-                output=executeScript(script)
-                if (output =~ /(\d+), (.*)/)
-                    track=ItunesController::Track.new(file,$1.to_i,$2)
+                added=iTunes.add_to_ [file], library
+                if added
+                    track=ItunesController::Track.new(file,added.databaseID.to_i,added.name)
                     tracks.push(track)
                 else
-                    ItunesController::ItunesControllerLogging::error("Unable to add file '#{file}': " + output)
+                    ItunesController::ItunesControllerLogging::error("Unable to add file '#{file}'")
                 end
             end
 
