@@ -151,7 +151,7 @@ module ItunesController
         # Notify the remote server of a file that an action is to be performed on
         # @param file The file
         def file(file)
-            sendCommand(ItunesController::CommandName::FILE+":#{file}",ItunesController::Code::OK.to_i)
+            sendCommand(ItunesController::CommandName::FILE+":#{getAbsPath(file)}",ItunesController::Code::OK.to_i)
         end
         
         def addFiles()
@@ -196,7 +196,7 @@ module ItunesController
         
         def infoTrackByPath(path)
             begin
-                result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i,nil,[404])            
+                result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+getAbsPath(path),ItunesController::Code::OK.to_i,nil,[404])            
                 result = JSON.parse(result)      
                 result.each do | k,v |
                     ItunesController::ItunesControllerLogging::info("#{k}: #{v}")
@@ -227,6 +227,10 @@ module ItunesController
                     end
                 end
             end
+        end
+
+        def getAbsPath(path)
+            return File.expand_path(path,Dir.pwd)
         end
            
         # Used to send a command to the server and wait for a response. 

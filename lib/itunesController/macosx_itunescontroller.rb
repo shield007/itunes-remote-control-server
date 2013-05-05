@@ -71,7 +71,7 @@ module ItunesController
         def removeTracksFromLibrary(tracks)
             ItunesController::ItunesControllerLogging::info("removing tracks...")
             tracks.reverse.each do | track |
-                ItunesController::ItunesControllerLogging::debug("Removing track #{track.location.pathh}")
+                ItunesController::ItunesControllerLogging::debug("Removing track #{track.location.path}")
                 track.delete
             end
         end
