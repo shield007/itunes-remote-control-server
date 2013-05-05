@@ -59,8 +59,9 @@ module ItunesController
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
         # @param [Array] tracks A list of tracks to fresh
         def refreshTracks(tracks)
-            ItunesController::ItunesControllerLogging::debug("refreshing tracks...")
+            ItunesController::ItunesControllerLogging::info("refreshing tracks...")
             tracks.reverse.each do | track |
+                ItunesController::ItunesControllerLogging::debug("Refershing track #{track.location.pathh}")
                 track.refresh
             end
         end
@@ -68,8 +69,9 @@ module ItunesController
         # Used to remove tracks from the libaray
         # @param [Array] tracks A list of tracks to remove from the itunes libaray
         def removeTracksFromLibrary(tracks)
-            ItunesController::ItunesControllerLogging::debug("removing tracks...")
+            ItunesController::ItunesControllerLogging::info("removing tracks...")
             tracks.reverse.each do | track |
+                ItunesController::ItunesControllerLogging::debug("Removing track #{track.location.pathh}")
                 track.delete
             end
         end
@@ -80,7 +82,9 @@ module ItunesController
         def addFilesToLibrary(files)
             tracks=[]
             files.each do | file |
-                added=iTunes.add_to_ [file], library
+                url=NSURL.fileURLWithPath(file)
+                added=@iTunes.add_to_([url],@libraryPlaylists[0])
+                ItunesController::ItunesControllerLogging::debug("Added track #{added}")
                 if added
                     track=ItunesController::Track.new(file,added.databaseID.to_i,added.name)
                     tracks.push(track)

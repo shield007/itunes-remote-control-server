@@ -32,6 +32,7 @@ class AppRemoveFiles < ItunesController::RemoteApplication
 end
 
 if __FILE__.end_with?(Pathname.new($0).basename)
+    args=ARGV
     app=AppRemoveFiles.new("itunes-remote-remove-files.rb")
     app.exec(args)
 end
