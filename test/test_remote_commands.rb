@@ -98,7 +98,7 @@ class RemoteCommandTest < BaseServerTest
             assert(e.code() == 0)
         end                             
         puts("\n-- Test End: #{this_method()}")
-    end
+    end       
     
     def test_add_files
         puts("\n-- Test Start: #{this_method()}")
@@ -135,11 +135,10 @@ class RemoteCommandTest < BaseServerTest
             $stderr.puts @stderr.string            
             assert(e.code() == 0)
         end
-        
+        exit(1)
         assert(@stdout.string.include?("Location: /blah/show_episode.m4v\nTitle: Test 0\nDatabaseId: 0\nLocation: /blah/show_episode_1.m4v\nTitle: Test 1\nDatabaseId: 1"))        
         
-        puts("\n-- Test End: #{this_method()}")        
-        
+        puts("\n-- Test End: #{this_method()}")                
     end    
     
     def test_info
