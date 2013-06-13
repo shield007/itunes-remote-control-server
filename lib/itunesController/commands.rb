@@ -331,12 +331,13 @@ module ItunesController
             #                track = @itunes.getTrackByDatabaseId($1.to_i)
             if (line =~ /^\:path\:(.+)$/)
                 ItunesController::ItunesControllerLogging::debug("Getting info for track: "+$1)
-                track = @itunes.getTrack($1)
+                track = @itunes.getTrack(File.expand_path($1))
             else
                 return true,"#{ItunesController::Code::ErrorGeneral} Unable to parse path\r\n"
             end
             result=""
             if track!=nil
+                ItunesController::ItunesControllerLogging::debug("Got track #{track}")
                 # TODO add other fields of the track that were fetched from iTunes
                 JSON.pretty_generate({ 'location' => track.location,
                     'databaseId' => track.databaseID,
@@ -345,6 +346,7 @@ module ItunesController
                 end
                 result = result+"#{ItunesController::Code::OK} ok\r\n"
             else
+                ItunesController::ItunesControllerLogging::debug("Unable to find track")
                 result="#{ItunesController::Code::JSON}:{}\r\n"
                 result = result+"#{ItunesController::Code::NotFound} Not Found\r\n"
             end
@@ -442,7 +444,7 @@ module ItunesController
 
         def processData(line,io)
             if (line =~ /^\:(.+)$/)
-                @state.files.push($1)
+                @state.files.push(File.expand_path($1))
                 return true, "#{ItunesController::Code::OK} ok\r\n"
             end
             return true, "#{ItunesController::Code::ErrorMissingParam} ERROR expected file\r\n"
