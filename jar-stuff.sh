@@ -8,6 +8,7 @@ GEMS="$GEMS json"
 GEMS="$GEMS itunes-controller"
 
 JRUBY_ARGS="--1.9"
+JRUBY_OPTS="-Xcext.enabled=true"
 
 # Compile the gem
 rm *.gem
