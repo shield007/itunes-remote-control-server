@@ -18,7 +18,7 @@ class CheckCacheApp < ItunesController::RemoteApplication
     end
 end
 
-if __FILE__.end_with?(Pathname.new($0).basename)
+if __FILE__.end_with?(Pathname.new($0).basename.to_s)
     args = ARGV
     app=CheckCacheApp.new("itunes-remote-check-cache.rb")
     app.exec(args)

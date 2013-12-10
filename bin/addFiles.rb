@@ -33,7 +33,7 @@ class App < ItunesController::Application
     end
 end
 
-if __FILE__.end_with?(Pathname.new($0).basename)
+if __FILE__.end_with?(Pathname.new($0).basename.to_s)
     app=App.new("addFiles.rb")
     app.exec()
 end
