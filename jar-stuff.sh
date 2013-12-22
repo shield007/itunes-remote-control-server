@@ -1,13 +1,17 @@
 #!/bin/bash
 
+source ~/.rvm/environments/jruby-1.7.9@itunes-controller
+
 GEMS=""
-GEMS="$GEMS sqlite3"
+#GEMS="$GEMS sqlite3"
 GEMS="$GEMS escape"
 GEMS="$GEMS log4r"
 GEMS="$GEMS json"
 GEMS="$GEMS itunes-controller"
 
-JRUBY_ARGS="--1.9"
+export JRUBY_ARGS="--1.9"
+export JRUBY_OPTS="--1.9"
+#export JRUBY_OPTS="--1.9 -Xcext.enabled=true"
 
 # Compile the gem
 rm *.gem
