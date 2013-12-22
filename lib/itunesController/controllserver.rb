@@ -137,6 +137,7 @@ module ItunesController
                 RefreshFilesCommand.new(@state,@itunes),
                 VersionCommand.new(@state,@itunes),
                 ListTracksCommand.new(@state,@itunes),
+                ListDeadTracksCommand.new(@state,@itunes),
                 TrackInfoCommand.new(@state,@itunes),
                 CheckCacheCommand.new(@state,@itunes),
                 ServerInfoCommand.new(@state,@itunes),

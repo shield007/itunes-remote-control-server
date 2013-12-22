@@ -39,6 +39,8 @@ module ItunesController
         VERSION="VERSION"
         # This command is used to list tracks
         LISTTRACKS="LISTTRACKS"
+        # This command is used to list dead tracks
+        LISTDEADTRACKS="LISTDEADTRACKS"
         # This command is used to get information about a track
         TRACKINFO="TRACKINFO"
         # This command is used to check the cache is uptodate and if not regenerate it
@@ -293,6 +295,27 @@ module ItunesController
             return true, result
         end
 
+    end
+    
+    class ListDeadTracksCommand < ServerCommand
+        def initialize(state,itunes)
+            super(ItunesController::CommandName::LISTDEADTRACKS,ServerState::AUTHED,false,state,itunes)
+        end
+
+        def processData(line,io)
+            result=""
+            tracks = []
+            @itunes.findDeadTracks().each do | track |
+                tracks.push({ 'databaseId' => track.databaseId,
+                              'title' => track.title})
+            end
+            tempHash = { "tracks" =>    tracks }
+            JSON.pretty_generate(tempHash).each_line do | line |
+                result = result+"#{ItunesController::Code::JSON}:"+line.chomp+"\r\n"
+            end
+            result = result+"#{ItunesController::Code::OK} ok\r\n"
+            return true, result
+        end
     end
 
     class TrackInfoCommand < ServerCommand
