@@ -64,9 +64,15 @@ module ItunesController
     
         # Used to check the command line options are valid
         def checkOptions
-            if (@options[:config]==nil) 
-                                           
-                usageError("No configuration file specified. Use --config option.")
+            if (@options[:config]==nil)
+                if (ENV['ITRCS_CONFIG']!=nil)
+                  @options[:config] = ENV['ITRCS_CONFIG']
+                else
+                    
+                end                                             
+                if (@options[:config]==nil)
+                  usageError("No configuration file specified. Use --config option.")
+                end
             end
             checkAppOptions        
         end
