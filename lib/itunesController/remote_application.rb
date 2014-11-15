@@ -17,6 +17,15 @@ module ItunesController
                 exit(code)
             end
         end
+
+        class ErrorResponseException < Exception
+            attr_accessor :code,:result
+
+            def initialize(code,result)
+                @code = code
+                @result = result
+            end
+        end
         
         def initialize(appName,stdout=$stdout,stderr=$stdout,exitHandler=ExitHandler.new())
             @appName = appName
@@ -143,7 +152,7 @@ module ItunesController
         # Notify the remote server of a file that an action is to be performed on
         # @param file The file
         def file(file)
-            sendCommand(ItunesController::CommandName::FILE+":#{file}",ItunesController::Code::OK.to_i)
+            sendCommand(ItunesController::CommandName::FILE+":#{getAbsPath(file)}",ItunesController::Code::OK.to_i)
         end
         
         def addFiles()
@@ -233,12 +242,16 @@ module ItunesController
                 end
             end
         end
+
+        def getAbsPath(path)
+            return File.expand_path(path,Dir.pwd)
+        end
            
         # Used to send a command to the server and wait for a response. 
         # @param cmd The command to send
         # @param expectedCode The code to wait for
         # @return the command response       
-        def sendCommand(cmd, expectedCode,stream = nil)
+        def sendCommand(cmd, expectedCode,stream = nil,errorCodes=[])
             if (cmd =~ /PASSWORD:(.*)/)
                 cleanedCmd = "PASSWORD:<hidden>"
                 ItunesController::ItunesControllerLogging::debug("Send command #{cleanedCmd} and wait for #{expectedCode}")
@@ -254,6 +267,8 @@ module ItunesController
                             code=$1.to_i                                                        
                             if (code==expectedCode)                    
                                 return result;
+                            elsif (errorCodes.include?(code))
+                                raise ErrorResponseException.new(code,result)
                             elsif (code==ItunesController::Code::JSON.to_i or code==ItunesController::Code::TEXT.to_i)
                                 data = $2[1..$2.length]+"\n"
                                 if stream != nil
