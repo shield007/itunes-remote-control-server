@@ -200,6 +200,10 @@ module ItunesController
             end
         end
         
+        def removeDeadTracks()
+            sendCommand(ItunesController::CommandName::REMOVEDEADFILES,ItunesController::Code::OK.to_i)
+        end
+        
         def infoTrackByPath(path)
             result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
             result = JSON.parse(result)      
