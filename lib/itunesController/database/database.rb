@@ -55,7 +55,7 @@ module ItunesController
             tracks = @backend.sequel()[:tracks]
             if (tracks.where(:location => loc).count()>0)
                 ItunesController::ItunesControllerLogging::warn("Duplicate track reference detected with databaseId #{id}, title '#{title}' and location '#{loc}'")
-                @backend.sequel()[:tracks].insert(:databaseId => id, :location => loc,:name =>title)
+                @backend.sequel()[:dupe_tracks].insert(:databaseId => id, :location => loc,:name =>title)
             else
                 tracks.insert(:databaseId => id, :location => loc,:name =>title)
             end                       
@@ -146,29 +146,8 @@ module ItunesController
 
      private
         def createTables()
-            ItunesController::ItunesControllerLogging::debug("Checking database tables exist")
-            @backend.sequel().create_table :tracks do
-              primary_key :databaseId
-              String :location
-              String :name
-            end
-            
-            @backend.sequel().create_table :dead_tracks do
-              primary_key :databaseId
-              String :location
-              String :name
-            end
-            
-            @backend.sequel().create_table :dupe_tracks do
-              primary_key :databaseId
-              String :location
-              String :name
-            end
-            
-            @backend.sequel().create_table :params do
-              primary_key :key
-              String :value              
-            end            
+            ItunesController::ItunesControllerLogging::debug("Checking database tables exist")            
+            @backend.createTables()            
         end       
     end
 end

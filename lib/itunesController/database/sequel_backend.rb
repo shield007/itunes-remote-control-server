@@ -48,6 +48,11 @@ module ItunesController
             return @db 
         end
         
+        def createTables()
+            Sequel.extension :migration, :core_extensions
+            Sequel::Migrator.run(@db, File.dirname(__FILE__)+"/migrations")
+        end
+        
         def close()
             @db.disconnect()
         end
