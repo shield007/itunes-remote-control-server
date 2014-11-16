@@ -146,7 +146,8 @@ module ItunesController
                      stream.puts("Caching tracks...")
                 end
                 @database.removeTracks()
-                @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,@controller.getTrackCount())
+                @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,0)
+                count = @controller.getTrackCount()
                 size=@controller.getTracks() { |t,count,size,dead|
                     if (dead)
                         ItunesController::ItunesControllerLogging::warn("Found dead track with databaseID #{t.databaseId}")
@@ -164,7 +165,8 @@ module ItunesController
                              stream.puts("Cached tracks #{count}/#{size}")
                         end
                     end
-                }                
+                }        
+                @database.setParam(ItunesController::Database::PARAM_KEY_TRACK_COUNT,count)        
                 ItunesController::ItunesControllerLogging::info("Cached tracks #{size}/#{size}")
                 if (stream!=nil)
                      stream.puts("Cached tracks #{size}/#{size}")
