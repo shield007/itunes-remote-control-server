@@ -1,5 +1,4 @@
-Information
------------
+# iTunes Remote Control Server 
 
 This is a project to create make it possible to control enable iTunes to be operated 
 on a headless server without the GUI. It provides a TCP server which can be connected 
@@ -8,20 +7,22 @@ to locally or remote by other applications to control iTunes.
 The server only currently runs on Mac OSX It's written in such a way that if someone 
 knows how to script iTunes from ruby on windows, then windows support could be added.
 
-Requirments
------------
+## Requirments
 
 * iTunes (latest)
-* MacOS X (tested on snow leopard)
+* MacOS X
 * Mac Ruby
 
-Installation
-------------
+## Installation
 
-Building
---------
+
+## Building
 
 If you need to rebuild gem and run all the tests, then just change to the project directory and type:
 
 rake
+
+## Configuration
+
+## Using
 
