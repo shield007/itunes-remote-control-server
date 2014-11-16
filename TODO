@@ -4,8 +4,9 @@ TODO
 Version 0.2
 -----------
 
-* Add better support for different databases using sequel: http://sequel.jeremyevans.net
 * Test the extra track info on windows
+* When regenerating the track cache make it possible to talk to the server
+   * This might only be at startup, but it a big issue
 * Add command line option to server to generate a file with the PID in it
 	* Test windows
 	* Test linux
@@ -19,3 +20,5 @@ Version 0.2
 * Check that commands that take paths work with relative paths (convert to abs)
 * Check that commands that take paths work with escape characters and quoted file names 
 * Replace use of apple script
+
+* [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
