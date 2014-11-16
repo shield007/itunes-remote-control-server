@@ -20,48 +20,36 @@
 
 require 'itunesController/logging'
 require 'itunesController/platform'
-require 'itunesController/database/backend'
 
 require 'rubygems'
-require 'sqlite3'
+require 'sequel'
 
 module ItunesController
 
-    class SQLite3DatabaseBackend < DatabaseBackend                
+    class SequelDatabaseBackend                 
         
-        def initialize(dbPath=nil)
-            if (dbPath==nil)
+        def initialize(connectionString=nil)
+            if (connectionString==nil)
                 dbPath=ItunesController::Platform::getUserHomeDir()+"/.itunesController/database.db"
-            end
-            if (!File.directory?(File.dirname(dbPath)))
-                FileUtils::mkdir_p(File.dirname(dbPath))
-            end
-            ItunesController::ItunesControllerLogging::info("Database path #{dbPath}")
-            @db=SQLite3::Database.new( dbPath )
+                              
+                if (!File.directory?(File.dirname(dbPath)))
+                    FileUtils::mkdir_p(File.dirname(dbPath))
+                end
+                ItunesController::ItunesControllerLogging::info("Database path #{dbPath}")
+                @connectionString = "@sqlite://#{dbPath}"
+            else
+                @connectionString = connectionString
+            end              
+            @db=Sequel.connect(@connectionString)
+            
         end
         
-        def prepare(sql)
-           return @db.prepare(sql)         
-        end
-        
-        def executeStatement(stmt,*args)
-            begin
-                return stmt.execute(*args)
-            rescue SQLite3::ConstraintException => e
-                raise ItunesController::DatabaseConstraintException, e.message
-            end
-        end
-        
-        def execute(sql)
-            begin
-                return @db.execute(sql)
-            rescue SQLite3::ConstraintException => e
-                raise ItunesController::DatabaseConstraintException, e.message
-            end
+        def sequel()
+            return @db 
         end
         
         def close()
-            @db.close()
+            @db.disconnect()
         end
     end
 end

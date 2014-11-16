@@ -37,110 +37,98 @@ module ItunesController
         end
 
         def addDeadTrack(track)
-            stmt = @backend.prepare("insert into dead_tracks(databaseId,location,name) values(?,?,?)")
-            id=track.databaseId.to_i
-            title=track.title.to_s
             loc = nil
             if (track.location!=nil)
                 loc = track.location.to_s
             end
-            @backend.executeStatement(stmt,id,loc,title)            
+            
+            dead_tracks = @backend.sequel()[:dead_tracks]
+            dead_tracks.insert(:databaseId => track.databaseId.to_i, :location => loc,:name =>track.title.to_s)            
         end
 
         def addTrack(track)
-            stmt = @backend.prepare("insert into tracks(databaseId,location,name) values(?,?,?)")
-            id=track.databaseId.to_i
-            title=track.title.to_s
-            loc=track.location.to_s
-            #ItunesController::ItunesControllerLogging::debug("Adding track to database with id=#{id}, title='#{title}' and location='#{loc}'")
-            begin  
-                @backend.executeStatement(stmt,id,loc,title)
-            rescue ItunesController::DatabaseConstraintException
-                stmt2 = @backend.prepare("select * from tracks where location = ?")
-                rows=@backend.executeStatement(stmt2,loc) 
-                if (rows.next!=nil)
-                    ItunesController::ItunesControllerLogging::warn("Duplicate track reference detected with databaseId #{id}, title '#{title}' and location '#{loc}'")
-                    stmt3 = @backend.prepare("insert into dupe_tracks(databaseId,location,name) values(?,?,?)")
-                    @backend.executeStatement(stmt3,id,loc,title)
-                else
-                    ItunesController::ItunesControllerLogging::warn("Unable to add track to database with #{id}, title '#{title}' and location '#{loc}'")
-                end
-            end
+            title = track.title.to_s
+            loc = track.location.to_s
+            id = track.databaseId.to_i
+            ItunesController::ItunesControllerLogging::debug("Adding track to database with id=#{id}, title='#{title}' and location='#{loc}'")
+            
+            tracks = @backend.sequel()[:tracks]
+            if (tracks.where(:location => loc).count()>0)
+                ItunesController::ItunesControllerLogging::warn("Duplicate track reference detected with databaseId #{id}, title '#{title}' and location '#{loc}'")
+                @backend.sequel()[:tracks].insert(:databaseId => id, :location => loc,:name =>title)
+            else
+                tracks.insert(:databaseId => id, :location => loc,:name =>title)
+            end                       
         end
 
         def removeTrack(track)
-            ItunesController::ItunesControllerLogging::debug("Removing track from database with id=#{track.databaseId.to_i}'")
-            stmt = @backend.prepare("delete from tracks where databaseId=?")
-            @backend.executeStatement(stmt,track.databaseId.to_i)
-            stmt = @backend.prepare("delete from dead_tracks where databaseId=?")
-            @backend.executeStatement(stmt,track.databaseId.to_i)
-            stmt = @backend.prepare("delete from dupe_tracks where databaseId=?")
-            @backend.executeStatement(stmt,track.databaseId.to_i)
+            databaseId = track.databaseId.to_i
+            ItunesController::ItunesControllerLogging::debug("Removing track from database with id=#{databaseId}'")
+            @backend.sequel()[:tracks].where(:databaseId=>databaseId).delete()
+            @backend.sequel()[:dead_tracks].where(:databaseId=>databaseId).delete()
+            @backend.sequel()[:dupe_tracks].where(:databaseId=>databaseId).delete()            
         end
 
         def removeTracks()
             ItunesController::ItunesControllerLogging::debug("Removing all references to tracks in cache...")
-            @backend.execute("delete from tracks")
-            @backend.execute("delete from dead_tracks")
-            @backend.execute("delete from dupe_tracks")
+            ItunesController::ItunesControllerLogging::debug("Removing tracks...")
+            @backend.sequel()[:tracks].delete()            
+            ItunesController::ItunesControllerLogging::debug("Removing dead_tracks...")
+            @backend.sequel()[:dead_tracks].delete()            
+            ItunesController::ItunesControllerLogging::debug("Removing dupe_tracks...")
+            @backend.sequel()[:dupe_tracks].delete()            
             ItunesController::ItunesControllerLogging::debug("Tracks references removed from cache")
         end
 
         def setParam(key,value)
-            stmt = @backend.prepare("delete from params where key=?")
-            @backend.executeStatement(stmt,key)
-            stmt = @backend.prepare("insert into params(key,value) values(?,?)")
-            @backend.executeStatement(stmt,key,value)
+            params = @backend.sequel()[:params]
+            params.where(:key=>key).delete()
+            params.insert(:key => key, :value => value)
         end
 
         def getParam(key,default)
-            stmt=@backend.prepare("select value from params where key = ?")
-            rows = @backend.executeStatement(stmt,key)
-            row=rows.next
-            if (row!=nil)
-                return row[0]
+            params=@backend.sequel()[:params]
+            result = params.first(:key=>key)
+            if (result != nil)
+                return result[:value]
             end
-
+                     
             return default
         end
 
         def getTrack(path)
-            stmt=@backend.prepare("select databaseId,location,name from tracks where location=?")
-            rows = @backend.executeStatement(stmt,path)
-            row=rows.next
-            if (row!=nil)
-                return ItunesController::Track.new(row[1],row[0].to_i,row[2])
-            end
+            tracks=@backend.sequel()[:tracks]
+            result = tracks.first(:location=>path)
+            if (result != nil)
+                return ItunesController::Track.new(result[:location],result[:databaseId].to_i,result[:name])
+            end            
             return nil
         end
 
         def getDeadTracks()
-            result=[]
-            stmt=@backend.prepare("select databaseId,location,name from dead_tracks")
-            rows = @backend.executeStatement(stmt)
-            while ((row = rows.next)!=nil)
-                result.push(ItunesController::Track.new(row[1],row[0].to_i,row[2]))
-            end
+            result=[]             
+            dead_tracks=@backend.sequel()[:dead_tracks]
+            dead_tracks.each do | track |
+                result.push(ItunesController::Track.new(track[:location],track[:databaseId].to_i,track[:name]))
+            end              
             return result
         end        
         
         def getTracks()
-            result=[]
-            stmt=@backend.prepare("select databaseId,location,name from tracks")
-            rows = @backend.executeStatement(stmt)
-            while ((row = rows.next)!=nil)
-                result.push(ItunesController::Track.new(row[1],row[0].to_i,row[2]))
-            end    
-            return result
+            result=[]             
+            dead_tracks=@backend.sequel()[:tracks]
+            dead_tracks.each do | track |
+                result.push(ItunesController::Track.new(track[:location],track[:databaseId].to_i,track[:name]))
+            end              
+            return result            
         end
 
         def getTrackById(id)
-            stmt=@backend.prepare("select databaseId,location,name from tracks where databaseId=?")
-            rows = @backend.executeStatement(stmt,id)
-            row=rows.next
-            if (row!=nil)
-                return ItunesController::Track.new(row[1],row[0].to_i,row[2])
-            end
+            result = @backend.sequel()[:tracks].where(:databaseId=>id)
+            result = result.first()
+            if (result!=nil)
+                return ItunesController::Track.new(result[:location],result[:database_id].to_i,result[:name])
+            end           
             return nil
         end
 
@@ -149,43 +137,39 @@ module ItunesController
         end
 
         def getTrackCount()
-            stmt=@backend.prepare("select count(*) from tracks")
-            rows = @backend.executeStatement(stmt)
-            row=rows.next
-            if (row!=nil)
-                return row[0].to_i
-            end
+            return @backend.sequel()[:tracks].count
         end
         
         def getDeadTrackCount()
-            stmt=@backend.prepare("select count(*) from dead_tracks")
-            rows = @backend.executeStatement(stmt)            
-            row=rows.next
-            if (row!=nil)
-                return row[0].to_i
-            end
-        end
+            return @backend.sequel()[:dead_tracks].count
+        end               
 
      private
         def createTables()
             ItunesController::ItunesControllerLogging::debug("Checking database tables exist")
-            @backend.execute("create table if not exists tracks ( databaseId INTEGER PRIMARY KEY, "+
-                                                            "location TEXT NOT NULL, "+
-                                                            "name TEXT NOT NULL) ")
-
-            @backend.execute("create table if not exists dead_tracks ( databaseId INTEGER NOT NULL, "+
-                                                                 "location TEXT, "+
-                                                                 "name TEXT NOT NULL) ")
-
-            @backend.execute("create table if not exists dupe_tracks ( databaseId INTEGER NOT NULL, "+
-                                                                 "location TEXT, "+
-                                                                 "name TEXT NOT NULL) ")
-
-            @backend.execute("create unique index if not exists 'loction_index' on tracks (location)")
+            @backend.sequel().create_table :tracks do
+              primary_key :databaseId
+              String :location
+              String :name
+            end
             
-            @backend.execute("create table if not exists params ( key INTEGER PRIMARY KEY, "+
-                                                             "value TEXT NOT NULL) ")
-        end
+            @backend.sequel().create_table :dead_tracks do
+              primary_key :databaseId
+              String :location
+              String :name
+            end
+            
+            @backend.sequel().create_table :dupe_tracks do
+              primary_key :databaseId
+              String :location
+              String :name
+            end
+            
+            @backend.sequel().create_table :params do
+              primary_key :key
+              String :value              
+            end            
+        end       
     end
 end
 
