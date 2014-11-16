@@ -19,15 +19,15 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
-require 'itunesController/database/sqlite3_backend'
+require 'itunesController/database/sequel_backend'
 require 'itunesController/itunescontroller_factory'
 require 'itunesController/controller_creator'
 
 module ItunesController  
 
-    class SQLLiteControllerCreator < ControllerCreator    
+    class SequelControllerCreator < ControllerCreator    
         def createController()            
-            dbBackend = ItunesController::SQLite3DatabaseBackend.new(nil)
+            dbBackend = ItunesController::SequelDatabaseBackend.new(nil)
             return ItunesController::CachedController.new(ItunesController::ITunesControllerFactory::createController(),dbBackend)
         end
     end    

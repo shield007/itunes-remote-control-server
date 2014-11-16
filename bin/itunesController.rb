@@ -28,7 +28,7 @@ require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/cachedcontroller'
 require 'itunesController/application'
-require 'itunesController/sqlite_creator'
+require 'itunesController/sequel_creator'
 
 class App < ItunesController::Application
 

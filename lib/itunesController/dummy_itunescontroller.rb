@@ -93,7 +93,7 @@ module ItunesController
                 @@commandLog.push("addFilesToLibrary("+file+")")                
             end
             return tracks
-        end
+        end               
         
         def findPlaylists(types)
             playlists=[]

@@ -1,4 +1,5 @@
 
+
 require 'tempfile'
 require 'test/unit'
 require 'socket'
@@ -11,7 +12,7 @@ require 'itunesController/controllserver'
 require 'itunesController/cachedcontroller'
 require 'itunesController/controller_creator'
 
-require 'itunesController/database/sqlite3_backend'
+require 'itunesController/database/sequel_backend'
 
 class DummyControllerCreator < ItunesController::ControllerCreator
     
@@ -71,8 +72,7 @@ class BaseServerTest < Test::Unit::TestCase
         }
         #@dbFile = Tempfile.new('dummyDatabase.db')
         itunes = ItunesController::DummyITunesController.new        
-#        dbBackend = ItunesController::SQLite3DatabaseBackend.new(@dbFile.path) 
-        dbBackend = ItunesController::SQLite3DatabaseBackend.new(":memory:")
+        dbBackend = ItunesController::SequelDatabaseBackend.new("sqlite:/")
         controller = ItunesController::CachedController.new(itunes,dbBackend)        
         @config=ItunesController::ServerConfig.new
         @config.port = findAvaliablePort
