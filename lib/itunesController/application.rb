@@ -29,12 +29,13 @@ require 'optparse'
 
 module ItunesController
 
-    class Application
+    class Application               
 
         def initialize(appName)
             @appName = appName
             @options = {}
             @options[:logFile] = nil
+            @config = nil
         end
 
         def genericOptionDescription()
@@ -103,7 +104,9 @@ module ItunesController
         end        
     
         def exec()
-            parseOptions
+            ItunesController::ItunesControllerLogging::debug("Start application")
+            parseOptions()
+            readServerConfig()
             controllerCreator = createController()
             execApp(controllerCreator)
             #controller.close()
@@ -117,6 +120,10 @@ module ItunesController
         end
 
         def checkAppOptions()
+        end
+        
+        def readServerConfig()            
+            @config=ItunesController::ServerConfig.readConfig(@options[:config])
         end
 
         def execApp(controllerCreator)

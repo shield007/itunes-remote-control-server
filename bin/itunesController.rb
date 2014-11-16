@@ -58,20 +58,22 @@ class App < ItunesController::Application
         end
     end
     
-    def createController
-        return ItunesController::SQLLiteControllerCreator.new
+    def readConfig()
+    end
+    
+    def createController()
+        return ItunesController::SequelControllerCreator.new()
     end
 
     def execApp(controllerCreator)        
-        port=DEFAULT_PORT
-        config=ItunesController::ServerConfig.readConfig(@options[:config])
-        if (config.port!=nil) 
-            port = config.port
+        port=DEFAULT_PORT        
+        if (@config.port!=nil) 
+            port = @config.port
         end
         if (@options[:port]!=nil)
             port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controllerCreator)        
+        server=ItunesController::ITunesControlServer.new(@config,port,controllerCreator)        
         server.join
     end
 end

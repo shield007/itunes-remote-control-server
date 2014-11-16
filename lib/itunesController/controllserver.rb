@@ -76,9 +76,10 @@ module ItunesController
     class CreateControllerCommand < ServerCommand
         # The constructor        
         # @param [ItunesController::BaseITunesController] controllerCreator The itunes controller class
-        def initialize(controllerCreator)
+        def initialize(controllerCreator,config)
             super("CreateController",nil,false,nil,nil)
             @controllerCreator=controllerCreator
+            @config = config
         end
                        
         def processData(line,io)            
@@ -86,7 +87,7 @@ module ItunesController
         end  
         
         def executeSingleThreaded(state)
-            @controller=@controllerCreator.createController
+            @controller=@controllerCreator.createController(@config.dbConnectionString)
         end
         
         def getController()
@@ -116,7 +117,7 @@ module ItunesController
                     sleep(1)
                 end                
             }             
-            cmd=CreateControllerCommand.new(itunes)
+            cmd=CreateControllerCommand.new(itunes,config)
             @jobQueue << Job.new(cmd,nil)
             while (cmd.getController()==nil)  
                 sleep(1)             

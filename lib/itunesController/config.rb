@@ -30,6 +30,7 @@ module ItunesController
     #        <users>
     #            <user username="test" password="test"/>
     #        </users>
+    #        <database connection="sqlite:/">
     #    </itunesController>
     # }
     # @attr username The username of the user used to connect to login to the server
@@ -37,12 +38,13 @@ module ItunesController
     # @attr port The port number the server is listening on
     # @attr interfaceAddress The DNS/IP address of the interface the server is binding too. 
     class ServerConfig
-        attr_accessor :username,:password,:port,:interfaceAddress
+        attr_accessor :username,:password,:port,:interfaceAddress,:dbConnectionString
         
         # The constructor
         def initialize()
             @port =nil
             @interfaceAddress = "localhost"
+            @dbConnectionString = nil
         end
     
         # A class scoped method used to read the server configuration from a file
@@ -52,6 +54,7 @@ module ItunesController
         # @param [String] configFile The file name of the configuration file
         # @return [ItunesController::ServerConfig] The server configuration
         def self.readConfig(configFile)
+            ItunesController::ItunesControllerLogging::debug("Reading configuration #{configFile}")
             if (!File.exists? configFile)
                 raise("Unable to find configuration file: "+configFile)
             end 
@@ -74,7 +77,10 @@ module ItunesController
                 doc.elements.each("/itunesController/users/user") { |userElement| 
                     config.username=userElement.attributes["username"]
                     config.password=userElement.attributes["password"]
-                }                       
+                }                  
+                doc.elements.each("/itunesController/database") { | dbElement |
+                    config.dbConnectionString = attributes['connection']
+                }
             
             rescue EOFError
                 raise("Unable to read or parse the configuration file: " + configFile)
