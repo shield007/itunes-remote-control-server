@@ -30,18 +30,24 @@ module ItunesController
         
         def initialize(connectionString=nil)
             if (connectionString==nil)
-                dbPath=ItunesController::Platform::getUserHomeDir()+"/.itunesController/database.db"
+                dbPath=ItunesController::Platform::getUserHomeDir()+"/.itunesController/database_2.db"
                               
                 if (!File.directory?(File.dirname(dbPath)))
                     FileUtils::mkdir_p(File.dirname(dbPath))
                 end
                 ItunesController::ItunesControllerLogging::info("Database path #{dbPath}")
-                @connectionString = "@sqlite://#{dbPath}"
+                @connectionString = "sqlite://#{dbPath}"
+                
             else
                 @connectionString = connectionString
             end              
+            ItunesController::ItunesControllerLogging::debug("Connecting to #{@connectionString}...")
             @db=Sequel.connect(@connectionString)
-            
+            ItunesController::ItunesControllerLogging::debug("Connected")
+        end
+        
+        def version()
+            return @db.get{server_version{}}
         end
         
         def sequel()

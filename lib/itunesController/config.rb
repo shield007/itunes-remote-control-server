@@ -62,7 +62,7 @@ module ItunesController
             config=ServerConfig.new
             begin        
                 doc=Document.new(File.new( configFile ))
-                    
+                  
                 rootEl = doc.root.elements["/itunesController"]       
                 if (rootEl==nil)
                     raise("Unable to find parse configuartion file, can't find node /itunesController")
@@ -73,13 +73,14 @@ module ItunesController
                 if (rootEl.attributes["interfaceAddress"]!=nil && rootEl.attributes["interfaceAddress"]!="")
                     config.interfaceAddress = rootEl.attributes["interfaceAddress"]
                 end
-                        
+                
                 doc.elements.each("/itunesController/users/user") { |userElement| 
                     config.username=userElement.attributes["username"]
                     config.password=userElement.attributes["password"]
-                }                  
-                doc.elements.each("/itunesController/database") { | dbElement |
-                    config.dbConnectionString = attributes['connection']
+                }
+                doc.elements.each("/itunesController/database") { | dbElement |                    
+                    config.dbConnectionString = dbElement.attributes['connection']
+                    ItunesController::ItunesControllerLogging::debug("Read connection string #{config.dbConnectionString}")
                 }
             
             rescue EOFError

@@ -30,7 +30,7 @@ module ItunesController
         PARAM_KEY_TRACK_COUNT=2
 
         # The constructor
-        def initialize(controller,backend)
+        def initialize(controller,backend)            
             @controller = controller
             @backend = backend            
             createTables()
@@ -146,8 +146,9 @@ module ItunesController
 
      private
         def createTables()
-            ItunesController::ItunesControllerLogging::debug("Checking database tables exist")            
-            @backend.createTables()            
+            ItunesController::ItunesControllerLogging::debug("Database migrations start")            
+            @backend.createTables()
+            ItunesController::ItunesControllerLogging::debug("Database migrations finish")            
         end       
     end
 end

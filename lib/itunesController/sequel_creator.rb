@@ -26,7 +26,7 @@ require 'itunesController/controller_creator'
 module ItunesController  
 
     class SequelControllerCreator < ControllerCreator    
-        def createController(connnectionString)            
+        def createController(connnectionString)   
             dbBackend = ItunesController::SequelDatabaseBackend.new(connnectionString)
             return ItunesController::CachedController.new(ItunesController::ITunesControllerFactory::createController(),dbBackend)
         end
