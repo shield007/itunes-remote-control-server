@@ -108,6 +108,7 @@ module ItunesController
             parseOptions()
             readServerConfig()
             controllerCreator = createController()
+            ItunesController::ItunesControllerLogging::debug("Controller Created")
             execApp(controllerCreator)
             #controller.close()
         end

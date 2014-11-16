@@ -162,7 +162,7 @@ module ItunesController
                     if (count % 150 == 0)
                         ItunesController::ItunesControllerLogging::info("Cached tracks #{count}/#{size}")
                         if (stream!=nil)
-                             stream.puts("Cached tracks #{count}/#{size}")
+                             stream.puts("Cached tracks #{count}/#{size}")                             
                         end
                     end
                 }        
