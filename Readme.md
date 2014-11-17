@@ -1,3 +1,5 @@
+[![Analytics](https://ga-beacon.appspot.com/UA-5774405-9/itunes-remote-control-server/Readme)](https://github.com/igrigorik/ga-beacon)
+
 # iTunes Remote Control Server 
 
 This is a project to create make it possible to control enable iTunes to be operated 
