@@ -19,6 +19,7 @@
 #
 
 require 'itunesController/logging'
+require 'timeout'
 require 'itunesController/platform'
 
 require 'rubygems'
@@ -42,7 +43,12 @@ module ItunesController
                 @connectionString = connectionString
             end              
             ItunesController::ItunesControllerLogging::debug("Connecting to #{@connectionString}...")
-            @db=Sequel.connect(@connectionString)
+            begin                
+                @db=Sequel.connect(@connectionString,:test=>true,:single_threaded=>true)                               
+            rescue => e                                 
+                raise
+            end
+                        
             ItunesController::ItunesControllerLogging::debug("Connected")
         end
         

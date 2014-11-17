@@ -87,7 +87,12 @@ module ItunesController
         end  
         
         def executeSingleThreaded(state)
-            @controller=@controllerCreator.createController(@config.dbConnectionString)
+            begin
+                @controller=@controllerCreator.createController(@config.dbConnectionString)
+            rescue => e
+                ItunesController::ItunesControllerLogging::error(e.message,e)
+                exit(2)
+            end   
         end
         
         def getController()
