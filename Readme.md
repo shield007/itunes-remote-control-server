@@ -37,6 +37,8 @@ rake
 
 ## Configuration
 
+[Server Configration] (https://github.com/shield007/itunes-remote-control-server/wiki/Server-Configuration)
+
 ## Using
 
 TBD
