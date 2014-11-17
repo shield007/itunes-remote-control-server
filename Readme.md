@@ -15,10 +15,14 @@ knows how to script iTunes from ruby on windows, then windows support could be a
 
 ## Installation
 
+Instructions for install on different platforms can be found on the wiki.
+
+* [Windows Install Instuctions](https://github.com/shield007/itunes-remote-control-server/wiki/Windows-Install-Instructions)
+* [Max OSX Install Instructions](https://github.com/shield007/itunes-remote-control-server/wiki/Max-OSX-Install-Instructions)
 
 ## Building
 
-If you need to rebuild gem and run all the tests, then just change to the project directory and type:
+If you need to rebuild gem and run all the tests, then from a terminal change to the project directory and type:
 
 rake
 
