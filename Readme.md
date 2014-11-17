@@ -7,6 +7,15 @@ to locally or remote by other applications to control iTunes.
 The server only currently runs on Mac OSX It's written in such a way that if someone 
 knows how to script iTunes from ruby on windows, then windows support could be added.
 
+## Features
+
+* Provides a remote control server TCP server
+* Provides scripts to interact with iTunes without using the TCP server.
+* Able to add, remove and refresh tracks.
+* Able to to list and remove dead tracks.
+* Keeps a sqlite3 database in sync with the iTunes library to make operations very quick.
+* Can Be used with Windows or Mac OSX versions of iTunes.
+
 ## Requirments
 
 * iTunes (latest)
