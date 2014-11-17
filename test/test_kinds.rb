@@ -12,12 +12,13 @@ class KindTest < Test::Unit::TestCase
                 
         assert(ItunesController::VideoKind::fromKind(1).displayName()=="Unknown")
         assert(ItunesController::VideoKind::fromKind(1800630348).displayName()=="Unknown")        
-        assert(ItunesController::VideoKind::fromKind(1800630352).displayName()=="")
-        assert(ItunesController::VideoKind::fromKind(1800630345).displayName()=="")
+        assert(ItunesController::VideoKind::fromKind(1800630352).displayName()=="Podcasts")
+        assert(ItunesController::VideoKind::fromKind(1800630345).displayName()=="Movies")
         assert(ItunesController::VideoKind::fromKind(1800630362).displayName()=="Music")
         assert(ItunesController::VideoKind::Music.displayName()=="Music")
-        
-        
+                
         puts("--Test Finish:#{this_method()}")
     end
+    
+    # TODO add tests for the other kinds
 end
