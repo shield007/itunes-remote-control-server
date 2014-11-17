@@ -19,6 +19,8 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+require 'itunesController/logging'
+
 module ItunesController
         
     # A enum of special kinds
@@ -73,6 +75,7 @@ module ItunesController
                 return v1
                 end
             }
+            ItunesController::ItunesControllerLogging::warn("Unknown SpecialKind #{kind}")
             return SpecialKind.new(v1,"Unknown")
         end
     
@@ -114,10 +117,11 @@ module ItunesController
         def self.fromKind(kind)
             @@values.each { | v1 |
                 if (v1.kind==kind)
-                return v1
+                    return v1
                 end
             }
-            return SourceKind.new(v1,"Unknown")
+            ItunesController::ItunesControllerLogging::warn("Unknown VideoKind #{kind}")
+            return SourceKind.new(kind,"Unknown")
         end
     
         # Used pretty print the kind to a string
@@ -171,7 +175,8 @@ module ItunesController
                 return v1
                 end
             }
-            return SourceKind.new(v1,"Unknown")
+            ItunesController::ItunesControllerLogging::warn("Unknown SourceKind #{kind}")
+            return SourceKind.new(kind,"Unknown")
         end
     
         # Used pretty print the kind to a string

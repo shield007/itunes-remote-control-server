@@ -17,6 +17,8 @@ class DatabaseTest < Test::Unit::TestCase
         begin    
             db.addTrack(ItunesController::Track.new('/Shows/Seasn 1/S01E01 - Blah.avi',1,"Blah"))
             db.addTrack(ItunesController::Track.new('/Shows/Seasn 1/S01E01 - Blah.avi',2,"Blah"))
+                
+            # TODO Check that the dupe tracks are in the DB and the normal track
         ensure
             db.close()
         end
