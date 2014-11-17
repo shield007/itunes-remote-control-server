@@ -45,7 +45,8 @@ module ItunesController
             ItunesController::ItunesControllerLogging::debug("Connecting to #{@connectionString}...")
             begin                
                 @db=Sequel.connect(@connectionString,:test=>true,:single_threaded=>true)                               
-            rescue => e                                 
+            rescue => e                 
+                ItunesController::ItunesControllerLogging::error("Unable to connect to database with connection: #{@connectionString}")
                 raise
             end
                         
