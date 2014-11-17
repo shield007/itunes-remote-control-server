@@ -20,7 +20,7 @@ class DummyControllerCreator < ItunesController::ControllerCreator
         @controller = controller
     end
     
-    def createController()
+    def createController(connectionString)
         return @controller
     end
 end
