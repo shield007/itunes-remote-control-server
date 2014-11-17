@@ -9,8 +9,7 @@ Rake::TestTask.new do |t|
   t.libs << 'bin'
 end
 
-YARD::Rake::YardocTask.new do |t|
-#    t.files   = ['lib/**/*.rb','bin/**/*.rb','LICENSE','README']
+YARD::Rake::YardocTask.new do |t|    
     t.files   = ['lib/**/*.rb','bin/**/*.rb']
 end
 

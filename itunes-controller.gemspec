@@ -14,8 +14,8 @@ Gem::Specification.new do |s|
   s.executables = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   s.has_rdoc     = 'yard'
-  s.rdoc_options = [ '--main', 'README' ] 
-  s.extra_rdoc_files = [ 'LICENSE', 'README' ] 
+  s.rdoc_options = [ '--main', 'Readme.md' ] 
+  s.extra_rdoc_files = [ 'LICENSE', 'Readme.md' ] 
   s.add_development_dependency('yard')
   s.add_development_dependency('rake')
   s.add_development_dependency('test-unit')
@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.add_dependency('sqlite3') if RUBY_PLATFORM != 'java'
   s.add_dependency('log4r')
   s.add_dependency('json')
+  s.add_dependency('sequel')  
 end
