@@ -5,6 +5,12 @@ Version 0.2
 -----------
  
 * Improve the exception printing
+* Test track info command
+   * How does it handle tracks that have not been added to iTunes
+   * Does all it's output go though the logger
+* Add a --json to client utils to get the contents back as json
+   * Add to command itunes-remote-track-info.rb
+   * Add to command itunes-remote-server-info.rb
 * Test the extra track info on windows
 * When regenerating the track cache make it possible to talk to the server
    * This might only be at startup, but it a big issue
