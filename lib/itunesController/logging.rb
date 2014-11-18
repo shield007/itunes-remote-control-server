@@ -77,9 +77,9 @@ module ItunesController
         def self.error(msg,exception=nil)
             @@log.error(msg)                        
             if (exception!=nil)
-                @@log.error(exception.message)
+                @@log.error("#{exception.class.name}: "+exception.message)
                 exception.backtrace.each do | trace | 
-                    @@log.error("* " + trace)
+                    @@log.error("  * " + trace)
                 end
             end            
         end                           
