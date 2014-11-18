@@ -89,6 +89,7 @@ module ItunesController
         def executeSingleThreaded(state)
             begin
                 @controller=@controllerCreator.createController(@config.dbConnectionString)
+                ItunesController::ItunesControllerLogging::info("Started iTunes control server on port #{@config.port}")
             rescue => e
                 ItunesController::ItunesControllerLogging::error(e.message,e)
                 exit(2)
@@ -110,7 +111,7 @@ module ItunesController
         # @param [ItunesController::BaseITunesController] itunes The itunes controller class         
         def initialize(config,port,itunes)
             super(port,config.interfaceAddress)
-            ItunesController::ItunesControllerLogging::info("Started iTunes controll server on port #{port}")    
+            ItunesController::ItunesControllerLogging::info("Starting iTunes control server....")    
             @exit=false   
             @jobQueue=Queue.new
             @jobQueueThread=Thread.new {
@@ -171,7 +172,11 @@ module ItunesController
         def processJobs()            
             job=@jobQueue.pop
             ItunesController::ItunesControllerLogging::debug("Popped command and executing #{job}")
-            job.execute()
+            begin
+                job.execute()
+            rescue => e
+                ItunesController::ItunesControllerLogging::error("Job #{job} failed",e)                
+            end
         end
            
         # This method is called when a client is connected and finished when the client disconnects.
