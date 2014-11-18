@@ -107,11 +107,16 @@ module ItunesController
                     @stdout.puts "Website: http://code.google.com/p/itunes-remote-control-server/"
                 end
                 opts.on_tail( '-h', '--help', 'Display this screen' ) do
-                    @stdout.puts opts
+                    displayUsage()
                     @exitHandler.doExit(0)
                 end
-                end
-            optparse.parse!(args)
+            end
+            begin
+                optparse.parse!(args)
+            rescue => e
+                usageError(e.message)
+            end
+            
             checkOptions()
         end   
         
@@ -225,13 +230,16 @@ module ItunesController
             result.each do | k,v |
                 @stdout.puts("#{k}: #{v}")
             end      
-#            @stdout.puts("Location: #{result['location']}")
-#            @stdout.puts("Title: #{result['title']}")
-#            @stdout.puts("DatabaseId: #{result['databaseId']}")
         end
-        
-        def checkCache()
-            sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i,@stdout)            
+
+        # Used to check that the cache is uptodate 
+        # @param regerenated If true, will force the cache to be regerenated                             
+        def checkCache(regerenate)
+            if regerenate                
+                sendCommand(ItunesController::CommandName::CHECKCACHE+':true',ItunesController::Code::OK.to_i,@stdout)
+            else
+                sendCommand(ItunesController::CommandName::CHECKCACHE+':false',ItunesController::Code::OK.to_i,@stdout)
+            end            
         end
         
         def waitFor(expected)
