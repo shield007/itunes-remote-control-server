@@ -11,16 +11,42 @@ Version 0.2
 * Add a --json to client utils to get the contents back as json
    * Add to command itunes-remote-track-info.rb
    * Add to command itunes-remote-server-info.rb
-* Test the extra track info on windows
 * When regenerating the track cache make it possible to talk to the server
    * This might only be at startup, but it a big issue
 * Add command line option to server to generate a file with the PID in it
 	* Test windows
 	* Test linux
-* Make track info return more information about the track
 * Server info command should dislpay all the json values without having them hardcoded in the client
 * Check that commands that take paths work with relative paths (convert to abs)
 * Check that commands that take paths work with escape characters and quoted file names 
 * Replace use of apple script
+* itunes-remote-add-files.rb
+    * itunes-remote-check-cache.rb
+    * itunes-remote-list-dead-tracks.rb
+    * itunes-remote-list-tracks.rb
+    * itunes-remote-refresh-files.rb
+    * itunes-remote-remove-dead-tracks.rb
+    * itunes-remote-remove-files.rb
+    * itunes-remote-server-info.rb
+    * itunesController.rb    
+* Test scripts on MacOSX
+    * itunes-remote-add-files.rb
+    * itunes-remote-check-cache.rb
+    * itunes-remote-list-dead-tracks.rb
+    * itunes-remote-list-tracks.rb
+    * itunes-remote-refresh-files.rb
+    * itunes-remote-remove-dead-tracks.rb
+    * itunes-remote-remove-files.rb
+    * itunes-remote-server-info.rb
+    * itunesController.rb
+* Handle iTunes quiting
+* Add command to restart iTtunes
 
 * [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
+
+Version 0.3
+-----------
+
+* Add command/script for searching for tracks
+* Add command/scripts to stop/play track
+* Make track info return more information about the track
