@@ -72,11 +72,11 @@ module ItunesController
         def self.fromKind(kind)
             @@values.each { | v1 |
                 if (v1.kind==kind)
-                return v1
+                    return v1
                 end
             }
             ItunesController::ItunesControllerLogging::warn("Unknown SpecialKind #{kind}")
-            return SpecialKind.new(v1,"Unknown")
+            return SpecialKind.new(kind,"Unknown")
         end
     
         # Used pretty print the kind to a string
@@ -121,7 +121,7 @@ module ItunesController
                 end
             }
             ItunesController::ItunesControllerLogging::warn("Unknown VideoKind #{kind}")
-            return SourceKind.new(kind,"Unknown")
+            return VideoKind.new(kind,"Unknown")
         end
     
         # Used pretty print the kind to a string
@@ -172,7 +172,7 @@ module ItunesController
         def self.fromKind(kind)
             @@values.each { | v1 |
                 if (v1.kind==kind)
-                return v1
+                    return v1
                 end
             }
             ItunesController::ItunesControllerLogging::warn("Unknown SourceKind #{kind}")
