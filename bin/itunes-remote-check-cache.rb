@@ -13,8 +13,25 @@ require 'itunesController/remote_application'
 
 class CheckCacheApp < ItunesController::RemoteApplication          
     
-    def execApp(args)        
-        checkCache()
+    def displayUsage()
+        puts("Usage: "+@appName+" [options] files...") 
+        puts("")
+        puts(genericOptionDescription())            
+        puts("    -r, --regenerated-cache          If this option is given, then it will force the cache to be regenerated")
+    end     
+
+    def parseAppOptions(opts)
+        opts.on('-r','regenerated-cache','If this option is given, then it will force the cache to be regenerated') do
+            @options[:regenerate_cache] = true;
+        end        
+    end        
+    
+    def execApp(args)
+        force = false
+        if @options[:regenerate_cache]==true
+            force=true
+        end        
+        checkCache(force)
     end
 end
 
