@@ -143,6 +143,10 @@ module ItunesController
         def getDeadTrackCount()
             return @backend.sequel()[:dead_tracks].count
         end               
+        
+        def getDupilicateTrackCount()
+            return @backend.sequel()[:dupe_tracks].count
+        end
 
      private
         def createTables()
