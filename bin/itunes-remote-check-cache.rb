@@ -21,7 +21,7 @@ class CheckCacheApp < ItunesController::RemoteApplication
     end     
 
     def parseAppOptions(opts)
-        opts.on('-r','regenerated-cache','If this option is given, then it will force the cache to be regenerated') do
+        opts.on('-r','--regenerated-cache','If this option is given, then it will force the cache to be regenerated') do
             @options[:regenerate_cache] = true;
         end        
     end        

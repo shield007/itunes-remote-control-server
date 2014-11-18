@@ -222,8 +222,8 @@ module ItunesController
         def initialize(state,itunes)
             super(ItunesController::CommandName::CLEARFILES,ServerState::AUTHED,false,state,itunes)
         end
-
         def processData(line,io)
+
             @state.files=[]
             return true, "#{ItunesController::Code::OK} ok\r\n"
         end
@@ -260,9 +260,16 @@ module ItunesController
             super(ItunesController::CommandName::CHECKCACHE,ServerState::AUTHED,false,state,itunes)
         end
 
-        def processData(line,io)            
+        def processData(line,io)
+            force=false
+            if (line =~ /^\:(.+)$/)
+                if $1.downcase()=="true"
+                    force=true
+                end
+            end
+            
             stream=StringIO.new("","w+")
-            @itunes.cacheTracks(false,stream)
+            @itunes.cacheTracks(force,stream)
             
             result=""
             stream.string.each_line do | line |
