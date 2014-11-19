@@ -9,4 +9,4 @@ install:
 build_script:
     - rake
 artifacts:
-  - path: *.gem
+    - path: *.gem
