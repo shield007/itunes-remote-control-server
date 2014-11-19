@@ -1,0 +1,7 @@
+version: "{build}"
+clone_depth: 1
+platform:
+    - x64
+    - x86
+install:
+    - rvm --version
