@@ -13,6 +13,7 @@ require 'itunesController/remote_application'
 
 class AppRefreshFiles < ItunesController::RemoteApplication   
     
+    # Display the command line usage of the application
     def displayUsage()
         puts("Usage: "+@appName+" [options] files...") 
         puts("")

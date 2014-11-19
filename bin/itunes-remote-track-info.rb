@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -I../lib
 #
-# A command line util used to add tracks to the iTunes library
+# A command line utility to display track information
 #
 # Author:: John-Paul Stanford <dev@stanwood.org.uk>
 # Copyright:: Copyright (C) 2011  John-Paul.Stanford <dev@stanwood.org.uk>
@@ -13,12 +13,25 @@ require 'itunesController/remote_application'
 
 class TrackInfoListTracks < ItunesController::RemoteApplication   
     
+    # Display the command line usage of the application
     def displayUsage()
         puts("Usage: "+@appName+" [options] files...") 
         puts("")
         puts(genericOptionDescription())
     end
+
+    # Print track information to stdout
+    # @param path The location of the track to print information for     
+    def infoTrackByPath(path)
+        result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
+        result = JSON.parse(result)      
+        result.each do | k,v |
+            @stdout.puts("#{k}: #{v}")
+        end      
+    end
     
+    # Called when the application is executed to display track information
+    # @args The arguments passed to the application
     def execApp(args)        
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line")

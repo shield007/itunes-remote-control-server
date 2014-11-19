@@ -163,50 +163,11 @@ module ItunesController
         
         def refreshFiles()
             sendCommand(ItunesController::CommandName::REFRESHFILES,ItunesController::Code::OK.to_i)
-        end              
-                       
-        def listTracks()
-            result=sendCommand(ItunesController::CommandName::LISTTRACKS,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)
-            tracks = result['tracks']
-            if (tracks==nil or tracks.length()==0)
-                @stdout.puts("No tracks found")
-            else
-                tracks.each do | track |
-                    @stdout.puts("Location: #{track['location']} - Title: #{track['title']} - DatabaseId: #{track['databaseId']}")
-                end
-                
-            end            
-        end
-        
-        def listDeadTracks()
-            result=sendCommand(ItunesController::CommandName::LISTDEADTRACKS,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)
-            tracks = result['tracks']
-            if (tracks==nil or tracks.length()==0)
-                @stdout.puts("No tracks found")
-            else
-                tracks.each do | track |
-                    @stdout.puts("Title: #{track['title']} - DatabaseId: #{track['databaseId']}")
-                end
-                
-            end
-        end
+        end                                                           
         
         def removeDeadTracks()
             sendCommand(ItunesController::CommandName::REMOVEDEADFILES,ItunesController::Code::OK.to_i)
-        end
-        
-        def infoTrackByPath(path)
-            result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
-            result = JSON.parse(result)      
-            result.each do | k,v |
-                @stdout.puts("#{k}: #{v}")
-            end      
-#            @stdout.puts("Location: #{result['location']}")
-#            @stdout.puts("Title: #{result['title']}")
-#            @stdout.puts("DatabaseId: #{result['databaseId']}")
-        end
+        end                
         
         def checkCache()
             sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i,@stdout)            
