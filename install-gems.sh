@@ -9,7 +9,7 @@ gem install yard rake test-unit rdoc
 gem install escape log4r json sequel
 
 # Install native GEMS
-if ruby --version | grep -q jruby
+if [ "`ruby --version | grep -q jruby`" -ne "0" ] 
 then
     gem install sqlite3
 fi
