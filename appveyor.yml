@@ -4,4 +4,6 @@ platform:
     - x64
     - x86
 install:
-    - rvm --version
+    - ruby --version
+    - dir
+    - install-gems.bat
