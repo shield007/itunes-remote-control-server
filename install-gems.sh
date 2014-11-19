@@ -2,11 +2,15 @@
 
 echo "Installing GEMS....."
 
-rvm info
-
 # Test GEMS
 gem install yard rake test-unit rdoc 
 
 # Runtime GEMS
-gem install escape sqlite3 log4r json sequel
+gem install escape log4r json sequel
+
+# Install native GEMS
+if ruby --version | grep -q jruby
+then
+    gem install sqlite3
+fi
 
