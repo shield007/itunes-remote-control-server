@@ -26,7 +26,7 @@ class AppAddFiles < ItunesController::RemoteApplication
     end
     
     # Register all the files to be added with the server, then send the command to add them
-    # @args The arguments passed to the application
+    # @param args The arguments passed to the application
     def execApp(args)
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line to add to iTunes")

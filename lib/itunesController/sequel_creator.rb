@@ -20,7 +20,7 @@
 #
 
 require 'itunesController/database/sequel_backend'
-require 'itunesController/itunescontroller_factory'
+require 'itunesController/itunes/itunescontroller_factory'
 require 'itunesController/controller_creator'
 
 module ItunesController  

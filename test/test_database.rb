@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'itunesController/database/sequel_backend'
 require 'itunesController/database/database'
-require 'itunesController/track'
+require 'itunesController/track/track'
 
 class DatabaseTest < Test::Unit::TestCase 
     

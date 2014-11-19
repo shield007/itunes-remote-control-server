@@ -37,7 +37,7 @@ class AppListTracks < ItunesController::RemoteApplication
     end
     
     # Call the server to list dead tracks
-    # @args The arguments passed to the application
+    # @param args The arguments passed to the application
     def execApp(args)
         listDeadTracks()                               
     end

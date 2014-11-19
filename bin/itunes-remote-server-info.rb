@@ -36,7 +36,7 @@ class AppServerInfo < ItunesController::RemoteApplication
     end       
     
     # Called when the application is executed to retrieve the server information
-    # @args The arguments passed to the application
+    # @param args The arguments passed to the application
     def execApp(args)
         serverInfo()                               
     end

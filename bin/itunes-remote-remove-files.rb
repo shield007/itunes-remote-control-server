@@ -26,7 +26,7 @@ class AppRemoveFiles < ItunesController::RemoteApplication
     end
     
     # Register all the files to be removed with the server, then send the command to remove them
-    # @args The arguments passed to the application
+    # @param args The arguments passed to the application
     def execApp(args)
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line to remove from iTunes")

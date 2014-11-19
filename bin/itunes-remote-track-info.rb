@@ -31,7 +31,7 @@ class TrackInfoListTracks < ItunesController::RemoteApplication
     end
     
     # Called when the application is executed to display track information
-    # @args The arguments passed to the application
+    # @param args The arguments passed to the application
     def execApp(args)        
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line")

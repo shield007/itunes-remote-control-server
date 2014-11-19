@@ -36,7 +36,7 @@ class AppListTracks < ItunesController::RemoteApplication
     end
     
     # Call the server to list tracks
-    # @args The arguments passed to the application
+    # @param args The arguments passed to the application
     def execApp(args)
         listTracks()                               
     end

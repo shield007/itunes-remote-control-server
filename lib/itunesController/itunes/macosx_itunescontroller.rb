@@ -24,11 +24,11 @@
 #  - http://guides.macrumors.com/Deleting_Songs_From_iTunes
 #  - http://macscripter.net/viewtopic.php?id=22726
 
-require 'itunesController/itunescontroller'
+require 'itunesController/itunes/itunescontroller'
 require 'itunesController/kinds'
 require 'itunesController/debug'
 require 'itunesController/logging'
-require 'itunesController/track'
+require 'itunesController/track/track'
 require 'rubygems'
 require 'escape'
 require 'open3'

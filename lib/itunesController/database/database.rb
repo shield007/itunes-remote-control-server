@@ -18,7 +18,7 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 require 'itunesController/logging'
-require 'itunesController/itunescontroller'
+require 'itunesController/itunes/itunescontroller'
 
 require 'fileutils'
 
