@@ -15,11 +15,11 @@ class AppAddFiles < ItunesController::RemoteApplication
     
     # Display the command line usage of the application
     def displayUsage()
-        puts("Usage: "+@appName+" [options] files...") 
-        puts("")
-        puts(genericOptionDescription())
-    end
-    
+        @stdout.puts("Usage: "+@appName+" [options] files...") 
+        @stdout.puts("")
+        @stdout.puts(genericOptionDescription())
+    end     
+       
     # Send the add files command to the server
     def addFiles()
         sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)       

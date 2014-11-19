@@ -15,9 +15,9 @@ class AppRemoveFiles < ItunesController::RemoteApplication
     
     # Display the command line usage of the application
     def displayUsage()
-        puts("Usage: "+@appName+" [options] files...") 
-        puts("")
-        puts(genericOptionDescription())
+        @stdout.puts("Usage: "+@appName+" [options] files...") 
+        @stdout.puts("")
+        @stdout.puts(genericOptionDescription())
     end
     
     # Send the remove files command to the server

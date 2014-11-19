@@ -106,8 +106,8 @@ module ItunesController
                     @stdout.puts "Authors: John-Paul Stanford <dev@stanwood.org.uk>"
                     @stdout.puts "Website: http://code.google.com/p/itunes-remote-control-server/"
                 end
-                opts.on_tail( '-h', '--help', 'Display this screen' ) do
-                    displayUsage()
+                opts.on_tail( '-h', '--help', 'Display this screen' ) do                    
+                    displayUsage()                    
                     @exitHandler.doExit(0)
                 end
             end
@@ -172,11 +172,7 @@ module ItunesController
         
         def removeDeadTracks()
             sendCommand(ItunesController::CommandName::REMOVEDEADFILES,ItunesController::Code::OK.to_i)
-        end                
-        
-        def checkCache()
-            sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i,@stdout)            
-        end
+        end                             
         
         def waitFor(expected)
             @client.waitfor(/\n/) do |response|

@@ -38,7 +38,7 @@ module ItunesController
     # @attr [ItunesController::ServerConfig] config The server configuration
     class ServerState
         
-        attr_accessor :state,:files,:user,:config
+        attr_accessor :state,:files,:user,:config, :doCacheUpdate
         
         NOT_AUTHED=1
         DOING_AUTH=2
@@ -47,12 +47,14 @@ module ItunesController
         def initialize(config)
             @state=ServerState::NOT_AUTHED
             @files=[]
-            @config=config           
+            @config=config
+            @doCacheUpdate = false           
         end
         
         def clean
             @state=ServerState::NOT_AUTHED
             @files=[]
+            @doCacheUpdate = false
         end
     end
            

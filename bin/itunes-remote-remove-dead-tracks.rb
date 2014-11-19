@@ -15,9 +15,9 @@ class AppListTracks < ItunesController::RemoteApplication
     
     # Display the command line usage of the application
     def displayUsage()
-        puts("Usage: "+@appName+" [options]") 
-        puts("")
-        puts(genericOptionDescription())
+        @stdout.puts("Usage: "+@appName+" [options]") 
+        @stdout.puts("")
+        @stdout.puts(genericOptionDescription())
     end
     
     def execApp(args)

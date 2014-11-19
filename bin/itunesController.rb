@@ -36,11 +36,11 @@ class App < ItunesController::Application
 
     # Used to display the command line useage
     def displayUsage()
-        puts("Usage: "+@appName+" [options]")
-        puts("")
-        puts(genericOptionDescription())
-        puts("    -p, --port PORT                  The port number to start the server on. Defaults to #{DEFAULT_PORT}")
-        puts("    -c, --config FILE                The configuration file")
+        @stdout.puts("Usage: "+@appName+" [options]")
+        @stdout.puts("")
+        @stdout.puts(genericOptionDescription())
+        @stdout.puts("    -p, --port PORT                  The port number to start the server on. Defaults to #{DEFAULT_PORT}")
+        @stdout.puts("    -c, --config FILE                The configuration file")
     end
 
     def checkAppOptions()

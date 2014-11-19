@@ -70,7 +70,7 @@ class RemoteCommandTest < BaseServerTest
             assert(e.code() == 0)
         end                        
         assert(@stderr.string.length() == 0)
-        assert(@stdout.string.include?("Usage: itunes-remote-add-files.rb [options]"))
+        assert(@stdout.string.include?("Usage: itunes-remote-add-files.rb [options] files..."))
         assert(@stdout.string.include?("Specific options:"))
         puts("\n-- Test End: #{this_method()}")            
     end
@@ -156,16 +156,30 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test End: #{this_method()}")
     end
     
-    def test_aacheck_cache
+    def test_check_cache
         puts("\n-- Test Start: #{this_method()}")
         begin
-            app = CheckCacheApp.new("itunes-remote-check-cache.rb",@stdout,@stderr,DummyExitHandler.new())
+            app = CheckCacheApp.new("itunes-remote-check-cache.rb",@stdout,@stderr,DummyExitHandler.new())                
             app.exec(["-c",@configFile.path()])
         rescue ExitException => e            
             assert(e.code() == 0)
         end
                
-        assert(@stdout.string.include?("Track cache uptodate\n"))        
+        assert(@stdout.string.include?("Cache is uptodate\n"))        
+        
+        puts("\n-- Test End: #{this_method()}")
+    end
+    
+    def test_check_cache_regenerate
+        puts("\n-- Test Start: #{this_method()}")
+        begin
+            app = CheckCacheApp.new("itunes-remote-check-cache.rb",@stdout,@stderr,DummyExitHandler.new())                
+            app.exec(["-c",@configFile.path(),"--regenerated-cache"])
+        rescue ExitException => e            
+            assert(e.code() == 0)
+        end
+
+        assert(@stdout.string.include?("Cache is dirty, Running update\n"))        
         
         puts("\n-- Test End: #{this_method()}")
     end

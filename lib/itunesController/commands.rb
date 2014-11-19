@@ -268,16 +268,24 @@ module ItunesController
                 end
             end
             
-            stream=StringIO.new("","w+")
-            @itunes.cacheTracks(force,stream)
-            
             result=""
-            stream.string.each_line do | line |
-                result=result+"101:"+line+"\r\n"
-            end
+            if (@itunes.needsRecacheTracks() || force)
+                result=result+"101:Cache is dirty, Running update\r\n"
+                @state.doCacheUpdate = true                
+            else 
+                result=result+"101:Cache is uptodate\r\n"
+                @state.doCacheUpdate = false
+            end            
             result=result+"#{ItunesController::Code::OK} ok\r\n"
                         
             return true, result
+        end
+        
+        def executeSingleThreaded(state)
+            if (state.doCacheUpdate)
+                @itunes.cacheTracks(force)
+                state.doCacheUpdate = false                
+            end            
         end
     end
 
