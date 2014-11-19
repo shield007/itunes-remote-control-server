@@ -164,82 +164,18 @@ module ItunesController
         # @param file The file
         def file(file)
             sendCommand(ItunesController::CommandName::FILE+":#{getAbsPath(file)}",ItunesController::Code::OK.to_i)
-        end
-        
-        def addFiles()
-            sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)       
-        end
+        end              
         
         def refreshFiles()
             sendCommand(ItunesController::CommandName::REFRESHFILES,ItunesController::Code::OK.to_i)
-        end
-        
-        def removeFiles()
-            sendCommand(ItunesController::CommandName::REMOVEFILES,ItunesController::Code::OK.to_i)
-        end
-        
-        def serverInfo()
-            result=sendCommand(ItunesController::CommandName::VERSION,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)           
-            @stdout.puts("ITunes control server : #{result['server']}")
-            @stdout.puts("Apple iTunes version : #{result['iTunes']}")
-            result=sendCommand(ItunesController::CommandName::SERVERINFO,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)
-            @stdout.puts("Cache Dirty: #{result['cacheDirty']}")
-            @stdout.puts("Cached Track Count: #{result['cachedTrackCount']}")
-            @stdout.puts("Cached Dead Track Count: #{result['cachedDeadTrackCount']}")
-            @stdout.puts("Cached Library Track Count: #{result['cachedLibraryTrackCount']}")
-            @stdout.puts("Library Track Count: #{result['libraryTrackCount']}")
-        end
-        
-        def listTracks()
-            result=sendCommand(ItunesController::CommandName::LISTTRACKS,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)
-            tracks = result['tracks']
-            if (tracks==nil or tracks.length()==0)
-                @stdout.puts("No tracks found")
-            else
-                tracks.each do | track |
-                    @stdout.puts("Location: #{track['location']} - Title: #{track['title']} - DatabaseId: #{track['databaseId']}")
-                end
-                
-            end            
-        end
-        
-        def listDeadTracks()
-            result=sendCommand(ItunesController::CommandName::LISTDEADTRACKS,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)
-            tracks = result['tracks']
-            if (tracks==nil or tracks.length()==0)
-                @stdout.puts("No tracks found")
-            else
-                tracks.each do | track |
-                    @stdout.puts("Title: #{track['title']} - DatabaseId: #{track['databaseId']}")
-                end
-                
-            end
-        end
+        end                                                           
         
         def removeDeadTracks()
             sendCommand(ItunesController::CommandName::REMOVEDEADFILES,ItunesController::Code::OK.to_i)
-        end
+        end                
         
-        def infoTrackByPath(path)
-            result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
-            result = JSON.parse(result)      
-            result.each do | k,v |
-                @stdout.puts("#{k}: #{v}")
-            end      
-        end
-
-        # Used to check that the cache is uptodate 
-        # @param regerenated If true, will force the cache to be regerenated                             
-        def checkCache(regerenate)
-            if regerenate                
-                sendCommand(ItunesController::CommandName::CHECKCACHE+':true',ItunesController::Code::OK.to_i,@stdout)
-            else
-                sendCommand(ItunesController::CommandName::CHECKCACHE+':false',ItunesController::Code::OK.to_i,@stdout)
-            end            
+        def checkCache()
+            sendCommand(ItunesController::CommandName::CHECKCACHE,ItunesController::Code::OK.to_i,@stdout)            
         end
         
         def waitFor(expected)

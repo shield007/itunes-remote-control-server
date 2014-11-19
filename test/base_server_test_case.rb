@@ -7,7 +7,7 @@ require 'timeout'
 
 require 'itunesController/platform'
 require 'itunesController/config'
-require 'itunesController/dummy_itunescontroller'
+require 'itunesController/itunes/dummy_itunescontroller'
 require 'itunesController/controllserver'
 require 'itunesController/cachedcontroller'
 require 'itunesController/controller_creator'

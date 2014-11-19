@@ -19,9 +19,9 @@
 #
 
 require 'itunesController/logging'
-require 'itunesController/itunescontroller'
+require 'itunesController/itunes/itunescontroller'
 require 'itunesController/database/database'
-require 'itunesController/track'
+require 'itunesController/track/track'
 
 module ItunesController
 

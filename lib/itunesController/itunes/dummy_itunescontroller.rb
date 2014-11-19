@@ -18,8 +18,8 @@
 # Copyright:: Copyright (C) 2011  John-Paul.Stanford <dev@stanwood.org.uk>
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
-require 'itunesController/itunescontroller'
-require 'itunesController/dummy_itunes_track'
+require 'itunesController/itunes/itunescontroller'
+require 'itunesController/track/dummy_itunes_track'
 
 module ItunesController
     # This is a dummy implementation of the itunes controller which can be used
