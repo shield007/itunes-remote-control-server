@@ -105,6 +105,7 @@ module ItunesController
         TVShow=VideoKind.new(1800823892,"TV Show")       
         Movie=VideoKind.new(1800823885,"Movie")
         MusicVideo=VideoKind.new(1800823894,"Music Video")
+        HomveVideo=VideoKind.new(1800823880,"Home Video")        
         None=VideoKind.new(1800302446,"None")        
         # The unknown kind
         Unknown=SpecialKind.new(-1,"Unknown") 
