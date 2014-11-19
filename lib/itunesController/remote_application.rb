@@ -172,21 +172,7 @@ module ItunesController
         def removeFiles()
             sendCommand(ItunesController::CommandName::REMOVEFILES,ItunesController::Code::OK.to_i)
         end
-        
-        def serverInfo()
-            result=sendCommand(ItunesController::CommandName::VERSION,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)           
-            @stdout.puts("ITunes control server : #{result['server']}")
-            @stdout.puts("Apple iTunes version : #{result['iTunes']}")
-            result=sendCommand(ItunesController::CommandName::SERVERINFO,ItunesController::Code::OK.to_i)
-            result = JSON.parse(result)
-            @stdout.puts("Cache Dirty: #{result['cacheDirty']}")
-            @stdout.puts("Cached Track Count: #{result['cachedTrackCount']}")
-            @stdout.puts("Cached Dead Track Count: #{result['cachedDeadTrackCount']}")
-            @stdout.puts("Cached Library Track Count: #{result['cachedLibraryTrackCount']}")
-            @stdout.puts("Library Track Count: #{result['libraryTrackCount']}")
-        end
-        
+                       
         def listTracks()
             result=sendCommand(ItunesController::CommandName::LISTTRACKS,ItunesController::Code::OK.to_i)
             result = JSON.parse(result)
