@@ -159,19 +159,11 @@ module ItunesController
         # @param file The file
         def file(file)
             sendCommand(ItunesController::CommandName::FILE+":#{getAbsPath(file)}",ItunesController::Code::OK.to_i)
-        end
-        
-        def addFiles()
-            sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)       
-        end
+        end              
         
         def refreshFiles()
             sendCommand(ItunesController::CommandName::REFRESHFILES,ItunesController::Code::OK.to_i)
-        end
-        
-        def removeFiles()
-            sendCommand(ItunesController::CommandName::REMOVEFILES,ItunesController::Code::OK.to_i)
-        end
+        end              
                        
         def listTracks()
             result=sendCommand(ItunesController::CommandName::LISTTRACKS,ItunesController::Code::OK.to_i)

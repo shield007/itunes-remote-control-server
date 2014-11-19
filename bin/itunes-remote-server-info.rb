@@ -13,6 +13,7 @@ require 'itunesController/remote_application'
 
 class AppServerInfo < ItunesController::RemoteApplication   
     
+    # Display the command line usage of the application
     def displayUsage()
         puts("Usage: "+@appName+" [options]") 
         puts("")
@@ -32,8 +33,10 @@ class AppServerInfo < ItunesController::RemoteApplication
         @stdout.puts("Cached Dead Track Count: #{result['cachedDeadTrackCount']}")
         @stdout.puts("Cached Library Track Count: #{result['cachedLibraryTrackCount']}")
         @stdout.puts("Library Track Count: #{result['libraryTrackCount']}")
-    end
+    end       
     
+    # Called when the application is executed to retrieve the server information
+    # @args The arguments passed to the application
     def execApp(args)
         serverInfo()                               
     end

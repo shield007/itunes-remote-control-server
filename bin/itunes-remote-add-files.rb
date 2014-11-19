@@ -13,12 +13,20 @@ require 'itunesController/remote_application'
 
 class AppAddFiles < ItunesController::RemoteApplication   
     
+    # Display the command line usage of the application
     def displayUsage()
         puts("Usage: "+@appName+" [options] files...") 
         puts("")
         puts(genericOptionDescription())
     end
     
+    # Send the add files command to the server
+    def addFiles()
+        sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)       
+    end
+    
+    # Register all the files to be added with the server, then send the command to add them
+    # @args The arguments passed to the application
     def execApp(args)
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line to add to iTunes")
