@@ -8,5 +8,5 @@ install:
     - install-gems.bat
 build_script:
     - rake
-artifacts:
-    - path: *.gem
+#artifacts:
+#    - path: *.gem
