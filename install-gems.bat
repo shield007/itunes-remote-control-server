@@ -2,12 +2,12 @@
 
 echo "Installing GEMS....."
 
-REM Test GEMS
+echo "Test GEMS"
 gem install yard rake test-unit rdoc 
 
-REM Runtime GEMS
+echo "Runtime GEMS"
 gem install escape log4r json sequel
 
-REM Install native GEMS
+echo "Install native GEMS"
 gem install sqlite3
 
