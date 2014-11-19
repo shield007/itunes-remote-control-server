@@ -4,6 +4,5 @@ platform:
     - x64
     - x86
 install:
-    - ruby --version
-    - dir
     - install-gems.bat
+    - rake
