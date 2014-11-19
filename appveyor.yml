@@ -4,5 +4,9 @@ platform:
     - x64
     - x86
 install:
+    - choco install SQLite
     - install-gems.bat
+build_script:
     - rake
+artifacts:
+  - path: *.gem
