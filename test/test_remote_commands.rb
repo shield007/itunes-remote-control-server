@@ -145,7 +145,7 @@ class RemoteCommandTest < BaseServerTest
                                             
         begin
             app = TrackInfoListTracks.new("itunes-remote-track-info.rb",@stdout,@stderr,DummyExitHandler.new())
-            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1,file2])
         rescue ExitException => e
             if e.code() != 0
                 puts "==================== STDOUT ========================="
