@@ -147,8 +147,13 @@ class RemoteCommandTest < BaseServerTest
             app = TrackInfoListTracks.new("itunes-remote-track-info.rb",@stdout,@stderr,DummyExitHandler.new())
             app.exec(["-c",@configFile.path(),'--log_config','DEBUG',"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
         rescue ExitException => e
-            puts @stdout.string
-            $stderr.puts @stderr.string            
+            if e.code() != 0
+                puts "==================== STDOUT ========================="
+                puts @stdout.string
+                puts "==================== STDERR ========================="
+                puts @stderr.string
+                puts "====================================================="
+            end            
             assert(e.code() == 0)
         end
         assert(@stdout.string.include?("location: /blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: /blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
