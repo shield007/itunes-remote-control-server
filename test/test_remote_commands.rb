@@ -163,8 +163,8 @@ class RemoteCommandTest < BaseServerTest
         puts @stderr.string
         puts "====================================================="
         
-        if (ItunesController::Platform::isWindows())
-            assert(@stdout.string.include?("location: c:/blah/show_episode_1.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: c:/blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
+        if (ItunesController::Platform::isWindows())            
+            assert(@stdout.string.include?("location: c:/blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: c:/blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
         else
             assert(@stdout.string.include?("location: /blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: /blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
         end    
