@@ -4,7 +4,9 @@ platform:
     - x64
     - x86
 install:
-    - choco install SQLite
+#    - choco install SQLite
+#    - Install-Package sqlite
+    - nuget install sqlite
     - install-gems.bat
 build_script:
     - rake
