@@ -38,10 +38,11 @@ Version 0.2
     * itunes-remote-remove-files.rb
     * itunes-remote-server-info.rb
     * itunesController.rb
-* Handle iTunes quiting
+* [done on osx, need to check windows] Handle iTunes quiting    
 * Add command to restart iTtunes
 
 * [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
+
 
 Version 0.3
 -----------

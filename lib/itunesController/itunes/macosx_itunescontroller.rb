@@ -44,16 +44,19 @@ module ItunesController
     class MacOSXITunesController < ItunesController::BaseITunesController
 
         # The constructor
-        def initialize()
-            @iTunes = SBApplication.applicationWithBundleIdentifier:'com.apple.iTunes'
-            library=getSourceLibrary()
-            @libraryPlaylists=library.libraryPlaylists
+        def initialize() 
+            getITunes()      
         end
 
         # Used to get the iTunes version
         # @return [String] The itunes version
         def version
-            return @iTunes.version.to_s+" (Mac OSX)"
+            begin
+                return getITunes().version.to_s+" (Mac OSX)"
+            rescue => e
+                puts e
+                raise
+            end
         end
 
         # Used to tell iTunes to refresh a list of tracks data from the info stored in the files
@@ -81,9 +84,10 @@ module ItunesController
         # @return [Array[ItunesController::Track]] List of ids of the new tracks once they are in the database
         def addFilesToLibrary(files)
             tracks=[]
+                        
             files.each do | file |
                 url=NSURL.fileURLWithPath(file)
-                added=@iTunes.add_to_([url],@libraryPlaylists[0])
+                added=getITunes().add_to_([url],getLibraryPlaylists()[0])
                 ItunesController::ItunesControllerLogging::debug("Added track #{added}")
                 if added
                     track=ItunesController::Track.new(file,added.databaseID.to_i,added.name)
@@ -105,7 +109,7 @@ module ItunesController
         
         def getTracks(&b)
             ItunesController::ItunesControllerLogging::debug("Retrieving track information...")
-            playlist=@libraryPlaylists[0]
+            playlist=getLibraryPlaylists()[0]
             fileTracks = playlist.fileTracks
             size = fileTracks.length()
             count = 1
@@ -145,7 +149,7 @@ module ItunesController
         # Used to find the number of tracks in the library
         # @return [Number] The number of tracks
         def getTrackCount()
-            playlist=@libraryPlaylists[0]
+            playlist=getLibraryPlaylists()[0]
             return playlist.fileTracks.length()
         end
 
@@ -171,7 +175,7 @@ module ItunesController
         # Used to get the libaray iTunes source
         # @return The iTunes source for the library
         def getSourceLibrary()
-            @iTunes.sources.each do |source|
+            getITunes().sources.each do |source|
                 if (source.kind == SourceKind::Library.kind)
                     return source
                 end
@@ -208,5 +212,16 @@ module ItunesController
             stdin, stdout, stderr = Open3.popen3(Escape.shell_command(["osascript","-e",script]))
             return stdout.readlines.join('\n').strip
         end
+        
+        def getITunes()
+            iTunes = SBApplication.applicationWithBundleIdentifier:'com.apple.iTunes'
+            return iTunes            
+        end
+        
+        def getLibraryPlaylists()
+            library=getSourceLibrary()
+            libraryPlaylists=library.libraryPlaylists
+            return libraryPlaylists
+        end     
     end
 end
