@@ -128,19 +128,35 @@ class ServerTest < BaseServerTest
             client.connect("localhost",@port)            
             client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
             
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah1/shows's/S01E01 - The Episode.m4v", 220);
-            client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
-            client.sendCommand(ItunesController::CommandName::ADDFILES, 220);
-            client.sendCommand(ItunesController::CommandName::HELO, 220);
+            if (ItunesController::Platform::isWindows())                
+                client.sendCommand(ItunesController::CommandName::FILE+":c:\\blah", 220);
+                client.sendCommand(ItunesController::CommandName::FILE+":c:/blah1/shows's/S01E01 - The Episode.m4v", 220);
+                client.sendCommand(ItunesController::CommandName::FILE+":c:\\blah\\blah2", 220);
+                client.sendCommand(ItunesController::CommandName::ADDFILES, 220);
+                client.sendCommand(ItunesController::CommandName::HELO, 220);
+            else
+                client.sendCommand(ItunesController::CommandName::FILE+":/blah", 220);
+                client.sendCommand(ItunesController::CommandName::FILE+":/blah1/shows's/S01E01 - The Episode.m4v", 220);
+                client.sendCommand(ItunesController::CommandName::FILE+":/blah/blah2", 220);
+                client.sendCommand(ItunesController::CommandName::ADDFILES, 220);
+                client.sendCommand(ItunesController::CommandName::HELO, 220);
+            end
             
             commandLog = ItunesController::DummyITunesController::getCommandLog()            
             
-            assertCommandLog(["getTrackCount() = 0",
-                              "getTrackCount() = 0",
-                              "addFilesToLibrary(/blah)",
-                              "addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",
-                              "addFilesToLibrary(/blah/blah2)"])      
+            if (ItunesController::Platform::isWindows())    
+                assertCommandLog(["getTrackCount() = 0",
+                                  "getTrackCount() = 0",
+                                  "addFilesToLibrary(/blah)",
+                                  "addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",
+                                  "addFilesToLibrary(/blah/blah2)"])
+            else
+                assertCommandLog(["getTrackCount() = 0",
+                                  "getTrackCount() = 0",
+                                  "addFilesToLibrary(c:/blah)",
+                                  "addFilesToLibrary(c:/blah1/shows's/S01E01 - The Episode.m4v)",
+                                  "addFilesToLibrary(c:/blah/blah2)"])
+            end      
             client.sendCommand(ItunesController::CommandName::QUIT,221)
             client.disconnect
         ensure

@@ -4,13 +4,12 @@ platform:
     - x64
     - x86
 install:
-#    - choco install SQLite
-#    - Install-Package sqlite
     - nuget install sqlite
 #    - install-gems.bat
     - gem install yard rake test-unit rdoc 
     - gem install escape log4r json sequel
     - gem install sqlite3
+    - gem install redcarpet
 build_script:
     - rake
 #artifacts:
