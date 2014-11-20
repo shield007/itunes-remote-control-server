@@ -37,6 +37,7 @@ class TrackInfoListTracks < ItunesController::RemoteApplication
             ItunesController::ItunesControllerLogging::error("No files given on the command line")
         else
             args.each do | path |
+                puts "Path: #{path}"
                 infoTrackByPath(path)                       
             end            
         end                                          

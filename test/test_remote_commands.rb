@@ -125,13 +125,14 @@ class RemoteCommandTest < BaseServerTest
         
         @server.waitForEmptyJobQueue()
         
-                
+        puts("Here 1")
         begin        
             app = AppListTracks.new('itunes-remote-list-tracks.rb',@stdout,@stderr,DummyExitHandler.new())
             app.exec(["-c",@configFile.path()])
         rescue ExitException => e
             assert(e.code() == 0)
-        end                          
+        end           
+        puts("Here 2")               
                 
         if (ItunesController::Platform::isWindows())
             assert(@stdout.string.include?("Location: c:/blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
