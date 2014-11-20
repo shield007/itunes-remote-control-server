@@ -129,9 +129,9 @@ class ServerTest < BaseServerTest
             client.login(BaseServerTest::USER,BaseServerTest::PASSWORD)
             
             if (ItunesController::Platform::isWindows())                
-                client.sendCommand(ItunesController::CommandName::FILE+":c:\\blah", 220);
+                client.sendCommand(ItunesController::CommandName::FILE+":c:/blah", 220);
                 client.sendCommand(ItunesController::CommandName::FILE+":c:/blah1/shows's/S01E01 - The Episode.m4v", 220);
-                client.sendCommand(ItunesController::CommandName::FILE+":c:\\blah\\blah2", 220);
+                client.sendCommand(ItunesController::CommandName::FILE+":c:/blah/blah2", 220);
                 client.sendCommand(ItunesController::CommandName::ADDFILES, 220);
                 client.sendCommand(ItunesController::CommandName::HELO, 220);
             else
