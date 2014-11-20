@@ -104,10 +104,17 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test Start: #{this_method()}")
         begin        
             app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
-            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',"/blah/show_episode.m4v","/blah/show_episode_1.m4v"])
+            file1 = '/blah/show_episode.m4v'
+            file2 = '/blah/show_episode_1.m4v'
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1,file2])
         rescue ExitException => e
-            puts @stdout.string
-            $stderr.puts @stderr.string
+            if e.code() != 0
+                puts "==================== STDOUT ========================="
+                puts @stdout.string
+                puts "==================== STDERR ========================="
+                puts @stderr.string
+                puts "====================================================="
+            end
             assert(e.code() == 0)
         end          
         
