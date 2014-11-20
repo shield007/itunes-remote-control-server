@@ -104,8 +104,13 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test Start: #{this_method()}")
         begin        
             app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
-            file1 = '/blah/show_episode.m4v'
-            file2 = '/blah/show_episode_1.m4v'
+            if (ItunesController::Platform::isWindows())
+                file1 = 'c:/blah/show_episode.m4v'
+                file2 = 'c:/blah/show_episode_1.m4v'
+            else
+                file1 = '/blah/show_episode.m4v'
+                file2 = '/blah/show_episode_1.m4v'
+            end               
             app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1,file2])
         rescue ExitException => e
             if e.code() != 0
@@ -128,9 +133,13 @@ class RemoteCommandTest < BaseServerTest
             assert(e.code() == 0)
         end                          
                 
-        assert(@stdout.string.include?("Location: /blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
-        assert(@stdout.string.include?("Location: /blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
-   
+        if (ItunesController::Platform::isWindows())
+            assert(@stdout.string.include?("Location: c:/blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
+            assert(@stdout.string.include?("Location: c:/blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
+        else
+            assert(@stdout.string.include?("Location: /blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
+            assert(@stdout.string.include?("Location: /blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
+        end   
         
         @stdout=StringIO.new("","w+")
                                             
