@@ -7,7 +7,10 @@ install:
 #    - choco install SQLite
 #    - Install-Package sqlite
     - nuget install sqlite
-    - install-gems.bat
+#    - install-gems.bat
+    - gem install yard rake test-unit rdoc 
+    - gem install escape log4r json sequel
+    - gem install sqlite3
 build_script:
     - rake
 #artifacts:
