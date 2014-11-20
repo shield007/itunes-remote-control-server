@@ -144,18 +144,18 @@ class ServerTest < BaseServerTest
             
             commandLog = ItunesController::DummyITunesController::getCommandLog()            
             
-            if (ItunesController::Platform::isWindows())    
+            if (ItunesController::Platform::isWindows())
+                assertCommandLog(["getTrackCount() = 0",
+                                  "getTrackCount() = 0",
+                                  "addFilesToLibrary(c:/blah)",
+                                  "addFilesToLibrary(c:/blah1/shows's/S01E01 - The Episode.m4v)",
+                                  "addFilesToLibrary(c:/blah/blah2)"])                    
+            else
                 assertCommandLog(["getTrackCount() = 0",
                                   "getTrackCount() = 0",
                                   "addFilesToLibrary(/blah)",
                                   "addFilesToLibrary(/blah1/shows's/S01E01 - The Episode.m4v)",
                                   "addFilesToLibrary(/blah/blah2)"])
-            else
-                assertCommandLog(["getTrackCount() = 0",
-                                  "getTrackCount() = 0",
-                                  "addFilesToLibrary(c:/blah)",
-                                  "addFilesToLibrary(c:/blah1/shows's/S01E01 - The Episode.m4v)",
-                                  "addFilesToLibrary(c:/blah/blah2)"])
             end      
             client.sendCommand(ItunesController::CommandName::QUIT,221)
             client.disconnect
