@@ -157,6 +157,11 @@ class RemoteCommandTest < BaseServerTest
             end            
             assert(e.code() == 0)
         end
+        puts "==================== STDOUT ========================="
+        puts @stdout.string
+        puts "==================== STDERR ========================="
+        puts @stderr.string
+        puts "====================================================="
         assert(@stdout.string.include?("location: /blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: /blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
                 
         # assert(@stdout.string.include?("Location: /blah/show_episode.m4v\nTitle: Test 0\nDatabaseId: 0\nLocation: /blah/show_episode_1.m4v\nTitle: Test 1\nDatabaseId: 1"))        
