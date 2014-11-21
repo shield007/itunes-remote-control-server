@@ -1,0 +1,13 @@
+machine:
+  ruby:
+    version: 2.0.0
+    
+build:
+  override:
+    - rvm install ruby-2.0.0
+    - ./install-gems.sh
+    
+test:
+  orverride:
+    - rake
+  
