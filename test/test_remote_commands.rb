@@ -123,16 +123,13 @@ class RemoteCommandTest < BaseServerTest
             assert(e.code() == 0)
         end          
         
-        @server.waitForEmptyJobQueue()
-        
-        puts("Here 1")
+        @server.waitForEmptyJobQueue()                
         begin        
             app = AppListTracks.new('itunes-remote-list-tracks.rb',@stdout,@stderr,DummyExitHandler.new())
             app.exec(["-c",@configFile.path()])
         rescue ExitException => e
             assert(e.code() == 0)
-        end           
-        puts("Here 2")               
+        end                                 
                 
         if (ItunesController::Platform::isWindows())
             assert(@stdout.string.include?("Location: c:/blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
@@ -156,21 +153,13 @@ class RemoteCommandTest < BaseServerTest
                 puts "====================================================="
             end            
             assert(e.code() == 0)
-        end
-        puts "==================== STDOUT ========================="
-        puts @stdout.string
-        puts "==================== STDERR ========================="
-        puts @stderr.string
-        puts "====================================================="
+        end        
         
         if (ItunesController::Platform::isWindows())            
             assert(@stdout.string.include?("location: c:/blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: c:/blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
         else
             assert(@stdout.string.include?("location: /blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: /blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
         end    
-                
-        # assert(@stdout.string.include?("Location: /blah/show_episode.m4v\nTitle: Test 0\nDatabaseId: 0\nLocation: /blah/show_episode_1.m4v\nTitle: Test 1\nDatabaseId: 1"))        
-        
         puts("\n-- Test End: #{this_method()}")                
     end    
     
@@ -181,8 +170,7 @@ class RemoteCommandTest < BaseServerTest
             app.exec(["-c",@configFile.path()])
         rescue ExitException => e
             assert(e.code() == 0)
-        end
-        puts @stdout.string        
+        end               
         assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\nCache Dirty: false\nCached Track Count: 0\nCached Dead Track Count: 0\nCached Library Track Count: 0\nLibrary Track Count: 0\n"))        
         
         puts("\n-- Test End: #{this_method()}")
