@@ -170,9 +170,22 @@ class RemoteCommandTest < BaseServerTest
             app.exec(["-c",@configFile.path()])
         rescue ExitException => e
             assert(e.code() == 0)
-        end               
-        assert(@stdout.string.include?("ITunes control server : 0.2.0\nApple iTunes version : Dummy\nCache Dirty: false\nCached Track Count: 0\nCached Dead Track Count: 0\nCached Library Track Count: 0\nLibrary Track Count: 0\n"))        
+        end        
         
+        assert(@stdout.string.include?("ITunes control server: 0.2.0\nApple iTunes version: Dummy\nCache Dirty: false\nCached Track Count: 0\nCached Dead Track Count: 0\nCached Library Track Count: 0\nLibrary Track Count: 0"))               
+        puts("\n-- Test End: #{this_method()}")
+    end
+    
+    def test_info_json
+        puts("\n-- Test Start: #{this_method()}")
+        begin
+            app = AppServerInfo.new('itunes-remote-server-info.rb',@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path(),'--json'])
+        rescue ExitException => e
+            assert(e.code() == 0)
+        end        
+       
+        assert(@stdout.string.include?('{"ITunes control server":"0.2.0","Apple iTunes version":"Dummy","Cache Dirty":false,"Cached Track Count":0,"Cached Dead Track Count":0,"Cached Library Track Count":0,"Library Track Count":0}'))               
         puts("\n-- Test End: #{this_method()}")
     end
     

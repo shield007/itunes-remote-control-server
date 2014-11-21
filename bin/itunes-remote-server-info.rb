@@ -13,32 +13,59 @@ require 'itunesController/remote_application'
 
 class AppServerInfo < ItunesController::RemoteApplication   
     
+    KEY_NAMES = {
+        'server' => 'ITunes control server',
+        'iTunes' => 'Apple iTunes version',
+        'cacheDirty' => 'Cache Dirty',
+        'cachedTrackCount' => 'Cached Track Count',
+        'cachedDeadTrackCount' => 'Cached Dead Track Count',
+        'cachedLibraryTrackCount' => 'Cached Library Track Count',
+        'libraryTrackCount' => 'Library Track Count'
+    }
+    
     # Display the command line usage of the application
     def displayUsage()
         @stdout.puts("Usage: "+@appName+" [options]") 
         @stdout.puts("")
         @stdout.puts(genericOptionDescription())
+        @stdout.puts("    -j, --json                       If this option is given, output will be in JSON format")        
     end
     
+    def parseAppOptions(opts)
+        opts.on('-j','--json','If this option is given, output will be in JSON format') do
+            @options[:json] = true;
+        end        
+    end       
+
+    
     # Used to get information about the server and print it to stdout
-    def serverInfo()
-        result=sendCommand(ItunesController::CommandName::VERSION,ItunesController::Code::OK.to_i)
-        result = JSON.parse(result)           
-        @stdout.puts("ITunes control server : #{result['server']}")
-        @stdout.puts("Apple iTunes version : #{result['iTunes']}")
-        result=sendCommand(ItunesController::CommandName::SERVERINFO,ItunesController::Code::OK.to_i)
-        result = JSON.parse(result)
-        @stdout.puts("Cache Dirty: #{result['cacheDirty']}")
-        @stdout.puts("Cached Track Count: #{result['cachedTrackCount']}")
-        @stdout.puts("Cached Dead Track Count: #{result['cachedDeadTrackCount']}")
-        @stdout.puts("Cached Library Track Count: #{result['cachedLibraryTrackCount']}")
-        @stdout.puts("Library Track Count: #{result['libraryTrackCount']}")
+    def serverInfo(json)
+        tmp=sendCommand(ItunesController::CommandName::VERSION,ItunesController::Code::OK.to_i)
+        versionResult = JSON.parse(tmp)
+        tmp=sendCommand(ItunesController::CommandName::SERVERINFO,ItunesController::Code::OK.to_i)
+        cacheResult= JSON.parse(tmp)
+        commandResult = versionResult.merge(cacheResult)
+        if json
+            result = {}            
+            KEY_NAMES.each do | key,value | 
+                result[value]=commandResult[key]
+            end
+            @stdout.puts(result.to_json)
+        else                           
+            KEY_NAMES.each do | key,value |                
+                @stdout.puts("#{value}: #{commandResult[key]}")
+            end            
+        end 
     end       
     
     # Called when the application is executed to retrieve the server information
     # @param args The arguments passed to the application
     def execApp(args)
-        serverInfo()                               
+        json = false
+        if @options[:json]==true
+            json=true
+        end
+        serverInfo(json)                               
     end
 end
 
