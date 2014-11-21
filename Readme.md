@@ -44,3 +44,4 @@ rake
 TBD
 
 [![Analytics](https://ga-beacon.appspot.com/UA-5774405-9/itunes-remote-control-server/Readme)](https://github.com/igrigorik/ga-beacon) [ ![Codeship Status for shield007/itunes-remote-control-server](https://codeship.com/projects/3f0d8e30-5066-0132-ad3b-661f60be2436/status)](https://codeship.com/projects/48011)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/nq0vi687oc5fsw78?svg=true)](https://ci.appveyor.com/project/shield007/itunes-remote-control-server)
