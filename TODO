@@ -15,6 +15,10 @@ Version 0.2
 * Add command line option to server to generate a file with the PID in it
 	* Test windows
 	* Test linux
+* More server info fields
+   * Uptime of server
+   * Uptime of iTunes
+   * Last cache regen and how long it took
 * Server info command should dislpay all the json values without having them hardcoded in the client
 * Check that commands that take paths work with relative paths (convert to abs)
 * Check that commands that take paths work with escape characters and quoted file names 
