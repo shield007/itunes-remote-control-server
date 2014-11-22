@@ -7,6 +7,7 @@ gem install yard rake test-unit rdoc
 
 # Runtime GEMS
 gem install escape log4r json sequel
+gem install sinatra
 
 # Install native GEMS
 
