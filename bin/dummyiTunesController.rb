@@ -24,9 +24,9 @@ require 'rubygems'
 require 'pathname'
 require 'tempfile'
 
-require 'itunesController/itunes/controller_creator'
+require 'itunesController/controller_creator'
 require 'itunesController/config'
-require 'itunesController/controllserver'
+require 'itunesController/server/server'
 require 'itunesController/itunes/dummy_itunescontroller'
 require 'itunesController/debug'
 require 'itunesController/logging'
@@ -93,9 +93,10 @@ class App < ItunesController::Application
             port = config.port
         end
         if (@options[:port]!=nil)
-            port = @options[:port]
+            config.port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controllerCreator)        
+        
+        server=ItunesController::runServer(config,controllerCreator)        
         server.join
     end
 end

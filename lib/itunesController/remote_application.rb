@@ -1,7 +1,5 @@
 require 'itunesController/logging'
 require 'itunesController/version'
-require 'itunesController/config'
-require 'itunesController/controllserver'
 require 'itunesController/codes'
 
 require 'rubygems'

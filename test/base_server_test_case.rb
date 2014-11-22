@@ -8,7 +8,7 @@ require 'timeout'
 require 'itunesController/platform'
 require 'itunesController/config'
 require 'itunesController/itunes/dummy_itunescontroller'
-require 'itunesController/controllserver'
+require 'itunesController/server/server'
 require 'itunesController/cachedcontroller'
 require 'itunesController/controller_creator'
 
@@ -79,7 +79,7 @@ class BaseServerTest < Test::Unit::TestCase
         @port = @config.port
         @config.username = BaseServerTest::USER
         @config.password = BaseServerTest::PASSWORD
-        @server=ItunesController::ITunesControlServer.new(@config,@port,DummyControllerCreator.new(controller))        
+        @server=ItunesController::ITunesRestServer.new(@config,DummyControllerCreator.new(controller))        
     end
     
     def teardownServer

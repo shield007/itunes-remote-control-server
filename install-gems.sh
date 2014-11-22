@@ -6,8 +6,8 @@ echo "Installing GEMS....."
 gem install yard rake test-unit rdoc 
 
 # Runtime GEMS
-gem install escape log4r json sequel
-gem install sinatra
+gem install escape log4r json sequel sqlite3
+gem install sinatra sinatra-contrib
 
 # Install native GEMS
 

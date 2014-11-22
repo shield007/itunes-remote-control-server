@@ -1,7 +1,5 @@
 
-require 'net/telnet'
-
-require 'itunesController/controllserver'
+require 'itunesController/server/server'
 
 class DummyClient
     
