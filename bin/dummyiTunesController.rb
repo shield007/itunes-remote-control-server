@@ -24,7 +24,7 @@ require 'rubygems'
 require 'pathname'
 require 'tempfile'
 
-require 'itunesController/itunes/controller_creator'
+require 'itunesController/controller_creator'
 require 'itunesController/config'
 require 'itunesController/controllserver'
 require 'itunesController/itunes/dummy_itunescontroller'
