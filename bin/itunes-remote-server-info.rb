@@ -10,6 +10,7 @@
 require 'rubygems'
 require 'pathname'
 require 'itunesController/remote_application'
+require 'json'
 
 class AppServerInfo < ItunesController::RemoteApplication   
     
@@ -31,12 +32,13 @@ class AppServerInfo < ItunesController::RemoteApplication
         @stdout.puts("    -j, --json                       If this option is given, output will be in JSON format")        
     end
     
+    # Parse the options for this application
+    # @param opts The OptionParser
     def parseAppOptions(opts)
         opts.on('-j','--json','If this option is given, output will be in JSON format') do
             @options[:json] = true;
         end        
     end       
-
     
     # Used to get information about the server and print it to stdout
     def serverInfo(json)
@@ -50,7 +52,7 @@ class AppServerInfo < ItunesController::RemoteApplication
             KEY_NAMES.each do | key,value | 
                 result[value]=commandResult[key]
             end
-            @stdout.puts(result.to_json)
+            @stdout.puts(JSON.pretty_generate(result))
         else                           
             KEY_NAMES.each do | key,value |                
                 @stdout.puts("#{value}: #{commandResult[key]}")

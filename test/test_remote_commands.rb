@@ -183,9 +183,20 @@ class RemoteCommandTest < BaseServerTest
             app.exec(["-c",@configFile.path(),'--json'])
         rescue ExitException => e
             assert(e.code() == 0)
-        end        
-       
-        assert(@stdout.string.include?('{"ITunes control server":"0.2.0","Apple iTunes version":"Dummy","Cache Dirty":false,"Cached Track Count":0,"Cached Dead Track Count":0,"Cached Library Track Count":0,"Library Track Count":0}'))               
+        end  
+        puts "---------------------"      
+        puts @stdout.string
+        puts "---------------------"
+        expectedResult = "{\n"
+        expectedResult = expectedResult+"  \"ITunes control server\": \"0.2.0\",\n"
+        expectedResult = expectedResult+"  \"Apple iTunes version\": \"Dummy\",\n"
+        expectedResult = expectedResult+"  \"Cache Dirty\": false,\n"
+        expectedResult = expectedResult+"  \"Cached Track Count\": 0,\n"
+        expectedResult = expectedResult+"  \"Cached Dead Track Count\": 0,\n"
+        expectedResult = expectedResult+"  \"Cached Library Track Count\": 0,\n"
+        expectedResult = expectedResult+"  \"Library Track Count\": 0\n"
+        expectedResult = expectedResult+"}\n"
+        assert_equal(expectedResult,@stdout.string)               
         puts("\n-- Test End: #{this_method()}")
     end
     
