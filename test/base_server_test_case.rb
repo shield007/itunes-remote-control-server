@@ -83,14 +83,19 @@ class BaseServerTest < Test::Unit::TestCase
     end
     
     def teardownServer
-        if @server!=nil
-            @server.stop
-            while !@server.stopped?
+        begin
+            if @server!=nil
+                @server.stop
+                while !@server.stopped?
+                end
+                @server.join
             end
-            @server.join
-        end
-        if @dbFile!=nil
-            @dbFile.unlink
+            if @dbFile!=nil
+                @dbFile.unlink
+            end
+            assert(@server.stopped?)
+        rescue => e
+            $stderr.puts("Error sutting down: "+e.message)
         end
     end
 

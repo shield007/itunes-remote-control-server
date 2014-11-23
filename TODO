@@ -8,8 +8,6 @@ Version 0.2
 * Test track info command
    * How does it handle tracks that have not been added to iTunes
    * Does all it's output go though the logger
-* Add a --json to client utils to get the contents back as json
-   * Add to command itunes-remote-track-info.rb
 * When regenerating the track cache make it possible to talk to the server
    * This might only be at startup, but it a big issue
 * Add command line option to server to generate a file with the PID in it
@@ -45,7 +43,7 @@ Version 0.2
 * Add command to restart iTtunes
 
 * [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
-
+* [done] Add a --json to client utils to get the contents back as json
 
 Version 0.3
 -----------

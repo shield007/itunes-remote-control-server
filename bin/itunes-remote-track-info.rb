@@ -10,6 +10,7 @@
 require 'rubygems'
 require 'pathname'
 require 'itunesController/remote_application'
+require 'json'
 
 class TrackInfoListTracks < ItunesController::RemoteApplication   
     
@@ -18,16 +19,34 @@ class TrackInfoListTracks < ItunesController::RemoteApplication
         @stdout.puts("Usage: "+@appName+" [options] files...") 
         @stdout.puts("")
         @stdout.puts(genericOptionDescription())
+        @stdout.puts("    -j, --json                       If this option is given, output will be in JSON format")
     end
+    
+    # Parse the options for this application
+    # @param opts The OptionParser
+    def parseAppOptions(opts)
+        opts.on('-j','--json','If this option is given, output will be in JSON format') do
+            @options[:json] = true;
+        end        
+    end    
 
     # Print track information to stdout
-    # @param path The location of the track to print information for     
-    def infoTrackByPath(path)
-        result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)            
-        result = JSON.parse(result)      
+    # @param path The location of the track to print information for        
+    def infoTrackByPathText(path)
+        result = getTrackInfo(path)        
         result.each do | k,v |
             @stdout.puts("#{k}: #{v}")
-        end      
+        end        
+        @stdout.puts("\n")
+    end
+    
+    # Get the information about a track
+    # @param path The location of the track to print information for
+    # @return Hash with the track info
+    def getTrackInfo(path)
+        result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)                    
+        result = JSON.parse(result)
+        return result
     end
     
     # Called when the application is executed to display track information
@@ -36,10 +55,21 @@ class TrackInfoListTracks < ItunesController::RemoteApplication
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line")
         else
-            args.each do | path |
-                puts "Path: #{path}"
-                infoTrackByPath(path)                       
-            end            
+            json = false
+            if @options[:json]==true
+                json=true
+            end
+            if json
+                result = []
+                args.each do | path |
+                    result << getTrackInfo(path)
+                end
+                @stdout.puts(JSON.pretty_generate(result))
+            else
+                args.each do | path |                
+                    infoTrackByPathText(path)                       
+                end    
+            end        
         end                                          
     end
 end

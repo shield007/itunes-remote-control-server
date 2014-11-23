@@ -85,9 +85,7 @@ class RemoteCommandTest < BaseServerTest
         end          
         assert(@stdout.string.include?("No tracks found"))
         puts("\n-- Test End: #{this_method()}")
-    end
-    
-
+    end  
     
     def test_add_files_no_files
         puts("\n-- Test Start: #{this_method()}")
@@ -99,6 +97,98 @@ class RemoteCommandTest < BaseServerTest
         end                             
         puts("\n-- Test End: #{this_method()}")
     end       
+    
+    def test_track_info
+        puts("\n-- Test Start: #{this_method()}")
+        begin
+            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
+            if (ItunesController::Platform::isWindows())
+                file1 = 'c:/blah/show_episode.m4v'            
+            else
+                file1 = '/blah/show_episode.m4v'
+            end 
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1])
+        rescue ExitException => e
+            if e.code() != 0
+                puts "==================== STDOUT ========================="
+                puts @stdout.string
+                puts "==================== STDERR ========================="
+                puts @stderr.string
+                puts "====================================================="
+            end
+            assert(e.code() == 0)
+        end
+        
+        begin
+            app = TrackInfoListTracks.new("itunes-remote-track-info.rb",@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1])
+        rescue ExitException => e
+            if e.code() != 0
+                puts "==================== STDOUT ========================="
+                puts @stdout.string
+                puts "==================== STDERR ========================="
+                puts @stderr.string
+                puts "====================================================="
+            end            
+            assert(e.code() == 0)
+        end        
+        
+        expectedOutput = ""
+        expectedOutput = expectedOutput+"location: #{file1}\n"
+        expectedOutput = expectedOutput+"databaseId: 0\n"
+        expectedOutput = expectedOutput+"title: Test 0\n\n"                
+        
+        assert_equal(expectedOutput,@stdout.string)           
+        puts("\n-- Test End: #{this_method()}")
+    end
+    
+    def test_track_info_json
+        puts("\n-- Test Start: #{this_method()}")
+        begin
+            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
+            if (ItunesController::Platform::isWindows())
+                file1 = 'c:/blah/show_episode.m4v'            
+            else
+                file1 = '/blah/show_episode.m4v'
+            end 
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1])
+        rescue ExitException => e
+            if e.code() != 0
+                puts "==================== STDOUT ========================="
+                puts @stdout.string
+                puts "==================== STDERR ========================="
+                puts @stderr.string
+                puts "====================================================="
+            end
+            assert(e.code() == 0)
+        end
+        
+        begin
+            app = TrackInfoListTracks.new("itunes-remote-track-info.rb",@stdout,@stderr,DummyExitHandler.new())
+            app.exec(["-c",@configFile.path(),'--log_config','DEBUG','--json',file1])
+        rescue ExitException => e
+            if e.code() != 0
+                puts "==================== STDOUT ========================="
+                puts @stdout.string
+                puts "==================== STDERR ========================="
+                puts @stderr.string
+                puts "====================================================="
+            end            
+            assert(e.code() == 0)
+        end        
+        
+        expectedOutput = ""
+        expectedOutput = expectedOutput + "[\n"
+        expectedOutput = expectedOutput + "  {\n"
+        expectedOutput = expectedOutput + "    \"location\": \"/blah/show_episode.m4v\",\n"
+        expectedOutput = expectedOutput + "    \"databaseId\": 0,\n"
+        expectedOutput = expectedOutput + "    \"title\": \"Test 0\"\n"
+        expectedOutput = expectedOutput + "  }\n"
+        expectedOutput = expectedOutput + "]\n"                       
+        
+        assert_equal(expectedOutput,@stdout.string)           
+        puts("\n-- Test End: #{this_method()}")
+    end
     
     def test_add_files
         puts("\n-- Test Start: #{this_method()}")
@@ -154,16 +244,23 @@ class RemoteCommandTest < BaseServerTest
             end            
             assert(e.code() == 0)
         end        
+                
+        expectedOutput = ""
+        expectedOutput = expectedOutput+"location: #{file1}\n"
+        expectedOutput = expectedOutput+"databaseId: 0\n"
+        expectedOutput = expectedOutput+"title: Test 0\n"
+        expectedOutput = expectedOutput+"\n"                
+        expectedOutput = expectedOutput+"location: #{file2}\n"
+        expectedOutput = expectedOutput+"databaseId: 1\n"
+        expectedOutput = expectedOutput+"title: Test 1\n"
+        expectedOutput = expectedOutput+"\n"
         
-        if (ItunesController::Platform::isWindows())            
-            assert(@stdout.string.include?("location: c:/blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: c:/blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
-        else
-            assert(@stdout.string.include?("location: /blah/show_episode.m4v\ndatabaseId: 0\ntitle: Test 0\nlocation: /blah/show_episode_1.m4v\ndatabaseId: 1\ntitle: Test 1"))
-        end    
+        assert_equal(expectedOutput,@stdout.string)
+        
         puts("\n-- Test End: #{this_method()}")                
     end    
     
-    def test_info
+    def test_server_info
         puts("\n-- Test Start: #{this_method()}")
         begin
             app = AppServerInfo.new('itunes-remote-server-info.rb',@stdout,@stderr,DummyExitHandler.new())
@@ -176,7 +273,7 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test End: #{this_method()}")
     end
     
-    def test_info_json
+    def test_server_info_json
         puts("\n-- Test Start: #{this_method()}")
         begin
             app = AppServerInfo.new('itunes-remote-server-info.rb',@stdout,@stderr,DummyExitHandler.new())
@@ -184,9 +281,7 @@ class RemoteCommandTest < BaseServerTest
         rescue ExitException => e
             assert(e.code() == 0)
         end  
-        puts "---------------------"      
-        puts @stdout.string
-        puts "---------------------"
+        
         expectedResult = "{\n"
         expectedResult = expectedResult+"  \"ITunes control server\": \"0.2.0\",\n"
         expectedResult = expectedResult+"  \"Apple iTunes version\": \"Dummy\",\n"

@@ -21,8 +21,7 @@ class ServerTest < BaseServerTest
             # TODO Fix this so when the client disconnects, we spot it
             #            assert_equal(0,@server.connections.size)
         ensure
-            teardownServer
-            assert(@server.stopped?)
+            teardownServer            
         end
         puts("-- Test Finish:#{this_method()}")
     end
@@ -42,8 +41,7 @@ class ServerTest < BaseServerTest
             #assert_equal(0,@server.connections.size)
             client.disconnect
         ensure
-            teardownServer
-            assert(@server.stopped?)
+            teardownServer            
         end
         puts("-- Test Finish:#{this_method()}")
     end
@@ -62,8 +60,7 @@ class ServerTest < BaseServerTest
             #assert_equal(0,@server.connections.size)
             client.disconnect
         ensure
-            teardownServer
-            assert(@server.stopped?)
+            teardownServer            
         end
         puts("--Test Finish:#{this_method()}")
     end
@@ -160,8 +157,7 @@ class ServerTest < BaseServerTest
             client.sendCommand(ItunesController::CommandName::QUIT,221)
             client.disconnect
         ensure
-            teardownServer
-            assert(@server.stopped?)
+            teardownServer            
         end
         puts("--Test Finish:#{this_method()}")
     end       
@@ -201,8 +197,7 @@ class ServerTest < BaseServerTest
                 client.disconnect
             end
         ensure
-            teardownServer
-            assert(@server.stopped?)
+            teardownServer            
         end
         puts("--Test Finish:#{this_method()}")
     end
@@ -238,8 +233,7 @@ class ServerTest < BaseServerTest
                 client.sendCommand(ItunesController::CommandName::QUIT,221)
                 client.disconnect            
             ensure
-                teardownServer
-                assert(@server.stopped?)
+                teardownServer                
             end
             puts("--Test Finish:#{this_method()}")
         end
@@ -264,8 +258,7 @@ class ServerTest < BaseServerTest
            client.sendCommand(ItunesController::CommandName::QUIT,221)
            client.disconnect
        ensure
-           teardownServer
-           assert(@server.stopped?)
+           teardownServer           
        end
        puts("--Test Finish:#{this_method()}")
    end
@@ -286,8 +279,7 @@ class ServerTest < BaseServerTest
            client.sendCommand(ItunesController::CommandName::QUIT,221)
            client.disconnect
        ensure
-           teardownServer
-           assert(@server.stopped?)
+           teardownServer           
        end
        puts("-- Test Finish:#{this_method()}")
    end
@@ -319,8 +311,7 @@ class ServerTest < BaseServerTest
            client.sendCommand(ItunesController::CommandName::QUIT,221)
            client.disconnect
        ensure
-           teardownServer
-           assert(@server.stopped?)
+           teardownServer           
        end
        puts("-- Test Finish:#{this_method()}")
    end
