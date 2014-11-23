@@ -22,7 +22,7 @@
 module ItunesController
     
     class ControllerCreator
-        def createController()
+        def createController(connnectionString)
             raise "ERROR: Your trying to instantiate an abstract class"
         end        
     end
