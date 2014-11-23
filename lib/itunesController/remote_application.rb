@@ -1,7 +1,7 @@
 require 'itunesController/logging'
 require 'itunesController/version'
 require 'itunesController/config'
-require 'itunesController/controllserver'
+require 'itunesController/server/server'
 require 'itunesController/codes'
 
 require 'rubygems'
@@ -18,7 +18,7 @@ module ItunesController
             end
         end
 
-        class ErrorResponseException < Exception
+        class ErrorResponseException < StandardError
             attr_accessor :code,:result
 
             def initialize(code,result)
@@ -210,12 +210,12 @@ module ItunesController
                 if (response!=nil)            
                     response.each_line do | line |                                                   
                         if ( line =~ /(\d+)(.*)/)                   
-                            code=$1.to_i                                                        
-                            if (code==expectedCode)                    
+                            code=$1.to_i                                                       
+                            if (code==expectedCode)                   
                                 return result;
-                            elsif (errorCodes.include?(code))
-                                raise ErrorResponseException.new(code,result)
-                            elsif (code==ItunesController::Code::JSON.to_i or code==ItunesController::Code::TEXT.to_i)
+                            elsif (errorCodes.include?("#{code}"))
+                                raise ErrorResponseException.new("#{code}",result)
+                            elsif (code==ItunesController::Code::JSON.to_i or code==ItunesController::Code::TEXT.to_i)                                
                                 data = $2[1..$2.length]+"\n"
                                 if stream != nil
                                     stream.print(data)

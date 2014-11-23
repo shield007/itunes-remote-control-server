@@ -23,7 +23,7 @@
 require 'rubygems'
 require 'pathname'
 require 'itunesController/config'
-require 'itunesController/controllserver'
+require 'itunesController/server/server'
 require 'itunesController/debug'
 require 'itunesController/logging'
 require 'itunesController/cachedcontroller'
@@ -73,7 +73,7 @@ class App < ItunesController::Application
         if (@options[:port]!=nil)
             port = @options[:port]
         end
-        server=ItunesController::ITunesControlServer.new(@config,port,controllerCreator)        
+        server=ItunesController::ITunesControlServer::runServer(@config,port,controllerCreator)        
         server.join
     end
 end

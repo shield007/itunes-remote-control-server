@@ -44,7 +44,7 @@ class TrackInfoListTracks < ItunesController::RemoteApplication
     # @param path The location of the track to print information for
     # @return Hash with the track info
     def getTrackInfo(path)
-        result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i)                    
+        result=sendCommand(ItunesController::CommandName::TRACKINFO+':path:'+path,ItunesController::Code::OK.to_i,nil,[ItunesController::Code::NotFound])                    
         result = JSON.parse(result)
         return result
     end
@@ -61,13 +61,34 @@ class TrackInfoListTracks < ItunesController::RemoteApplication
             end
             if json
                 result = []
-                args.each do | path |
-                    result << getTrackInfo(path)
+                errors = []
+                args.each do | path |                    
+                    begin
+                        result << getTrackInfo(path)
+                    rescue ItunesController::RemoteApplication::ErrorResponseException => e
+                        if e.code = ItunesController::Code::NotFound
+                            errors << "Unable to find track in iTunes #{path}"
+                        else
+                            raise
+                        end                          
+                    end                            
                 end
-                @stdout.puts(JSON.pretty_generate(result))
+                if errors.count > 0
+                    @stdout.puts(JSON.pretty_generate({ :errors => errors}))
+                else
+                    @stdout.puts(JSON.pretty_generate(result))
+                end
             else
-                args.each do | path |                
-                    infoTrackByPathText(path)                       
+                args.each do | path |
+                    begin                
+                        infoTrackByPathText(path)
+                    rescue ItunesController::RemoteApplication::ErrorResponseException => e
+                        if e.code = ItunesController::Code::NotFound
+                            @stderr.puts("Unable to find track in iTunes #{path}")
+                        else
+                            raise
+                        end
+                    end                       
                 end    
             end        
         end                                          

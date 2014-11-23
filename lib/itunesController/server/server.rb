@@ -26,7 +26,7 @@ require 'json'
 require 'itunesController/version'
 require 'itunesController/debug'
 require 'itunesController/logging'
-require 'itunesController/commands'
+require 'itunesController/server/commands'
 require 'itunesController/codes'
 
 module ItunesController    
@@ -48,7 +48,7 @@ module ItunesController
             @state=ServerState::NOT_AUTHED
             @files=[]
             @config=config
-            @doCacheUpdate = false           
+            @doCacheUpdate = false                   
         end
         
         def clean
@@ -235,6 +235,11 @@ module ItunesController
                 end
             end
             return nil,nil
-        end                
+        end               
+        
+        def self.runServer(config,port,controllerCreator)
+           return ItunesController::ITunesControlServer.new(config,port,controllerCreator)
+        end 
     end
+      
 end

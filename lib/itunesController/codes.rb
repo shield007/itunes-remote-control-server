@@ -12,6 +12,19 @@ module ItunesController
         ErrorGeneral = "500"
         ErrorWrongCredentials = "501"
         ErrorNoUsername = "502"
-        ErrorMissingParam = "503"               
+        ErrorMissingParam = "503"
+        Unknown = "999"                      
+        
+        # Get the code object from the number value
+        # @param value The number value
+        def self.fromNumber(value)
+            @@values.each { | v1 |
+                if (v1.to_i == value)
+                    return v1
+                end
+            }
+            return Code::Unknown
+        end
+        
     end
 end

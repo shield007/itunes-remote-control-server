@@ -26,7 +26,7 @@ require 'tempfile'
 
 require 'itunesController/controller_creator'
 require 'itunesController/config'
-require 'itunesController/controllserver'
+require 'itunesController/server/server'
 require 'itunesController/itunes/dummy_itunescontroller'
 require 'itunesController/debug'
 require 'itunesController/logging'
@@ -93,9 +93,9 @@ class App < ItunesController::Application
             port = config.port
         end
         if (@options[:port]!=nil)
-            port = @options[:port]
+            port = @options[:port]            
         end
-        server=ItunesController::ITunesControlServer.new(config,port,controllerCreator)        
+        server=ItunesController::ITunesControlServer::runServer(config,port,controllerCreator)        
         server.join
     end
 end
