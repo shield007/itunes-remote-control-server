@@ -4,6 +4,7 @@ TODO
 Version 0.2
 -----------
  
+* Change the license
 * Test track info command
    * How does it handle tracks that have not been added to iTunes
    * Does all it's output go though the logger

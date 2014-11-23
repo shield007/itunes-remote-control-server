@@ -24,6 +24,7 @@ require 'itunesController/platform'
 
 require 'rubygems'
 require 'sequel'
+require 'itunesController/debug'
 
 module ItunesController
 
@@ -42,11 +43,14 @@ module ItunesController
             else
                 @connectionString = connectionString
             end              
-            ItunesController::ItunesControllerLogging::debug("Connecting to #{@connectionString}...")
+            ItunesController::ItunesControllerLogging::debug("Connecting to '#{@connectionString}'...")
             begin                
-                @db=Sequel.connect(@connectionString,:test=>true,:single_threaded=>true)                               
-            rescue => e                 
-                ItunesController::ItunesControllerLogging::error("Unable to connect to database with connection: #{@connectionString}")
+                @db=Sequel.connect(@connectionString,:test=>true,:single_threaded=>true)  
+            rescue Sequel::AdapterNotFound
+                ItunesController::ItunesControllerLogging::error("Unable to load database adapter for connection string: '#{@connectionString}'")                
+                raise                                           
+            rescue => e                                
+                ItunesController::ItunesControllerLogging::error("Unable to connect to database with connection: '#{@connectionString}'")
                 raise
             end
                         
