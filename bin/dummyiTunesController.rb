@@ -82,7 +82,7 @@ class App < ItunesController::Application
         ItunesController::DummyITunesController::resetCommandLog()
         ItunesController::DummyITunesController::resetTracks()
         itunes=ItunesController::DummyITunesController.new()
-        dbBackend = ItunesController::SequelDatabaseBackend.new(@dbPath)      
+        dbBackend = ItunesController::SequelDatabaseBackend.new("sqlite://#{@dbPath}")      
         return DummyControllerCreator.new(ItunesController::CachedController.new(itunes,dbBackend))
     end
 
@@ -103,7 +103,7 @@ end
 if __FILE__.end_with?(Pathname.new($0).basename.to_s)
     dbFile = Tempfile.new('dummyDatabase.db')
     begin    
-        ItunesController::ItunesControllerLogging::info("Started dummy itunes controller with db path #{dbFile.path}")
+        ItunesController::ItunesControllerLogging::info("Started dummy iTunes controller with db path '#{dbFile.path}'")
         app=App.new("itunesController.rb",dbFile.path)
         app.exec()
     ensure
