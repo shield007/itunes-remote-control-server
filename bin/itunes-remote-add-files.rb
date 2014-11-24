@@ -22,7 +22,7 @@ class AppAddFiles < ItunesController::RemoteApplication
        
     # Send the add files command to the server
     def addFiles()
-        sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)       
+        sendCommand(ItunesController::CommandName::ADDFILES,ItunesController::Code::OK.to_i)        
     end
     
     # Register all the files to be added with the server, then send the command to add them
@@ -35,6 +35,9 @@ class AppAddFiles < ItunesController::RemoteApplication
                 file(path)                       
             end
             addFiles()
+            args.each do | path |
+                ItunesController::ItunesControllerLogging::info("#{path} added to iTunes")
+            end
         end                               
     end
 end

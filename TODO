@@ -12,7 +12,6 @@ Version 0.2
 	* Test linux
 * Check that commands that take paths work with relative paths (convert to abs)
 * Check that commands that take paths work with escape characters and quoted file names
-* Add script should say something about the file been added. Possible return the info
 * Replace use of apple script
 * Test on windows
     * itunes-remote-add-files.rb
@@ -39,6 +38,7 @@ Version 0.2
     
 * [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
 * [done] Add a --json to client utils to get the contents back as json
+* [done] Add script should say something about the file been added.
 
 Version 0.3
 -----------
