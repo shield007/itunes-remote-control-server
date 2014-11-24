@@ -5,18 +5,17 @@ Version 0.2
 -----------
  
 * Change the license
-* Test track info command
-   * How does it handle tracks that have not been added to iTunes
-   * Does all it's output go though the logger
 * When regenerating the track cache make it possible to talk to the server
    * This might only be at startup, but it a big issue
 * Add command line option to server to generate a file with the PID in it
 	* Test windows
 	* Test linux
 * Check that commands that take paths work with relative paths (convert to abs)
-* Check that commands that take paths work with escape characters and quoted file names 
+* Check that commands that take paths work with escape characters and quoted file names
+* Add script should say something about the file been added. Possible return the info
 * Replace use of apple script
-* itunes-remote-add-files.rb
+* Test on windows
+    * itunes-remote-add-files.rb
     * itunes-remote-check-cache.rb
     * itunes-remote-list-dead-tracks.rb
     * itunes-remote-list-tracks.rb
@@ -35,15 +34,16 @@ Version 0.2
     * itunes-remote-remove-files.rb
     * itunes-remote-server-info.rb
     * itunesController.rb
-* [done on osx, need to check windows] Handle iTunes quiting    
-* Add command to restart iTtunes
-
+    
+* [done on osx, need to check windows] Handle iTunes quiting
+    
 * [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
 * [done] Add a --json to client utils to get the contents back as json
 
 Version 0.3
 -----------
 
+* Add command to restart iTtunes
 * Add command/script for searching for tracks
 * Add command/scripts to stop/play track
 * Make track info return more information about the track
