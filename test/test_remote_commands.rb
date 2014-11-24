@@ -180,7 +180,7 @@ class RemoteCommandTest < BaseServerTest
         expectedOutput = ""
         expectedOutput = expectedOutput + "[\n"
         expectedOutput = expectedOutput + "  {\n"
-        expectedOutput = expectedOutput + "    \"location\": \"/blah/show_episode.m4v\",\n"
+        expectedOutput = expectedOutput + "    \"location\": \"#{file1}\",\n"
         expectedOutput = expectedOutput + "    \"databaseId\": 0,\n"
         expectedOutput = expectedOutput + "    \"title\": \"Test 0\"\n"
         expectedOutput = expectedOutput + "  }\n"
