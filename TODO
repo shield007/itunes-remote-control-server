@@ -5,12 +5,12 @@ Version 0.2
 -----------
  
 * Change the license
+* Check commands worked when installed as a gem
 * When regenerating the track cache make it possible to talk to the server
    * This might only be at startup, but it a big issue
 * Add command line option to server to generate a file with the PID in it
 	* Test windows
 	* Test linux
-* Check that commands that take paths work with relative paths (convert to abs)
 * Check that commands that take paths work with escape characters and quoted file names
 * Replace use of apple script
 * Test on windows
@@ -39,6 +39,7 @@ Version 0.2
 * [done] Add better support for different databases using sequel: http://sequel.jeremyevans.net
 * [done] Add a --json to client utils to get the contents back as json
 * [done] Add script should say something about the file been added.
+* [done] Handle reliative paths
 
 Version 0.3
 -----------
