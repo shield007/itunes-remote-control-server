@@ -457,8 +457,15 @@ module ItunesController
 
         def processData(line,io)
             if (line =~ /^\:(.+)$/)
-                @state.files.push(File.expand_path($1))
-                return true, "#{ItunesController::Code::OK} ok\r\n"
+                f = File.expand_path($1)
+                if File.file?(f)
+                    @state.files.push(f)
+                    return true, "#{ItunesController::Code::OK} ok\r\n"
+                else
+                    return true, "#{ItunesController::Code::NotFound} Unable to find file #{f}\r\n" 
+                end
+                
+                
             end
             return true, "#{ItunesController::Code::ErrorMissingParam} ERROR expected file\r\n"
         end

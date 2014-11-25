@@ -31,18 +31,34 @@ class AppAddFiles < ItunesController::RemoteApplication
         if (args.length()==0)
             ItunesController::ItunesControllerLogging::error("No files given on the command line to add to iTunes")
         else
+            count = 0
             args.each do | path |
-                file(path)                       
+                begin
+                    file(path)
+                    count=count +1
+                rescue ItunesController::RemoteApplication::ErrorResponseException => e
+                    if e.code = ItunesController::Code::NotFound
+                        ItunesController::ItunesControllerLogging::error("Unable to add file #{path} to iTunes as it can't be found")                        
+                    else
+                        raise
+                    end                          
+                end                         
             end
-            addFiles()
-            args.each do | path |
-                ItunesController::ItunesControllerLogging::info("#{path} added to iTunes")
-            end
+            if count>0
+                addFiles()
+            end                        
+            ItunesController::ItunesControllerLogging::info("#{count} files add to iTunes")            
         end                               
     end
 end
 
 if __FILE__.end_with?(Pathname.new($0).basename.to_s)
+    
+#    this_dir = File.dirname(__FILE__)            
+#    lib_dir  = File.join(this_dir,  '..', 'lib')
+#    $: << lib_dir
+    
+    
     args = ARGV
     app=AppAddFiles.new("itunes-remote-add-files.rb")
     app.exec(args)

@@ -168,7 +168,7 @@ module ItunesController
         # Notify the remote server of a file that an action is to be performed on
         # @param file The file
         def file(file)
-            sendCommand(ItunesController::CommandName::FILE+":#{getAbsPath(file)}",ItunesController::Code::OK.to_i)
+            sendCommand(ItunesController::CommandName::FILE+":#{getAbsPath(file)}",ItunesController::Code::OK.to_i,nil,[ItunesController::Code::NotFound])
         end              
         
         def refreshFiles()
@@ -194,8 +194,9 @@ module ItunesController
             end
         end
 
-        def getAbsPath(path)
-            return File.expand_path(path,Dir.pwd)
+        def getAbsPath(path)               
+            absFile=File.expand_path(path,Dir.pwd)            
+            return absFile
         end
            
         # Used to send a command to the server and wait for a response. 
@@ -215,12 +216,12 @@ module ItunesController
                 if (response!=nil)            
                     response.each_line do | line |                                                   
                         if ( line =~ /(\d+)(.*)/)                   
-                            code=$1.to_i                                                       
-                            if (code==expectedCode)                   
+                            code=$1.to_i                                                                        
+                            if (code==expectedCode)                                
                                 return result;
-                            elsif (errorCodes.include?("#{code}"))
+                            elsif (errorCodes.include?("#{code}"))                                
                                 raise ErrorResponseException.new("#{code}",result)
-                            elsif (code==ItunesController::Code::JSON.to_i or code==ItunesController::Code::TEXT.to_i)                                
+                            elsif (code==ItunesController::Code::JSON.to_i or code==ItunesController::Code::TEXT.to_i)                                                           
                                 data = $2[1..$2.length]+"\n"
                                 if stream != nil
                                     stream.print(data)
