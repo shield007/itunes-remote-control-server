@@ -20,6 +20,10 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+this_dir = File.dirname(__FILE__)            
+lib_dir  = File.join(this_dir,  '..', 'lib')
+$: << lib_dir
+
 require 'rubygems'
 require 'pathname'
 require 'itunesController/config'

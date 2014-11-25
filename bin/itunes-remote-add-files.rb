@@ -7,6 +7,10 @@
 # License:: GNU General Public License v3 <http://www.gnu.org/licenses/>
 #
 
+this_dir = File.dirname(__FILE__)            
+lib_dir  = File.join(this_dir,  '..', 'lib')
+$: << lib_dir
+
 require 'rubygems'
 require 'pathname'
 require 'itunesController/remote_application'
@@ -52,13 +56,7 @@ class AppAddFiles < ItunesController::RemoteApplication
     end
 end
 
-if __FILE__.end_with?(Pathname.new($0).basename.to_s)
-    
-#    this_dir = File.dirname(__FILE__)            
-#    lib_dir  = File.join(this_dir,  '..', 'lib')
-#    $: << lib_dir
-    
-    
+if __FILE__.end_with?(Pathname.new($0).basename.to_s)       
     args = ARGV
     app=AppAddFiles.new("itunes-remote-add-files.rb")
     app.exec(args)
