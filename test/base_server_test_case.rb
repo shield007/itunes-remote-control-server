@@ -58,6 +58,7 @@ class BaseServerTest < Test::Unit::TestCase
     end
     
     def setupServer(tracks=nil)
+        @tempFiles = []
         ItunesController::DummyITunesController::resetCommandLog()
         ItunesController::DummyITunesController::resetTracks()        
         if (tracks!=nil)
@@ -93,12 +94,23 @@ class BaseServerTest < Test::Unit::TestCase
                 @dbFile.unlink
             end
             assert(@server.stopped?)
+            @tempFiles.each do | file |
+                file.unlink
+            end
         rescue => e
             $stderr.puts("Error sutting down: "+e.message)
         end
     end
 
     def test_dummy
+    end
+    
+    def temp_name(file_name='', ext='', dir=nil)
+        # Create dir for files
+        t = Tempfile.new([file_name, ext])
+        t.close()   
+        @tempFiles << t 
+        return t.path        
     end
     
     def assertCommandLog(expected)

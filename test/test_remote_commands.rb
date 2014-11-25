@@ -5,13 +5,13 @@ require 'itunes-remote-list-tracks'
 require 'itunes-remote-track-info'
 require 'itunes-remote-server-info'
 require 'itunes-remote-check-cache'
-
+require 'tempfile'
 require 'stringio'
 
 class RemoteCommandTest < BaseServerTest
     
     def initialize(name)
-        super(name)        
+        super(name)               
     end     
     
     def this_method
@@ -101,12 +101,8 @@ class RemoteCommandTest < BaseServerTest
     def test_track_info
         puts("\n-- Test Start: #{this_method()}")
         begin
-            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
-            if (ItunesController::Platform::isWindows())
-                file1 = 'c:/blah/show_episode.m4v'            
-            else
-                file1 = '/blah/show_episode.m4v'
-            end 
+            app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())            
+            file1 = temp_name('show_episode.m4v','','blah')            
             app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1])
         rescue ExitException => e
             if e.code() != 0
@@ -146,11 +142,7 @@ class RemoteCommandTest < BaseServerTest
         puts("\n-- Test Start: #{this_method()}")
         begin
             app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
-            if (ItunesController::Platform::isWindows())
-                file1 = 'c:/blah/show_episode.m4v'            
-            else
-                file1 = '/blah/show_episode.m4v'
-            end 
+            file1 = temp_name('show_episode.m4v','','blah')
             app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1])
         rescue ExitException => e
             if e.code() != 0
@@ -188,19 +180,16 @@ class RemoteCommandTest < BaseServerTest
         
         assert_equal(expectedOutput,@stdout.string)           
         puts("\n-- Test End: #{this_method()}")
-    end
+    end    
     
     def test_add_files
         puts("\n-- Test Start: #{this_method()}")
         begin        
             app = AppAddFiles.new('itunes-remote-add-files.rb',@stdout,@stderr,DummyExitHandler.new())
-            if (ItunesController::Platform::isWindows())
-                file1 = 'c:/blah/show_episode.m4v'
-                file2 = 'c:/blah/show_episode_1.m4v'
-            else
-                file1 = '/blah/show_episode.m4v'
-                file2 = '/blah/show_episode_1.m4v'
-            end               
+                
+            file1 = temp_name('show_episode.m4v')
+            file2 = temp_name('show_episode_1.m4v')
+                          
             app.exec(["-c",@configFile.path(),'--log_config','DEBUG',file1,file2])
         rescue ExitException => e
             if e.code() != 0
@@ -221,13 +210,8 @@ class RemoteCommandTest < BaseServerTest
             assert(e.code() == 0)
         end                                 
                 
-        if (ItunesController::Platform::isWindows())
-            assert(@stdout.string.include?("Location: c:/blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
-            assert(@stdout.string.include?("Location: c:/blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
-        else
-            assert(@stdout.string.include?("Location: /blah/show_episode.m4v - Title: Test 0 - DatabaseId: 0"))
-            assert(@stdout.string.include?("Location: /blah/show_episode_1.m4v - Title: Test 1 - DatabaseId: 1"))
-        end   
+        assert(@stdout.string.include?("Location: #{file1} - Title: Test 0 - DatabaseId: 0"))
+        assert(@stdout.string.include?("Location: #{file2} - Title: Test 1 - DatabaseId: 1"))          
         
         @stdout=StringIO.new("","w+")
                                             
@@ -257,7 +241,7 @@ class RemoteCommandTest < BaseServerTest
         
         assert_equal(expectedOutput,@stdout.string)
         
-        puts("\n-- Test End: #{this_method()}")                
+        puts("\n-- Test End: #{this_method()}")                       
     end    
     
     def test_server_info
