@@ -1,4 +1,3 @@
-
 require 'base_server_test_case'
 require 'dummy_client'
 require 'itunesController/track/track'
