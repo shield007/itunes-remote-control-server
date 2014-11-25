@@ -134,10 +134,15 @@ module ItunesController
         # Create a connection to the remote server
         def connect()
             ItunesController::ItunesControllerLogging::debug("Connecting to #{@config.hostname}:#{@config.port}")
-            @client=Net::Telnet::new('Host' => @config.hostname,
-                                     'Port' => @config.port,
-                                     'Telnetmode' => false)
-            waitFor(001)
+            begin
+                @client=Net::Telnet::new('Host' => @config.hostname,
+                                         'Port' => @config.port,
+                                         'Telnetmode' => false)
+                waitFor(001)
+            rescue Errno::ECONNREFUSED
+                ItunesController::ItunesControllerLogging::error("Unable to connect to #{@config.hostname}:#{@config.port}")
+                exit(4)
+            end
             ItunesController::ItunesControllerLogging::info("Connected")
             
         end
