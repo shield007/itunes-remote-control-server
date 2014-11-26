@@ -4,8 +4,9 @@ machine:
         
 test:
   override:
-    - rvm install ruby-2.0.0
+    - ruby --version    
     - ./install-gems.sh
+    - rake yard
     - rake all
     - ls -la *
     - cp -R docs $CIRCLE_ARTIFACTS
