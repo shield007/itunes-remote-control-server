@@ -18,5 +18,5 @@ artifacts:
     - path: \*.gem
     
     # API Docs
-    - path: docs
+    - path: doc
     

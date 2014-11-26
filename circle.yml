@@ -5,10 +5,8 @@ machine:
 test:
   override:
     - ruby --version    
-    - ./install-gems.sh
-    - rake yard
-    - rake all
-    - ls -la *
-    - cp -R docs $CIRCLE_ARTIFACTS
+    - ./install-gems.sh    
+    - rake all    
+    - cp -R doc $CIRCLE_ARTIFACTS/
     - cp *.gem $CIRCLE_ARTIFACTS
   
