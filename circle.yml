@@ -6,7 +6,7 @@ test:
   override:
     - rvm install ruby-2.0.0
     - ./install-gems.sh
-    - rake
+    - rake all
     - ls -la *
     - cp -R docs $CIRCLE_ARTIFACTS
     - cp *.gem $CIRCLE_ARTIFACTS
