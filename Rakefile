@@ -10,6 +10,7 @@ Rake::TestTask.new do |t|
 end
 
 YARD::Rake::YardocTask.new do |t|    
+    t.options  += ['--debug']
     t.files   = ['lib/**/*.rb','bin/**/*.rb']
 end
 
