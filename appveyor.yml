@@ -3,14 +3,20 @@ clone_depth: 1
 platform:
     - x64
     - x86
+
 install:
     - nuget install sqlite
-#    - install-gems.bat
     - gem install yard rake test-unit rdoc 
     - gem install escape log4r json sequel
     - gem install sqlite3
-    - gem install redcarpet
+
 build_script:
     - rake
-#artifacts:
-#    - path: *.gem
+    
+artifacts:
+    # The gem for deployment
+    - path: \*.gem
+    
+    # API Docs
+    - path: docs
+    

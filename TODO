@@ -12,7 +12,6 @@ Version 0.2
 	* Test windows
 	* Test linux
 * Check that commands that take paths work with escape characters and quoted file names
-* Replace use of apple script
 * Test on windows
     * itunes-remote-add-files.rb
     * itunes-remote-check-cache.rb
@@ -53,3 +52,4 @@ Version 0.3
    * Uptime of server
    * Uptime of iTunes
    * Last cache regen and how long it took
+* Replace use of apple script
