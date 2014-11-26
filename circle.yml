@@ -7,4 +7,6 @@ test:
     - rvm install ruby-2.0.0
     - ./install-gems.sh
     - rake
+    - cp -R docs $CIRCLE_ARTIFACTS
+    - cp *.gem $CIRCLE_ARTIFACTS
   
