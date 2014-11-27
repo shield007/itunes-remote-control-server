@@ -6,7 +6,7 @@ platform:
 
 install:
     - nuget install sqlite
-    - gem install yard rake test-unit rdoc 
+    - gem install yard rake test-unit rdoc simplecov
     - gem install escape log4r json sequel
     - gem install sqlite3
 
