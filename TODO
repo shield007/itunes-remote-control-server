@@ -4,7 +4,6 @@ TODO
 Version 0.2
 -----------
  
-* Change the license
 * Check commands worked when installed as a gem
 * When regenerating the track cache make it possible to talk to the server
    * This might only be at startup, but it a big issue
@@ -39,6 +38,7 @@ Version 0.2
 * [done] Add a --json to client utils to get the contents back as json
 * [done] Add script should say something about the file been added.
 * [done] Handle reliative paths
+* [done] Change the license to MIT
 
 Version 0.3
 -----------

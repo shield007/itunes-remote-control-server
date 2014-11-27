@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.files       = `git ls-files`.split("\n")  
   s.executables = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
+  s.licenses    = ['MIT']
   s.has_rdoc     = 'yard'
   s.rdoc_options = [ '--main', 'Readme.md' ] 
   s.extra_rdoc_files = [ 'LICENSE', 'Readme.md' ] 
