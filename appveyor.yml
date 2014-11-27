@@ -20,3 +20,6 @@ artifacts:
     # API Docs
     - path: doc
     
+    # Test coverage
+    - path: coverage
+    

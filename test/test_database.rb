@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 require 'test/unit'
 require 'itunesController/database/sequel_backend'
 require 'itunesController/database/database'

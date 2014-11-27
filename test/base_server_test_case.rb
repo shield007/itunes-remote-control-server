@@ -1,4 +1,5 @@
-
+require 'simplecov'
+SimpleCov.start
 
 require 'tempfile'
 require 'test/unit'

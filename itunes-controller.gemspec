@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('yard')
   s.add_development_dependency('rake')
   s.add_development_dependency('test-unit')
+  s.add_development_dependency('simplecov')  
   s.add_dependency('escape')
   s.add_dependency('sqlite3') if RUBY_PLATFORM != 'java'
   s.add_dependency('log4r')
