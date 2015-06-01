@@ -1,5 +1,7 @@
 # iTunes Remote Control Server 
 
+[![Code Climate](https://codeclimate.com/repos/556c04cce30ba0663400c775/badges/0bcf2c1cf444e8650050/gpa.svg)](https://codeclimate.com/repos/556c04cce30ba0663400c775/feed)
+
 This is a project to create make it possible to control enable iTunes to be operated 
 on a headless server without the GUI. It provides a TCP server which can be connected 
 to locally or remote by other applications to control iTunes.
