@@ -33,6 +33,7 @@ Instructions for install on different platforms can be found on the wiki.
 
 If you need to rebuild gem and run all the tests, then from a terminal change to the project directory and type:
 
+sudo gem install bundle
 rake
 
 ## Configuration

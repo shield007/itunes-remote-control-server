@@ -29,6 +29,7 @@
 require 'rubygems'
 require 'rake/testtask'
 require 'yard'
+require "codeclimate-test-reporter"
 
 task :default => :all
 
@@ -47,6 +48,7 @@ end
 
 desc "Execute all the build tasks"
 task :all do
+    CodeClimate::TestReporter.start
     Rake::Task['yard'].invoke
     Rake::Task['test'].invoke    
     Rake::Task['gem'].invoke    
