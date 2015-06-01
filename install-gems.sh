@@ -3,10 +3,11 @@
 echo "Installing GEMS....."
 
 # Test GEMS
-gem install yard rake test-unit rdoc simplecov 
+#gem install yard rake test-unit rdoc simplecov 
 
 # Runtime GEMS
-gem install escape log4r json sequel
+#gem install escape log4r json sequel
+bundle install
 
 # Install native GEMS
 
